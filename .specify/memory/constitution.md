@@ -1,50 +1,223 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# video-watch-list Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. DDD + オニオンアーキテクチャ
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+バックエンドは Domain-Driven Design とオニオンアーキテクチャを基本とする。
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+- **ドメイン層**: ビジネスルールを表現し、フレームワーク・DB に依存しない純粋な Java
+- **アプリケーション層**: ユースケースのオーケストレーション、トランザクション管理
+- **インフラストラクチャ層**: DB（MyBatis）、外部 API 連携、フレームワーク固有の実装
+- **プレゼンテーション層**: REST API コントローラ、リクエスト・レスポンス変換のみを担う
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+依存方向は外側 → 内側のみ。内側は外側を知らない。
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### II. 仕様主導開発
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+新機能は必ず **仕様 → 計画 → タスク → 実装** の順に進める（Spec Kit フロー）。
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+- 仕様と設計が実装に先行する
+- 仕様変更時は、API 契約 → 実装 → フロント側 の順に整合性を取る
+- 仕様・設計が実装と乖離しないよう、変更時は必ず上流ドキュメントを更新する
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+### III. テスト重視とリグレッション防止
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+自動テストを重視し、リグレッションを防ぐ。
+
+**テスト戦略**:
+- **単体テスト**: ドメイン層・アプリケーション層の各クラスを個別にテスト（JUnit/Jest）
+- **統合テスト**: レイヤ間・コンポーネント間の連携を検証（Spring Test/Jest + Testing Library）
+- **E2E テスト**: ユーザーストーリー全体の動作を検証（Selenium/Cypress 等）
+- **カバレッジ目標**: 業務ロジック部分は 80% 以上のコードカバレッジを目指す
+- **リグレッション防止**: 新機能追加・バグ修正時は必ず対応するテストを追加し、既存テストの全パス確認が必須
+
+### IV. 保守性とシンプルさの優先
+
+過度に複雑な設計は避け、保守性・理解しやすさを優先する。
+
+**DDD + オニオンアーキテクチャとのバランス**:
+- DDD + オニオンアーキテクチャは長期保守性を重視した選択であり、初期実装の複雑さ増加は許容する
+- ただし、各層での過度な抽象化は避け、必要最小限の設計に留める
+- ドメイン層に集中し、アプリケーション層・インフラ層の過剰な設計は排除
+
+### V. テスト駆動開発（TDD）の採用
+
+テスト駆動開発を基本的な開発アプローチとし、テストを先に書くことでコード品質と保守性を確保する。
+
+**TDD プラクティス**:
+- **Red-Green-Refactor サイクル**: 失敗するテストを先に書き、最小限の実装で成功させ、その後リファクタリングする
+- **テストファースト原則**: 機能実装前に対応するテストを記述する（アクセプテンステスト・ユニットテスト）
+- **テスト駆動設計**: テストを通じてコンポーネント間のインターフェースを定義し、疎結合な設計を実現
+
+### VI. ドキュメント言語の統一と英語コーディング
+
+ドキュメントは日本語で作成し、コードは英語で記述する。ユビキタス言語として日本語と英語の両方を定義・統一する。
+
+**ドキュメント（日本語）**:
+- ユーザーストーリー、要件、設計、実装タスクはすべて日本語で記述する
+- 外部ライブラリやツールのドキュメント参照時のみ英語を使用可能
+
+**コード（英語）**:
+- クラス名、メソッド名、変数名は英語で記述する
+- コード内のコメント、docstring も英語で記述し、国際的な標準に従う
+- 例外: 複雑なビジネスロジックの説明は日本語コメント可（ただしコード行の直後にのみ配置）
+
+**ユビキタス言語の定義（日本語 ↔ 英語の対応）**:
+- ドメインモデル（エンティティ・値オブジェクト・サービス）の用語は日本語と英語で明示的に定義
+- 例：「作品」=「Work」、「視聴ステータス」=「WatchStatus」など仕様書に記載
+- コード・ドキュメント・仕様で用語を統一し、翻訳の曖昧性を排除
+
+## アーキテクチャ方針（DDD + オニオン）
+
+### バックエンドレイヤ構造
+
+```
+backend/src/main/java/com/example/videowatchlog/
+├── domain/
+│   ├── model/              (エンティティ・値オブジェクト)
+│   ├── repository/         (リポジトリインターフェース - 依存性逆転)
+│   ├── service/            (ドメインサービス)
+│   └── event/              (ドメインイベント)
+├── application/
+│   ├── service/            (ユースケース実装)
+│   ├── dto/                (DTO)
+│   ├── port/               (外部インターフェース)
+│   └── usecase/            (ユースケースクラス)
+├── infrastructure/
+│   ├── persistence/        (リポジトリ実装・MyBatis Mapper)
+│   ├── external/           (外部API連携)
+│   ├── config/             (Spring Boot設定)
+│   └── messaging/          (イベント駆動)
+└── presentation/
+    └── controller/         (REST API コントローラ)
+```
+
+### フロントエンドアーキテクチャ方針
+
+フロントエンドは React + Next.js を基本とし、以下の設計原則に従います：
+
+- **ページベースのファイル構成**: Next.js の App Router を使用し、`src/app/` 配下でページ・レイアウトを定義
+- **コンポーネント設計**: `src/components/` で再利用可能なコンポーネントを定義（Presentational/Smart コンポーネント分離）
+- **状態管理**: React Context または軽量な状態管理ライブラリ（Zustand 等）を使用し、過度な複雑性を避ける
+- **API 通信**: `src/lib/` で API クライアント・ユーティリティを集約し、コンポーネント層から分離
+- **テスト駆動**: Jest + Testing Library でコンポーネント・ユーティリティの単体・統合テストを実施
+
+### DDD の基本ルール
+
+- **ドメイン層の純粋性**: 重要な概念（作品、視聴ステータスなど）はドメインオブジェクト（エンティティ・値オブジェクト）として表現し、フレームワーク・DB 非依存とする
+- **依存性逆転**: domain/repository はインターフェース定義のみ、infrastructure/persistence に実装を配置
+- **ユビキタス言語**: ドメインモデルは日本語と英語で用語を定義し、仕様・コード・ドキュメントで統一
+- **イベント駆動**: ドメインイベントを使用して複雑なユースケース間の疎結合を実現
+- **ユースケース隔離**: application/usecase で各機能を独立したユースケースとして実装、テスト可能性を確保
+
+### MyBatis 選択の根拠
+
+MyBatis は以下の理由により、本プロジェクトの DDD 実装に適しています：
+- **SQL の明示的制御**: ORM（JPA/Hibernate）による自動生成 SQL ではなく、明示的な SQL 記述により最適化・デバッグが容易
+- **ドメイン層の独立性**: SQL マッピングをインフラ層に完全に分離でき、ドメイン層の純粋性を保ちやすい
+- **リポジトリ実装の柔軟性**: 複雑なドメインモデルをシンプルに永続化できる（例：値オブジェクトの JSON マッピング）
+
+## 技術スタック
+
+### バックエンド
+
+- **言語**: Java
+- **フレームワーク**: Spring Boot
+- **永続化**: MyBatis + PostgreSQL
+- **DB マイグレーション**: Flyway
+- **テスト**: JUnit + Spring Test
+
+### フロントエンド
+
+- **言語**: TypeScript
+- **フレームワーク**: React + Next.js
+- **テスト**: Jest + Testing Library
+- **UI 設計**: シンプルで読みやすさを優先
+
+### API 契約
+
+- **形式**: REST API
+- **スキーマ**: OpenAPI で管理する（可能な限り）
+
+## インフラ・実行環境
+
+### docker compose（開発環境は必須）
+
+**開発環境**での docker compose 使用は必須です。開発者が直接ホスト OS に依存したセットアップを行うことは避けます。
+
+docker compose により以下を管理（開発環境）：
+- バックエンド（Spring Boot アプリケーション）
+- フロントエンド（Next.js アプリケーション）
+- データベース（PostgreSQL）
+- その他の必要なミドルウェア
+
+**適用範囲の詳細**:
+- **開発環境**: docker compose による起動・管理は**必須**
+- **ローカル単体テスト**: IDE から直接 JUnit/Jest を実行可（docker 不要）
+- **CI/CD パイプライン**: コンテナ化されたテストランナーを推奨（docker 活用推奨）
+- **本番環境**: Kubernetes 等のオーケストレーションツール使用可（docker compose 不要）
+
+### 設定管理
+
+- 設定値（DB 接続情報など）は `.env` ファイルや compose 環境変数で管理
+- コードへのベタ書きは禁止
+- 環境ごとの差分は docker compose のオーバーライドファイルで吸収
+
+### リポジトリ構成
+
+```
+/
+├── docker-compose.yml           # Docker Compose 定義
+├── docker-compose.override.yml  # Docker Compose オーバーライド（開発環境）
+├── .env.example                 # 環境変数テンプレート
+├── backend/                     # Spring Boot アプリケーション
+│   ├── src/
+│   │   ├── main/java/com/example/videowatchlog/
+│   │   │   ├── domain/
+│   │   │   ├── application/
+│   │   │   ├── infrastructure/
+│   │   │   └── presentation/
+│   │   └── test/
+│   └── pom.xml
+├── frontend/                    # Next.js アプリケーション
+│   ├── src/
+│   │   ├── app/
+│   │   ├── components/
+│   │   └── lib/
+│   ├── package.json
+│   └── tsconfig.json
+└── .specify/                    # Spec Kit（仕様・計画・タスク）
+```
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+この憲法は video-watch-list プロジェクトの開発方針を規定する最高位の設計ドキュメントである。
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+### 憲法の位置づけ
+
+- **憲法の優位性**: 本憲法は他のドキュメント・慣行に優先する。矛盾がある場合、憲法の内容に従うこと
+- **自動同期メカニズム**: 憲法改正時は `/speckit.constitution` コマンドを実行し、依存テンプレート（spec、plan、tasks）との一貫性を検証・同期される
+
+### 変更プロセス
+
+新たに原則を追加・削除・修正する場合、必ず以下を実施：
+
+1. 憲法ドキュメントに変更を記述
+2. `/speckit.constitution` コマンドを実行（整合性チェック・自動同期）
+3. 変更内容をコミット（以下のコミットメッセージ形式を使用）
+
+### バージョン管理ルール
+
+憲法のバージョンは MAJOR.MINOR.PATCH 形式でセマンティックバージョニングを採用：
+
+- **MAJOR**: 原則の削除・根本的な再定義（後方互換性なし）
+- **MINOR**: 新規原則追加・既存原則の実装詳細化・拡張（後方互換性あり）
+- **PATCH**: 誤字修正・表現の明確化・書式改善（意味的変更なし）
+
+### コンプライアンス確認
+
+- **PR レビュー**: PR マージ前に本憲法との整合性を確認すること
+- **定期見直し**: 6ヶ月ごとに憲法内容とプロジェクト実装の乖離がないか確認する
+
+**Version**: 1.2.0 | **Ratified**: 2025-11-19 | **Last Amended**: 2025-11-19
