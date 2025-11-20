@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: videowatchlog
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/videowatchlog_test
+    username: videowatchuser
+    password: password
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+
+  flyway:
+    enabled: false
+
+mybatis:
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    root: INFO
+    com.example.videowatchlog: DEBUG

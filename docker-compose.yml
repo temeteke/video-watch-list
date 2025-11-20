@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: video-watch-list-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-videowatchuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-videowatchlog}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-videowatchuser}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - video-watch-list-network
+
+  # Spring Boot Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: video-watch-list-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB:-videowatchlog}
+      DB_USER: ${POSTGRES_USER:-videowatchuser}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-password}
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - video-watch-list-network
+    volumes:
+      - ./backend:/app
+    command: mvn spring-boot:run
+
+  # Next.js Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: video-watch-list-frontend
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080/api/v1}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - video-watch-list-network
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  video-watch-list-network:
+    driver: bridge
