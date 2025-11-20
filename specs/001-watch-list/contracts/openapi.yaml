@@ -1,0 +1,862 @@
+openapi: 3.0.3
+info:
+  title: 視聴予定リスト API
+  description: ドラマ・アニメ・映画を「視聴予定」として登録・管理するための REST API
+  version: 1.0.0
+  contact:
+    name: video-watch-list Team
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server
+
+tags:
+  - name: titles
+    description: タイトル（作品）管理
+  - name: series
+    description: シリーズ（シーズン）管理
+  - name: episodes
+    description: エピソード管理
+  - name: viewing-records
+    description: 視聴履歴管理
+
+paths:
+  /titles:
+    get:
+      tags:
+        - titles
+      summary: タイトル一覧を取得
+      description: |
+        タイトル名による部分一致検索、視聴状態によるフィルタリングをサポート。
+        Success Criteria SC-003: 検索・フィルタ結果を1秒以内に表示。
+      parameters:
+        - name: query
+          in: query
+          description: タイトル名による部分一致検索
+          required: false
+          schema:
+            type: string
+            example: "ワンピース"
+        - name: watchStatus
+          in: query
+          description: 視聴状態によるフィルタ（UNWATCHED/WATCHED）
+          required: false
+          schema:
+            type: string
+            enum: [UNWATCHED, WATCHED]
+            example: "UNWATCHED"
+      responses:
+        '200':
+          description: タイトル一覧を取得成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TitleSummary'
+        '400':
+          description: 無効なリクエストパラメータ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - titles
+      summary: 新規タイトルを作成
+      description: |
+        新しいタイトルを作成し、デフォルトシリーズとデフォルトエピソードを自動生成。
+        同一タイトル名の重複登録は拒否（FR-001）。
+        Success Criteria SC-001: 1分以内に作成・登録完了。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTitleRequest'
+      responses:
+        '201':
+          description: タイトル作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TitleDetail'
+        '400':
+          description: 無効なリクエスト（タイトル名重複など）
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: タイトル名が既に存在（重複）
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /titles/{titleId}:
+    get:
+      tags:
+        - titles
+      summary: タイトル詳細を取得
+      description: |
+        タイトルID を指定して詳細情報を取得。
+        配下のシリーズ・エピソード・視聴履歴も含めて取得。
+      parameters:
+        - name: titleId
+          in: path
+          required: true
+          description: タイトルID
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: タイトル詳細を取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TitleDetail'
+        '404':
+          description: タイトルが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - titles
+      summary: タイトル情報を更新
+      description: タイトル名の変更、タイトル情報URL の追加・削除
+      parameters:
+        - name: titleId
+          in: path
+          required: true
+          description: タイトルID
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTitleRequest'
+      responses:
+        '200':
+          description: タイトル更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TitleDetail'
+        '400':
+          description: 無効なリクエスト
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: タイトルが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: タイトル名が既に存在（重複）
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - titles
+      summary: タイトルを削除
+      description: |
+        タイトルを削除し、配下のシリーズ・エピソード・視聴履歴もカスケード削除（FR-014-1）。
+        削除前にフロントエンドで確認ダイアログを表示すること。
+      parameters:
+        - name: titleId
+          in: path
+          required: true
+          description: タイトルID
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '204':
+          description: タイトル削除成功（No Content）
+        '404':
+          description: タイトルが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /titles/{titleId}/series:
+    post:
+      tags:
+        - series
+      summary: シリーズを追加
+      description: |
+        タイトル配下に新しいシリーズを追加し、デフォルトエピソードを自動生成。
+        2つ目のシリーズが追加される際、既存のエピソードを1つ目のシリーズに移動（FR-002-2）。
+      parameters:
+        - name: titleId
+          in: path
+          required: true
+          description: タイトルID
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSeriesRequest'
+      responses:
+        '201':
+          description: シリーズ作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeriesDetail'
+        '400':
+          description: 無効なリクエスト
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: タイトルが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /series/{seriesId}:
+    get:
+      tags:
+        - series
+      summary: シリーズ詳細を取得
+      description: シリーズID を指定して詳細情報を取得
+      parameters:
+        - name: seriesId
+          in: path
+          required: true
+          description: シリーズID
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: シリーズ詳細を取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeriesDetail'
+        '404':
+          description: シリーズが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - series
+      summary: シリーズ情報を更新
+      description: シーズン名の変更
+      parameters:
+        - name: seriesId
+          in: path
+          required: true
+          description: シリーズID
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSeriesRequest'
+      responses:
+        '200':
+          description: シリーズ更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeriesDetail'
+        '400':
+          description: 無効なリクエスト
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: シリーズが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - series
+      summary: シリーズを削除
+      description: |
+        シリーズを削除し、配下のエピソード・視聴履歴もカスケード削除（FR-014-1）。
+        削除前にフロントエンドで確認ダイアログを表示すること。
+      parameters:
+        - name: seriesId
+          in: path
+          required: true
+          description: シリーズID
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '204':
+          description: シリーズ削除成功（No Content）
+        '404':
+          description: シリーズが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /series/{seriesId}/episodes:
+    post:
+      tags:
+        - episodes
+      summary: エピソードを追加
+      description: シリーズ配下に新しいエピソードを追加
+      parameters:
+        - name: seriesId
+          in: path
+          required: true
+          description: シリーズID
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEpisodeRequest'
+      responses:
+        '201':
+          description: エピソード作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EpisodeDetail'
+        '400':
+          description: 無効なリクエスト
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: シリーズが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /episodes/{episodeId}:
+    get:
+      tags:
+        - episodes
+      summary: エピソード詳細を取得
+      description: エピソードID を指定して詳細情報を取得
+      parameters:
+        - name: episodeId
+          in: path
+          required: true
+          description: エピソードID
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: エピソード詳細を取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EpisodeDetail'
+        '404':
+          description: エピソードが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - episodes
+      summary: エピソード情報を更新
+      description: エピソード情報、視聴ページURL の変更
+      parameters:
+        - name: episodeId
+          in: path
+          required: true
+          description: エピソードID
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEpisodeRequest'
+      responses:
+        '200':
+          description: エピソード更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EpisodeDetail'
+        '400':
+          description: 無効なリクエスト
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: エピソードが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - episodes
+      summary: エピソードを削除
+      description: エピソードを削除し、配下の視聴履歴も物理削除
+      parameters:
+        - name: episodeId
+          in: path
+          required: true
+          description: エピソードID
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '204':
+          description: エピソード削除成功（No Content）
+        '404':
+          description: エピソードが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /episodes/{episodeId}/complete:
+    post:
+      tags:
+        - episodes
+      summary: エピソードを視聴済みに変更
+      description: |
+        エピソードの視聴状態を UNWATCHED → WATCHED に変更し、視聴履歴を記録（FR-007, FR-008）。
+        一度 WATCHED に変更されたら、状態変更は不可。
+      parameters:
+        - name: episodeId
+          in: path
+          required: true
+          description: エピソードID
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteEpisodeRequest'
+      responses:
+        '200':
+          description: エピソード視聴完了成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EpisodeDetail'
+        '400':
+          description: 無効なリクエスト（既に視聴済みなど）
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: エピソードが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /episodes/{episodeId}/viewing-records:
+    post:
+      tags:
+        - viewing-records
+      summary: 視聴履歴を追加
+      description: |
+        視聴済みエピソードに対して、複数回の視聴履歴を追加（FR-009）。
+        エピソードが WATCHED 状態の場合のみ追加可能。
+      parameters:
+        - name: episodeId
+          in: path
+          required: true
+          description: エピソードID
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateViewingRecordRequest'
+      responses:
+        '201':
+          description: 視聴履歴追加成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewingRecordDetail'
+        '400':
+          description: 無効なリクエスト（エピソードが未視聴など）
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: エピソードが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /viewing-records/{recordId}:
+    delete:
+      tags:
+        - viewing-records
+      summary: 視聴履歴を削除
+      description: |
+        視聴履歴を削除。すべての視聴履歴が削除された場合、エピソードの状態を UNWATCHED に戻す（FR-016）。
+      parameters:
+        - name: recordId
+          in: path
+          required: true
+          description: 視聴履歴ID
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '204':
+          description: 視聴履歴削除成功（No Content）
+        '404':
+          description: 視聴履歴が見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    TitleSummary:
+      type: object
+      description: タイトル一覧表示用の要約情報
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: "ワンピース"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-01-15T10:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-01-20T14:45:00Z"
+
+    TitleDetail:
+      type: object
+      description: タイトル詳細情報（配下のシリーズ・エピソード含む）
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: "ワンピース"
+        titleInfoUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+          example: ["https://ja.wikipedia.org/wiki/ONE_PIECE", "https://www.imdb.com/title/tt0388629/"]
+        series:
+          type: array
+          items:
+            $ref: '#/components/schemas/SeriesDetail'
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-01-15T10:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-01-20T14:45:00Z"
+
+    CreateTitleRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          example: "ワンピース"
+        titleInfoUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+          example: ["https://ja.wikipedia.org/wiki/ONE_PIECE"]
+
+    UpdateTitleRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          example: "ワンピース"
+        titleInfoUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+          example: ["https://ja.wikipedia.org/wiki/ONE_PIECE", "https://www.imdb.com/title/tt0388629/"]
+
+    SeriesDetail:
+      type: object
+      description: シリーズ詳細情報（配下のエピソード含む）
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        titleId:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: "Season 1"
+        episodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/EpisodeDetail'
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-01-15T10:35:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-01-20T14:50:00Z"
+
+    CreateSeriesRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          example: "Season 2"
+
+    UpdateSeriesRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          example: "Season 1 (Updated)"
+
+    EpisodeDetail:
+      type: object
+      description: エピソード詳細情報（視聴履歴含む）
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        seriesId:
+          type: integer
+          format: int64
+          example: 1
+        episodeInfo:
+          type: string
+          example: "第1話"
+        watchPageUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+          example: ["https://www.netflix.com/watch/12345", "https://www.crunchyroll.com/watch/67890"]
+        watchStatus:
+          type: string
+          enum: [UNWATCHED, WATCHED]
+          example: "WATCHED"
+        viewingRecords:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewingRecordDetail'
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-01-15T10:40:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-01-20T15:00:00Z"
+
+    CreateEpisodeRequest:
+      type: object
+      properties:
+        episodeInfo:
+          type: string
+          maxLength: 200
+          example: "第1話"
+        watchPageUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+          example: ["https://www.netflix.com/watch/12345"]
+
+    UpdateEpisodeRequest:
+      type: object
+      properties:
+        episodeInfo:
+          type: string
+          maxLength: 200
+          example: "第1話（修正）"
+        watchPageUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+          example: ["https://www.netflix.com/watch/12345", "https://www.crunchyroll.com/watch/67890"]
+
+    CompleteEpisodeRequest:
+      type: object
+      required:
+        - watchedAt
+        - rating
+      properties:
+        watchedAt:
+          type: string
+          format: date-time
+          example: "2025-01-20T20:00:00Z"
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 5
+        comment:
+          type: string
+          maxLength: 2000
+          example: "とても面白かった!"
+
+    ViewingRecordDetail:
+      type: object
+      description: 視聴履歴詳細情報
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        episodeId:
+          type: integer
+          format: int64
+          example: 1
+        watchedAt:
+          type: string
+          format: date-time
+          example: "2025-01-20T20:00:00Z"
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 5
+        comment:
+          type: string
+          example: "とても面白かった!"
+        recordedAt:
+          type: string
+          format: date-time
+          example: "2025-01-20T20:05:00Z"
+
+    CreateViewingRecordRequest:
+      type: object
+      required:
+        - watchedAt
+        - rating
+      properties:
+        watchedAt:
+          type: string
+          format: date-time
+          example: "2025-01-21T20:00:00Z"
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 4
+        comment:
+          type: string
+          maxLength: 2000
+          example: "2回目も良かった!"
+
+    ErrorResponse:
+      type: object
+      description: エラーレスポンス
+      properties:
+        code:
+          type: string
+          example: "TITLE_DUPLICATE"
+        message:
+          type: string
+          example: "タイトル名が既に存在します"
+        details:
+          type: array
+          items:
+            type: string
+          example: ["タイトル名「ワンピース」は既に登録されています"]
