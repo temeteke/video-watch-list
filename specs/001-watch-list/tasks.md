@@ -72,34 +72,34 @@
 
 ### Domain Layer Foundation (Backend)
 
-- [ ] T016 backend/src/main/java/com/example/videowatchlog/domain/model/WatchStatus.java を作成（列挙型: UNWATCHED, WATCHED）
-- [ ] T017 [P] backend/src/test/java/com/example/videowatchlog/domain/model/TitleTest.java を作成（Title エンティティのテスト: 作成、バリデーション、集約ルート動作）
-- [ ] T018 backend/src/main/java/com/example/videowatchlog/domain/model/Title.java を作成（Title エンティティ: id, name, titleInfoUrls, series, createdAt, updatedAt）
-- [ ] T019 [P] backend/src/test/java/com/example/videowatchlog/domain/model/SeriesTest.java を作成（Series エンティティのテスト）
-- [ ] T020 backend/src/main/java/com/example/videowatchlog/domain/model/Series.java を作成（Series エンティティ: id, titleId, name, episodes, createdAt, updatedAt）
-- [ ] T021 [P] backend/src/test/java/com/example/videowatchlog/domain/model/EpisodeTest.java を作成（Episode エンティティのテスト: 視聴状態遷移を含む）
-- [ ] T022 backend/src/main/java/com/example/videowatchlog/domain/model/Episode.java を作成（Episode エンティティ: id, seriesId, episodeInfo, watchPageUrls, watchStatus, viewingRecords, createdAt, updatedAt）
-- [ ] T023 [P] backend/src/test/java/com/example/videowatchlog/domain/model/ViewingRecordTest.java を作成（ViewingRecord エンティティのテスト: 不変性確認）
-- [ ] T024 backend/src/main/java/com/example/videowatchlog/domain/model/ViewingRecord.java を作成（ViewingRecord エンティティ: id, episodeId, watchedAt, rating, comment, recordedAt）
+- [x] T016 backend/src/main/java/com/example/videowatchlog/domain/model/WatchStatus.java を作成（列挙型: UNWATCHED, WATCHED）
+- [x] T017 [P] backend/src/test/java/com/example/videowatchlog/domain/model/TitleTest.java を作成（Title エンティティのテスト: 作成、バリデーション、集約ルート動作）
+- [x] T018 backend/src/main/java/com/example/videowatchlog/domain/model/Title.java を作成（Title エンティティ: id, name, titleInfoUrls, series, createdAt, updatedAt）
+- [x] T019 [P] backend/src/test/java/com/example/videowatchlog/domain/model/SeriesTest.java を作成（Series エンティティのテスト）
+- [x] T020 backend/src/main/java/com/example/videowatchlog/domain/model/Series.java を作成（Series エンティティ: id, titleId, name, episodes, createdAt, updatedAt）
+- [x] T021 [P] backend/src/test/java/com/example/videowatchlog/domain/model/EpisodeTest.java を作成（Episode エンティティのテスト: 視聴状態遷移を含む）
+- [x] T022 backend/src/main/java/com/example/videowatchlog/domain/model/Episode.java を作成（Episode エンティティ: id, seriesId, episodeInfo, watchPageUrls, watchStatus, viewingRecords, createdAt, updatedAt）
+- [x] T023 [P] backend/src/test/java/com/example/videowatchlog/domain/model/ViewingRecordTest.java を作成（ViewingRecord エンティティのテスト: 不変性確認）
+- [x] T024 backend/src/main/java/com/example/videowatchlog/domain/model/ViewingRecord.java を作成（ViewingRecord エンティティ: id, episodeId, watchedAt, rating, comment, recordedAt）
 
 ### Value Objects (Backend)
 
-- [ ] T025 [P] backend/src/test/java/com/example/videowatchlog/domain/model/TitleInfoUrlTest.java を作成（TitleInfoUrl 値オブジェクトのテスト）
-- [ ] T026 backend/src/main/java/com/example/videowatchlog/domain/model/TitleInfoUrl.java を作成（TitleInfoUrl 値オブジェクト: url, バリデーション）
-- [ ] T027 [P] backend/src/test/java/com/example/videowatchlog/domain/model/WatchPageUrlTest.java を作成（WatchPageUrl 値オブジェクトのテスト）
-- [ ] T028 backend/src/main/java/com/example/videowatchlog/domain/model/WatchPageUrl.java を作成（WatchPageUrl 値オブジェクト: url, バリデーション）
+- [x] T025 [P] backend/src/test/java/com/example/videowatchlog/domain/model/TitleInfoUrlTest.java を作成（TitleInfoUrl 値オブジェクトのテスト）
+- [x] T026 backend/src/main/java/com/example/videowatchlog/domain/model/TitleInfoUrl.java を作成（TitleInfoUrl 値オブジェクト: url, バリデーション）
+- [x] T027 [P] backend/src/test/java/com/example/videowatchlog/domain/model/WatchPageUrlTest.java を作成（WatchPageUrl 値オブジェクトのテスト）
+- [x] T028 backend/src/main/java/com/example/videowatchlog/domain/model/WatchPageUrl.java を作成（WatchPageUrl 値オブジェクト: url, バリデーション）
 
 ### Repository Interfaces (Backend)
 
-- [ ] T029 backend/src/main/java/com/example/videowatchlog/domain/repository/TitleRepository.java を作成（インターフェース: findById, findAll, save, delete, existsByName）
-- [ ] T030 [P] backend/src/main/java/com/example/videowatchlog/domain/repository/SeriesRepository.java を作成（インターフェース: findById, findByTitleId, save, delete）
-- [ ] T031 [P] backend/src/main/java/com/example/videowatchlog/domain/repository/EpisodeRepository.java を作成（インターフェース: findById, findBySeriesId, save, delete）
-- [ ] T032 [P] backend/src/main/java/com/example/videowatchlog/domain/repository/ViewingRecordRepository.java を作成（インターフェース: findById, findByEpisodeId, save, delete）
+- [x] T029 backend/src/main/java/com/example/videowatchlog/domain/repository/TitleRepository.java を作成（インターフェース: findById, findAll, save, delete, existsByName）
+- [x] T030 [P] backend/src/main/java/com/example/videowatchlog/domain/repository/SeriesRepository.java を作成（インターフェース: findById, findByTitleId, save, delete）
+- [x] T031 [P] backend/src/main/java/com/example/videowatchlog/domain/repository/EpisodeRepository.java を作成（インターフェース: findById, findBySeriesId, save, delete）
+- [x] T032 [P] backend/src/main/java/com/example/videowatchlog/domain/repository/ViewingRecordRepository.java を作成（インターフェース: findById, findByEpisodeId, save, delete）
 
 ### Domain Services (Backend)
 
-- [ ] T033 [P] backend/src/test/java/com/example/videowatchlog/domain/service/TitleDuplicationCheckServiceTest.java を作成（タイトル重複チェックサービスのテスト）
-- [ ] T034 backend/src/main/java/com/example/videowatchlog/domain/service/TitleDuplicationCheckService.java を作成（isDuplicate メソッド: 大文字小文字区別なし完全一致チェック）
+- [x] T033 [P] backend/src/test/java/com/example/videowatchlog/domain/service/TitleDuplicationCheckServiceTest.java を作成（タイトル重複チェックサービスのテスト）
+- [x] T034 backend/src/main/java/com/example/videowatchlog/domain/service/TitleDuplicationCheckService.java を作成（isDuplicate メソッド: 大文字小文字区別なし完全一致チェック）
 
 ### Infrastructure Layer - MyBatis Mappers (Backend)
 
