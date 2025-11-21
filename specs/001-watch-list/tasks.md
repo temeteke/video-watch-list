@@ -168,70 +168,70 @@
 
 ### Backend - Application Layer (User Story 1)
 
-- [ ] T071 [US1] backend/src/test/java/com/example/videowatchlog/application/usecase/CreateTitleUseCaseTest.java を作成（TDD: タイトル作成のテスト - デフォルトシリーズ・エピソード自動生成、重複チェック）
-- [ ] T072 [US1] backend/src/main/java/com/example/videowatchlog/application/usecase/CreateTitleUseCase.java を作成（execute メソッド: TitleDuplicationCheckService 使用、デフォルトシリーズ・エピソード自動生成）
-- [ ] T073 [US1] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/GetTitleDetailUseCaseTest.java を作成
-- [ ] T074 [US1] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/GetTitleDetailUseCase.java を作成
-- [ ] T075 [US1] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/UpdateTitleUseCaseTest.java を作成
-- [ ] T076 [US1] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/UpdateTitleUseCase.java を作成
-- [ ] T077 [US1] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/DeleteTitleUseCaseTest.java を作成（カスケード削除テスト）
-- [ ] T078 [US1] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/DeleteTitleUseCase.java を作成
-- [ ] T079 [US1] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/CreateSeriesUseCaseTest.java を作成（2つ目のシリーズ追加時のロジックテスト）
-- [ ] T080 [US1] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/CreateSeriesUseCase.java を作成
-- [ ] T081 [US1] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/UpdateSeriesUseCaseTest.java を作成
-- [ ] T082 [US1] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/UpdateSeriesUseCase.java を作成
-- [ ] T083 [US1] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/DeleteSeriesUseCaseTest.java を作成（シリーズ削除後の動的UI切り替えロジックテスト）
-- [ ] T084 [US1] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/DeleteSeriesUseCase.java を作成
-- [ ] T085 [US1] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/CreateEpisodeUseCaseTest.java を作成
-- [ ] T086 [US1] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/CreateEpisodeUseCase.java を作成
-- [ ] T087 [US1] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/UpdateEpisodeUseCaseTest.java を作成（URL重複削除テスト）
-- [ ] T088 [US1] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/UpdateEpisodeUseCase.java を作成
-- [ ] T089 [US1] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/DeleteEpisodeUseCaseTest.java を作成
-- [ ] T090 [US1] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/DeleteEpisodeUseCase.java を作成
+- [x] T071 [US1] backend/src/test/java/com/example/videowatchlog/application/usecase/CreateTitleUseCaseTest.java を作成（TDD: タイトル作成のテスト - デフォルトシリーズ・エピソード自動生成、重複チェック）
+- [x] T072 [US1] backend/src/main/java/com/example/videowatchlog/application/usecase/CreateTitleUseCase.java を作成（execute メソッド: TitleDuplicationCheckService 使用、デフォルトシリーズ・エピソード自動生成）
+- [x] T073 [US1] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/GetTitleDetailUseCaseTest.java を作成
+- [x] T074 [US1] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/GetTitleDetailUseCase.java を作成
+- [x] T075 [US1] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/UpdateTitleUseCaseTest.java を作成
+- [x] T076 [US1] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/UpdateTitleUseCase.java を作成
+- [x] T077 [US1] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/DeleteTitleUseCaseTest.java を作成（カスケード削除テスト）
+- [x] T078 [US1] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/DeleteTitleUseCase.java を作成
+- [x] T079 [US1] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/CreateSeriesUseCaseTest.java を作成（2つ目のシリーズ追加時のロジックテスト）
+- [x] T080 [US1] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/CreateSeriesUseCase.java を作成
+- [x] T081 [US1] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/UpdateSeriesUseCaseTest.java を作成
+- [x] T082 [US1] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/UpdateSeriesUseCase.java を作成
+- [x] T083 [US1] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/DeleteSeriesUseCaseTest.java を作成（シリーズ削除後の動的UI切り替えロジックテスト）
+- [x] T084 [US1] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/DeleteSeriesUseCase.java を作成
+- [x] T085 [US1] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/CreateEpisodeUseCaseTest.java を作成
+- [x] T086 [US1] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/CreateEpisodeUseCase.java を作成
+- [x] T087 [US1] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/UpdateEpisodeUseCaseTest.java を作成（URL重複削除テスト）
+- [x] T088 [US1] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/UpdateEpisodeUseCase.java を作成
+- [x] T089 [US1] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/DeleteEpisodeUseCaseTest.java を作成
+- [x] T090 [US1] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/DeleteEpisodeUseCase.java を作成
 
 ### Backend - Presentation Layer (User Story 1)
 
-- [ ] T091 [US1] backend/src/test/java/com/example/videowatchlog/integration/TitleControllerIntegrationTest.java を作成（統合テスト: POST /titles, GET /titles/{id}, PUT /titles/{id}, DELETE /titles/{id}）
-- [ ] T092 [US1] backend/src/main/java/com/example/videowatchlog/presentation/controller/TitleController.java を作成（@RestController, @RequestMapping("/api/v1/titles")）
-- [ ] T093 [US1] [P] backend/src/test/java/com/example/videowatchlog/integration/SeriesControllerIntegrationTest.java を作成
-- [ ] T094 [US1] [P] backend/src/main/java/com/example/videowatchlog/presentation/controller/SeriesController.java を作成
-- [ ] T095 [US1] [P] backend/src/test/java/com/example/videowatchlog/integration/EpisodeControllerIntegrationTest.java を作成
-- [ ] T096 [US1] [P] backend/src/main/java/com/example/videowatchlog/presentation/controller/EpisodeController.java を作成
+- [x] T091 [US1] backend/src/test/java/com/example/videowatchlog/integration/TitleControllerIntegrationTest.java を作成（統合テスト: POST /titles, GET /titles/{id}, PUT /titles/{id}, DELETE /titles/{id}）
+- [x] T092 [US1] backend/src/main/java/com/example/videowatchlog/presentation/controller/TitleController.java を作成（@RestController, @RequestMapping("/api/v1/titles")）
+- [x] T093 [US1] [P] backend/src/test/java/com/example/videowatchlog/integration/SeriesControllerIntegrationTest.java を作成
+- [x] T094 [US1] [P] backend/src/main/java/com/example/videowatchlog/presentation/controller/SeriesController.java を作成
+- [x] T095 [US1] [P] backend/src/test/java/com/example/videowatchlog/integration/EpisodeControllerIntegrationTest.java を作成
+- [x] T096 [US1] [P] backend/src/main/java/com/example/videowatchlog/presentation/controller/EpisodeController.java を作成
 
 ### Frontend - API Client (User Story 1)
 
-- [ ] T097 [US1] frontend/src/tests/unit/api/titles.test.ts を作成（API クライアントのテスト: createTitle, getTitleDetail, updateTitle, deleteTitle）
-- [ ] T098 [US1] frontend/src/lib/api/titles.ts を作成（API クライアント実装: fetch使用）
-- [ ] T099 [US1] [P] frontend/src/tests/unit/api/series.test.ts を作成
-- [ ] T100 [US1] [P] frontend/src/lib/api/series.ts を作成
-- [ ] T101 [US1] [P] frontend/src/tests/unit/api/episodes.test.ts を作成
-- [ ] T102 [US1] [P] frontend/src/lib/api/episodes.ts を作成
+- [x] T097 [US1] frontend/src/tests/unit/api/titles.test.ts を作成（API クライアントのテスト: createTitle, getTitleDetail, updateTitle, deleteTitle）
+- [x] T098 [US1] frontend/src/lib/api/titles.ts を作成（API クライアント実装: fetch使用）
+- [x] T099 [US1] [P] frontend/src/tests/unit/api/series.test.ts を作成
+- [x] T100 [US1] [P] frontend/src/lib/api/series.ts を作成
+- [x] T101 [US1] [P] frontend/src/tests/unit/api/episodes.test.ts を作成
+- [x] T102 [US1] [P] frontend/src/lib/api/episodes.ts を作成
 
 ### Frontend - Components (User Story 1)
 
-- [ ] T103 [US1] frontend/src/tests/unit/components/title/TitleForm.test.tsx を作成（タイトル作成・編集フォームのテスト）
-- [ ] T104 [US1] frontend/src/components/title/TitleForm.tsx を作成（タイトル名、タイトル情報URL入力フォーム）
-- [ ] T105 [US1] [P] frontend/src/tests/unit/components/title/TitleList.test.tsx を作成
-- [ ] T106 [US1] [P] frontend/src/components/title/TitleList.tsx を作成（タイトル一覧表示）
-- [ ] T107 [US1] [P] frontend/src/tests/unit/components/series/SeriesForm.test.tsx を作成
-- [ ] T108 [US1] [P] frontend/src/components/series/SeriesForm.tsx を作成
-- [ ] T109 [US1] [P] frontend/src/tests/unit/components/episode/EpisodeForm.test.tsx を作成
-- [ ] T110 [US1] [P] frontend/src/components/episode/EpisodeForm.tsx を作成
-- [ ] T111 [US1] [P] frontend/src/tests/unit/components/common/HierarchicalView.test.tsx を作成（階層表示コンポーネントのテスト: 動的レイヤー非表示ロジック）
-- [ ] T112 [US1] [P] frontend/src/components/common/HierarchicalView.tsx を作成（シリーズ数・エピソード数に応じた条件付き非表示ロジック）
+- [x] T103 [US1] frontend/src/tests/unit/components/title/TitleForm.test.tsx を作成（タイトル作成・編集フォームのテスト）
+- [x] T104 [US1] frontend/src/components/title/TitleForm.tsx を作成（タイトル名、タイトル情報URL入力フォーム）
+- [x] T105 [US1] [P] frontend/src/tests/unit/components/title/TitleList.test.tsx を作成
+- [x] T106 [US1] [P] frontend/src/components/title/TitleList.tsx を作成（タイトル一覧表示）
+- [x] T107 [US1] [P] frontend/src/tests/unit/components/series/SeriesForm.test.tsx を作成
+- [x] T108 [US1] [P] frontend/src/components/series/SeriesForm.tsx を作成
+- [x] T109 [US1] [P] frontend/src/tests/unit/components/episode/EpisodeForm.test.tsx を作成
+- [x] T110 [US1] [P] frontend/src/components/episode/EpisodeForm.tsx を作成
+- [x] T111 [US1] [P] frontend/src/tests/unit/components/common/HierarchicalView.test.tsx を作成（階層表示コンポーネントのテスト: 動的レイヤー非表示ロジック）
+- [x] T112 [US1] [P] frontend/src/components/common/HierarchicalView.tsx を作成（シリーズ数・エピソード数に応じた条件付き非表示ロジック）
 
 ### Frontend - Pages (User Story 1)
 
-- [ ] T113 [US1] frontend/src/tests/integration/app/page.test.tsx を作成（トップページ統合テスト）
-- [ ] T114 [US1] frontend/src/app/page.tsx を作成（トップページ: タイトル一覧表示）
-- [ ] T115 [US1] [P] frontend/src/tests/integration/app/titles/new/page.test.tsx を作成
-- [ ] T116 [US1] [P] frontend/src/app/titles/new/page.tsx を作成（タイトル作成ページ）
-- [ ] T117 [US1] [P] frontend/src/tests/integration/app/titles/[id]/page.test.tsx を作成
-- [ ] T118 [US1] [P] frontend/src/app/titles/[id]/page.tsx を作成（タイトル詳細ページ: シリーズ・エピソード階層表示、シリーズ追加ボタン）
+- [x] T113 [US1] frontend/src/tests/integration/app/page.test.tsx を作成（トップページ統合テスト）
+- [x] T114 [US1] frontend/src/app/page.tsx を作成（トップページ: タイトル一覧表示）
+- [x] T115 [US1] [P] frontend/src/tests/integration/app/titles/new/page.test.tsx を作成
+- [x] T116 [US1] [P] frontend/src/app/titles/new/page.tsx を作成（タイトル作成ページ）
+- [x] T117 [US1] [P] frontend/src/tests/integration/app/titles/[id]/page.test.tsx を作成
+- [x] T118 [US1] [P] frontend/src/app/titles/[id]/page.tsx を作成（タイトル詳細ページ: シリーズ・エピソード階層表示、シリーズ追加ボタン）
 
 ### E2E Tests (User Story 1)
 
-- [ ] T119 [US1] frontend/tests/e2e/user-story-1.spec.ts を作成（E2E テスト: Acceptance Scenario 1-7 をカバー）
+- [x] T119 [US1] frontend/tests/e2e/user-story-1.spec.ts を作成（E2E テスト: Acceptance Scenario 1-7 をカバー）
 
 ---
 
