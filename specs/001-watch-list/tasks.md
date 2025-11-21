@@ -36,33 +36,33 @@
 
 ### Backend Setup
 
-- [ ] T001 プロジェクト構造を作成: backend/, frontend/, docker-compose.yml, .env.example
-- [ ] T002 [P] backend/pom.xml を作成し、依存関係を定義（Spring Boot 3.x, MyBatis, PostgreSQL Driver, Flyway, JUnit 5）
-- [ ] T003 [P] backend/src/main/resources/application.yml を作成し、DB接続・Flyway・JVM設定を定義
-- [ ] T004 [P] backend/src/main/java/com/example/videowatchlog/VideoWatchLogApplication.java を作成（Spring Boot エントリーポイント）
+- [x] T001 プロジェクト構造を作成: backend/, frontend/, docker-compose.yml, .env.example
+- [x] T002 [P] backend/pom.xml を作成し、依存関係を定義（Spring Boot 3.x, MyBatis, PostgreSQL Driver, Flyway, JUnit 5）
+- [x] T003 [P] backend/src/main/resources/application.yml を作成し、DB接続・Flyway・JVM設定を定義
+- [x] T004 [P] backend/src/main/java/com/example/videowatchlog/VideoWatchLogApplication.java を作成（Spring Boot エントリーポイント）
 
 ### Frontend Setup
 
-- [ ] T005 [P] frontend/package.json を作成し、依存関係を定義（Next.js 14, React 18, TypeScript 5.3, Jest, React Testing Library, Playwright）
-- [ ] T006 [P] frontend/tsconfig.json を作成し、TypeScript設定を定義
-- [ ] T007 [P] frontend/next.config.js を作成し、Next.js設定を定義（API_URL環境変数）
-- [ ] T008 [P] frontend/src/app/layout.tsx を作成（共通レイアウト）
-- [ ] T009 [P] frontend/src/lib/api/client.ts を作成（API クライアントのベース実装）
+- [x] T005 [P] frontend/package.json を作成し、依存関係を定義（Next.js 14, React 18, TypeScript 5.3, Jest, React Testing Library, Playwright）
+- [x] T006 [P] frontend/tsconfig.json を作成し、TypeScript設定を定義
+- [x] T007 [P] frontend/next.config.js を作成し、Next.js設定を定義（API_URL環境変数）
+- [x] T008 [P] frontend/src/app/layout.tsx を作成（共通レイアウト）
+- [x] T009 [P] frontend/src/lib/api/client.ts を作成（API クライアントのベース実装）
 
 ### Database Setup
 
-- [ ] T010 [P] backend/src/main/resources/db/migration/V1__initial_schema.sql を作成（titles, series, episodes, viewing_records, title_info_urls, watch_page_urls テーブル定義）
+- [x] T010 [P] backend/src/main/resources/db/migration/V1__initial_schema.sql を作成（titles, series, episodes, viewing_records, title_info_urls, watch_page_urls テーブル定義）
 
 ### Docker Compose Setup
 
-- [ ] T011 docker-compose.yml を作成（backend, frontend, PostgreSQL コンテナ定義）
-- [ ] T012 .env.example を作成（環境変数テンプレート: POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, SPRING_PROFILES_ACTIVE, NEXT_PUBLIC_API_URL）
+- [x] T011 docker-compose.yml を作成（backend, frontend, PostgreSQL コンテナ定義）
+- [x] T012 .env.example を作成（環境変数テンプレート: POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, SPRING_PROFILES_ACTIVE, NEXT_PUBLIC_API_URL）
 
 ### Testing Setup
 
-- [ ] T013 [P] backend/src/test/resources/application-test.yml を作成（テスト用 DB 設定）
-- [ ] T014 [P] frontend/jest.config.js を作成（Jest設定）
-- [ ] T015 [P] frontend/playwright.config.ts を作成（Playwright設定）
+- [x] T013 [P] backend/src/test/resources/application-test.yml を作成（テスト用 DB 設定）
+- [x] T014 [P] frontend/jest.config.js を作成（Jest設定）
+- [x] T015 [P] frontend/playwright.config.ts を作成（Playwright設定）
 
 ---
 
