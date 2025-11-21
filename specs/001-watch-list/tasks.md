@@ -103,51 +103,51 @@
 
 ### Infrastructure Layer - MyBatis Mappers (Backend)
 
-- [ ] T035 [P] backend/src/test/java/com/example/videowatchlog/infrastructure/persistence/TitleMapperTest.java を作成（TitleMapper の統合テスト: @MybatisTest使用）
-- [ ] T036 backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/TitleMapper.java を作成（MyBatis Mapper インターフェース）
-- [ ] T037 backend/src/main/resources/mybatis/mapper/TitleMapper.xml を作成（SQL マッピング: JOIN で階層構造取得、URL重複削除）
-- [ ] T038 [P] backend/src/test/java/com/example/videowatchlog/infrastructure/persistence/SeriesMapperTest.java を作成
-- [ ] T039 [P] backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/SeriesMapper.java を作成
-- [ ] T040 [P] backend/src/main/resources/mybatis/mapper/SeriesMapper.xml を作成
-- [ ] T041 [P] backend/src/test/java/com/example/videowatchlog/infrastructure/persistence/EpisodeMapperTest.java を作成
-- [ ] T042 [P] backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/EpisodeMapper.java を作成
-- [ ] T043 [P] backend/src/main/resources/mybatis/mapper/EpisodeMapper.xml を作成
-- [ ] T044 [P] backend/src/test/java/com/example/videowatchlog/infrastructure/persistence/ViewingRecordMapperTest.java を作成
-- [ ] T045 [P] backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/ViewingRecordMapper.java を作成
-- [ ] T046 [P] backend/src/main/resources/mybatis/mapper/ViewingRecordMapper.xml を作成
+- [x] T035 [P] backend/src/test/java/com/example/videowatchlog/infrastructure/persistence/TitleMapperTest.java を作成（TitleMapper の統合テスト: @MybatisTest使用）
+- [x] T036 backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/TitleMapper.java を作成（MyBatis Mapper インターフェース）
+- [x] T037 backend/src/main/resources/mybatis/mapper/TitleMapper.xml を作成（SQL マッピング: JOIN で階層構造取得、URL重複削除）
+- [x] T038 [P] backend/src/test/java/com/example/videowatchlog/infrastructure/persistence/SeriesMapperTest.java を作成
+- [x] T039 [P] backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/SeriesMapper.java を作成
+- [x] T040 [P] backend/src/main/resources/mybatis/mapper/SeriesMapper.xml を作成
+- [x] T041 [P] backend/src/test/java/com/example/videowatchlog/infrastructure/persistence/EpisodeMapperTest.java を作成
+- [x] T042 [P] backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/EpisodeMapper.java を作成
+- [x] T043 [P] backend/src/main/resources/mybatis/mapper/EpisodeMapper.xml を作成
+- [x] T044 [P] backend/src/test/java/com/example/videowatchlog/infrastructure/persistence/ViewingRecordMapperTest.java を作成
+- [x] T045 [P] backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/ViewingRecordMapper.java を作成
+- [x] T046 [P] backend/src/main/resources/mybatis/mapper/ViewingRecordMapper.xml を作成
 
 ### Repository Implementations (Backend)
 
-- [ ] T047 [P] backend/src/test/java/com/example/videowatchlog/infrastructure/persistence/TitleRepositoryImplTest.java を作成（リポジトリ実装の統合テスト）
-- [ ] T048 backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/TitleRepositoryImpl.java を作成（@Repository, TitleMapper を使用）
-- [ ] T049 [P] backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/SeriesRepositoryImpl.java を作成
-- [ ] T050 [P] backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/EpisodeRepositoryImpl.java を作成
-- [ ] T051 [P] backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/ViewingRecordRepositoryImpl.java を作成
+- [x] T047 [P] backend/src/test/java/com/example/videowatchlog/infrastructure/persistence/TitleRepositoryImplTest.java を作成（リポジトリ実装の統合テスト）
+- [x] T048 backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/TitleRepositoryImpl.java を作成（@Repository, TitleMapper を使用）
+- [x] T049 [P] backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/SeriesRepositoryImpl.java を作成
+- [x] T050 [P] backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/EpisodeRepositoryImpl.java を作成
+- [x] T051 [P] backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/ViewingRecordRepositoryImpl.java を作成
 
 ### DTOs (Backend)
 
-- [ ] T052 backend/src/main/java/com/example/videowatchlog/application/dto/TitleSummaryDTO.java を作成（id, name, createdAt, updatedAt）
-- [ ] T053 [P] backend/src/main/java/com/example/videowatchlog/application/dto/TitleDetailDTO.java を作成（階層構造すべて含む）
-- [ ] T054 [P] backend/src/main/java/com/example/videowatchlog/application/dto/CreateTitleRequestDTO.java を作成
-- [ ] T055 [P] backend/src/main/java/com/example/videowatchlog/application/dto/UpdateTitleRequestDTO.java を作成
-- [ ] T056 [P] backend/src/main/java/com/example/videowatchlog/application/dto/SeriesDetailDTO.java を作成
-- [ ] T057 [P] backend/src/main/java/com/example/videowatchlog/application/dto/CreateSeriesRequestDTO.java を作成
-- [ ] T058 [P] backend/src/main/java/com/example/videowatchlog/application/dto/UpdateSeriesRequestDTO.java を作成
-- [ ] T059 [P] backend/src/main/java/com/example/videowatchlog/application/dto/EpisodeDetailDTO.java を作成
-- [ ] T060 [P] backend/src/main/java/com/example/videowatchlog/application/dto/CreateEpisodeRequestDTO.java を作成
-- [ ] T061 [P] backend/src/main/java/com/example/videowatchlog/application/dto/UpdateEpisodeRequestDTO.java を作成
-- [ ] T062 [P] backend/src/main/java/com/example/videowatchlog/application/dto/CompleteEpisodeRequestDTO.java を作成
-- [ ] T063 [P] backend/src/main/java/com/example/videowatchlog/application/dto/ViewingRecordDetailDTO.java を作成
-- [ ] T064 [P] backend/src/main/java/com/example/videowatchlog/application/dto/CreateViewingRecordRequestDTO.java を作成
-- [ ] T065 [P] backend/src/main/java/com/example/videowatchlog/application/dto/ErrorResponseDTO.java を作成（code, message, details）
+- [x] T052 backend/src/main/java/com/example/videowatchlog/application/dto/TitleSummaryDTO.java を作成（id, name, createdAt, updatedAt）
+- [x] T053 [P] backend/src/main/java/com/example/videowatchlog/application/dto/TitleDetailDTO.java を作成（階層構造すべて含む）
+- [x] T054 [P] backend/src/main/java/com/example/videowatchlog/application/dto/CreateTitleRequestDTO.java を作成
+- [x] T055 [P] backend/src/main/java/com/example/videowatchlog/application/dto/UpdateTitleRequestDTO.java を作成
+- [x] T056 [P] backend/src/main/java/com/example/videowatchlog/application/dto/SeriesDetailDTO.java を作成
+- [x] T057 [P] backend/src/main/java/com/example/videowatchlog/application/dto/CreateSeriesRequestDTO.java を作成
+- [x] T058 [P] backend/src/main/java/com/example/videowatchlog/application/dto/UpdateSeriesRequestDTO.java を作成
+- [x] T059 [P] backend/src/main/java/com/example/videowatchlog/application/dto/EpisodeDetailDTO.java を作成
+- [x] T060 [P] backend/src/main/java/com/example/videowatchlog/application/dto/CreateEpisodeRequestDTO.java を作成
+- [x] T061 [P] backend/src/main/java/com/example/videowatchlog/application/dto/UpdateEpisodeRequestDTO.java を作成
+- [x] T062 [P] backend/src/main/java/com/example/videowatchlog/application/dto/CompleteEpisodeRequestDTO.java を作成
+- [x] T063 [P] backend/src/main/java/com/example/videowatchlog/application/dto/ViewingRecordDetailDTO.java を作成
+- [x] T064 [P] backend/src/main/java/com/example/videowatchlog/application/dto/CreateViewingRecordRequestDTO.java を作成
+- [x] T065 [P] backend/src/main/java/com/example/videowatchlog/application/dto/ErrorResponseDTO.java を作成（code, message, details）
 
 ### Frontend Type Definitions
 
-- [ ] T066 frontend/src/types/title.ts を作成（TitleSummary, TitleDetail, CreateTitleRequest, UpdateTitleRequest）
-- [ ] T067 [P] frontend/src/types/series.ts を作成（SeriesDetail, CreateSeriesRequest, UpdateSeriesRequest）
-- [ ] T068 [P] frontend/src/types/episode.ts を作成（EpisodeDetail, CreateEpisodeRequest, UpdateEpisodeRequest, CompleteEpisodeRequest, WatchStatus）
-- [ ] T069 [P] frontend/src/types/viewing-record.ts を作成（ViewingRecordDetail, CreateViewingRecordRequest）
-- [ ] T070 [P] frontend/src/types/error.ts を作成（ErrorResponse）
+- [x] T066 frontend/src/types/title.ts を作成（TitleSummary, TitleDetail, CreateTitleRequest, UpdateTitleRequest）
+- [x] T067 [P] frontend/src/types/series.ts を作成（SeriesDetail, CreateSeriesRequest, UpdateSeriesRequest）
+- [x] T068 [P] frontend/src/types/episode.ts を作成（EpisodeDetail, CreateEpisodeRequest, UpdateEpisodeRequest, CompleteEpisodeRequest, WatchStatus）
+- [x] T069 [P] frontend/src/types/viewing-record.ts を作成（ViewingRecordDetail, CreateViewingRecordRequest）
+- [x] T070 [P] frontend/src/types/error.ts を作成（ErrorResponse）
 
 ---
 
