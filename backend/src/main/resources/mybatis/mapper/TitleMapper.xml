@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.videowatchlog.infrastructure.persistence.TitleMapper">
+
+    <!-- Result Maps -->
+    <resultMap id="titleMap" type="com.example.videowatchlog.domain.model.Title">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <collection property="titleInfoUrls" ofType="com.example.videowatchlog.domain.model.TitleInfoUrl">
+            <constructor>
+                <arg column="info_url" javaType="String"/>
+            </constructor>
+        </collection>
+        <collection property="series" ofType="com.example.videowatchlog.domain.model.Series"
+                    select="selectSeriesByTitleId" column="id"/>
+    </resultMap>
+
+    <!-- Find By ID -->
+    <select id="findById" resultMap="titleMap">
+        SELECT id, name, created_at, updated_at
+        FROM titles
+        WHERE id = #{id}
+    </select>
+
+    <!-- Find All -->
+    <select id="findAll" resultMap="titleMap">
+        SELECT id, name, created_at, updated_at
+        FROM titles
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- Insert -->
+    <insert id="insert" parameterType="com.example.videowatchlog.domain.model.Title"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO titles (name, created_at, updated_at)
+        VALUES (#{name}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <!-- Update -->
+    <update id="update" parameterType="com.example.videowatchlog.domain.model.Title">
+        UPDATE titles
+        SET name = #{name},
+            updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
+
+    <!-- Delete (with cascade) -->
+    <delete id="delete">
+        DELETE FROM titles WHERE id = #{id}
+    </delete>
+
+    <!-- Check Exists By Name -->
+    <select id="existsByName" resultType="boolean">
+        SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END
+        FROM titles
+        WHERE LOWER(name) = LOWER(#{name})
+    </select>
+
+    <!-- Helper query to select series by title id -->
+    <select id="selectSeriesByTitleId" resultType="com.example.videowatchlog.domain.model.Series">
+        SELECT id, title_id, name, created_at, updated_at
+        FROM series
+        WHERE title_id = #{id}
+        ORDER BY id
+    </select>
+
+</mapper>
