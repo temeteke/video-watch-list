@@ -1,4 +1,4 @@
-.PHONY: help test test-watch dev up down logs logs-backend logs-db build clean rebuild
+.PHONY: help test test-watch dev up down logs logs-backend logs-frontend logs-db build clean rebuild
 
 # デフォルトターゲット: ヘルプを表示
 help:
@@ -10,6 +10,7 @@ help:
 	@echo "  make down          - すべてのコンテナを停止・削除"
 	@echo "  make logs          - すべてのログを表示"
 	@echo "  make logs-backend  - バックエンドのログを表示"
+	@echo "  make logs-frontend - フロントエンドのログを表示"
 	@echo "  make logs-db       - データベースのログを表示"
 	@echo "  make build         - 本番用イメージをビルド"
 	@echo "  make clean         - ボリュームを含めてすべて削除"
@@ -28,12 +29,12 @@ test-watch:
 # 開発サーバー起動（ホットリロード有効）
 dev:
 	@echo "開発サーバーを起動中..."
-	docker-compose up db backend-dev
+	docker-compose up db backend-dev frontend
 
 # 本番用コンテナ起動
 up:
 	@echo "本番用コンテナを起動中..."
-	docker-compose up -d db backend
+	docker-compose up -d db backend frontend
 
 # コンテナ停止・削除
 down:
@@ -48,6 +49,10 @@ logs:
 logs-backend:
 	docker-compose logs -f backend
 
+# フロントエンドのログを表示
+logs-frontend:
+	docker-compose logs -f frontend
+
 # データベースのログを表示
 logs-db:
 	docker-compose logs -f db
@@ -55,7 +60,7 @@ logs-db:
 # 本番用イメージをビルド
 build:
 	@echo "本番用イメージをビルド中..."
-	docker-compose build backend
+	docker-compose build backend frontend
 
 # ボリュームを含めてすべて削除
 clean:
