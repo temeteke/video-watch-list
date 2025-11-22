@@ -59,8 +59,7 @@ coverage/
 .nyc_output/
 
 # Docker
-.dockerignore
-Dockerfile*
+# (Dockerファイルはバージョン管理対象)
 
 # OS files
 .DS_Store
