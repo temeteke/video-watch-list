@@ -39,15 +39,13 @@ class GetAllTitlesUseCaseTest {
     void shouldGetAllTitles() {
         // Given
         LocalDateTime now = LocalDateTime.now();
-        Title title1 = new Title();
+        Title title1 = Title.create("Title 1");
         title1.setId(1L);
-        title1.setName("Title 1");
         title1.setCreatedAt(now);
         title1.setUpdatedAt(now);
 
-        Title title2 = new Title();
+        Title title2 = Title.create("Title 2");
         title2.setId(2L);
-        title2.setName("Title 2");
         title2.setCreatedAt(now);
         title2.setUpdatedAt(now);
 
