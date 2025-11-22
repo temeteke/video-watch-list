@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import { SeriesDetail, CreateSeriesRequest, UpdateSeriesRequest } from '@/types/series';
+import { CreateSeriesRequest, UpdateSeriesRequest } from '@/types/series';
 
 export const seriesApi = {
   async createSeries(titleId: number, request: CreateSeriesRequest): Promise<void> {
