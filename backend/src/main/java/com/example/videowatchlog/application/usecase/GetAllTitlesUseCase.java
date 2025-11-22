@@ -35,11 +35,11 @@ public class GetAllTitlesUseCase {
     }
 
     private TitleSummaryDTO toSummaryDTO(Title title) {
-        TitleSummaryDTO dto = new TitleSummaryDTO();
-        dto.setId(title.getId());
-        dto.setName(title.getName());
-        dto.setCreatedAt(title.getCreatedAt());
-        dto.setUpdatedAt(title.getUpdatedAt());
-        return dto;
+        return new TitleSummaryDTO(
+                title.getId(),
+                title.getName(),
+                title.getCreatedAt(),
+                title.getUpdatedAt()
+        );
     }
 }
