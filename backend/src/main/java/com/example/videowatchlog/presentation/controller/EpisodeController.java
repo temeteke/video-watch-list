@@ -14,7 +14,7 @@ import java.util.List;
  * EpisodeController - エピソード REST API
  */
 @RestController
-@RequestMapping("/api/v1/series/{seriesId}/episodes")
+@RequestMapping("/series/{seriesId}/episodes")
 public class EpisodeController {
     private final CreateEpisodeUseCase createEpisodeUseCase;
     private final UpdateEpisodeUseCase updateEpisodeUseCase;

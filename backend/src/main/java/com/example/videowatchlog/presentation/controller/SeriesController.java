@@ -13,7 +13,7 @@ import jakarta.validation.Valid;
  * SeriesController - シリーズ REST API
  */
 @RestController
-@RequestMapping("/api/v1/titles/{titleId}/series")
+@RequestMapping("/titles/{titleId}/series")
 public class SeriesController {
     private final CreateSeriesUseCase createSeriesUseCase;
     private final UpdateSeriesUseCase updateSeriesUseCase;

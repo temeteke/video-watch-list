@@ -19,7 +19,7 @@ import java.util.List;
  * TitleController - タイトル REST API
  */
 @RestController
-@RequestMapping("/api/v1/titles")
+@RequestMapping("/titles")
 public class TitleController {
     private final CreateTitleUseCase createTitleUseCase;
     private final GetAllTitlesUseCase getAllTitlesUseCase;
