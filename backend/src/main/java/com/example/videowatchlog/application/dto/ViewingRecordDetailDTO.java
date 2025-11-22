@@ -1,6 +1,6 @@
 package com.example.videowatchlog.application.dto;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 /**
  * ViewingRecordDetailDTO - 視聴履歴詳細
@@ -8,13 +8,13 @@ import java.time.ZonedDateTime;
 public class ViewingRecordDetailDTO {
     private Long id;
     private Long episodeId;
-    private ZonedDateTime watchedAt;
+    private LocalDateTime watchedAt;
     private Integer rating;
     private String comment;
-    private ZonedDateTime recordedAt;
+    private LocalDateTime recordedAt;
 
-    public ViewingRecordDetailDTO(Long id, Long episodeId, ZonedDateTime watchedAt,
-                                  Integer rating, String comment, ZonedDateTime recordedAt) {
+    public ViewingRecordDetailDTO(Long id, Long episodeId, LocalDateTime watchedAt,
+                                  Integer rating, String comment, LocalDateTime recordedAt) {
         this.id = id;
         this.episodeId = episodeId;
         this.watchedAt = watchedAt;
@@ -31,7 +31,7 @@ public class ViewingRecordDetailDTO {
         return episodeId;
     }
 
-    public ZonedDateTime getWatchedAt() {
+    public LocalDateTime getWatchedAt() {
         return watchedAt;
     }
 
@@ -43,7 +43,7 @@ public class ViewingRecordDetailDTO {
         return comment;
     }
 
-    public ZonedDateTime getRecordedAt() {
+    public LocalDateTime getRecordedAt() {
         return recordedAt;
     }
 }

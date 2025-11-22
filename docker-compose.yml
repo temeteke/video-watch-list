@@ -41,9 +41,6 @@ services:
         condition: service_healthy
     networks:
       - video-watch-list-network
-    volumes:
-      - ./backend:/app
-    command: mvn spring-boot:run
 
   # Next.js Frontend
   frontend:
@@ -59,10 +56,6 @@ services:
       - backend
     networks:
       - video-watch-list-network
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    command: npm run dev
 
 volumes:
   postgres_data:

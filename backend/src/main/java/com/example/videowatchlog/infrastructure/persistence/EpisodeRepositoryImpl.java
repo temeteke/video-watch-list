@@ -30,7 +30,8 @@ public class EpisodeRepositoryImpl implements EpisodeRepository {
     @Override
     public Episode save(Episode episode) {
         if (episode.getId() == null) {
-            return episodeMapper.insert(episode);
+            episodeMapper.insert(episode);
+            return episode;
         } else {
             episodeMapper.update(episode);
             return episode;

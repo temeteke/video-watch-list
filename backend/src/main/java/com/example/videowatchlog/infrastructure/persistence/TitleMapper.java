@@ -29,10 +29,9 @@ public interface TitleMapper {
 
     /**
      * タイトルを挿入します
-     * @param title 挿入するタイトル
-     * @return 挿入されたタイトル（IDが設定される）
+     * @param title 挿入するタイトル（IDが自動設定される）
      */
-    Title insert(Title title);
+    void insert(Title title);
 
     /**
      * タイトルを更新します

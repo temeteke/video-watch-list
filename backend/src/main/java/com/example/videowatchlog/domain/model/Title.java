@@ -1,6 +1,6 @@
 package com.example.videowatchlog.domain.model;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -17,22 +17,28 @@ public class Title {
     private String name;
     private Set<TitleInfoUrl> titleInfoUrls;
     private List<Series> series;
-    private ZonedDateTime createdAt;
-    private ZonedDateTime updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     /**
      * プライベートコンストラクタ（DDD: 集約ルートの完全性を保証するため）
      */
-    private Title(String name, ZonedDateTime createdAt, ZonedDateTime updatedAt) {
+    private Title(String name, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.name = name;
         this.titleInfoUrls = new LinkedHashSet<>();
         this.series = new ArrayList<>();
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        // Note: デフォルトシリーズはリポジトリ層で保存時に作成されます
+    }
 
-        // デフォルトシリーズを自動生成（内部的に最低1件のシリーズを保証）
-        Series defaultSeries = Series.createDefault(this.id);
-        this.series.add(defaultSeries);
+    /**
+     * MyBatis用デフォルトコンストラクタ（パッケージプライベート）
+     * リフレクションによるインスタンス化のために使用されます
+     */
+    Title() {
+        this.titleInfoUrls = new LinkedHashSet<>();
+        this.series = new ArrayList<>();
     }
 
     /**
@@ -44,7 +50,7 @@ public class Title {
      */
     public static Title create(String name) {
         validateName(name);
-        ZonedDateTime now = ZonedDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
         return new Title(name, now, now);
     }
 
@@ -57,7 +63,7 @@ public class Title {
     public void updateName(String newName) {
         validateName(newName);
         this.name = newName;
-        this.updatedAt = ZonedDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -67,7 +73,7 @@ public class Title {
      */
     public void addTitleInfoUrl(TitleInfoUrl titleInfoUrl) {
         this.titleInfoUrls.add(titleInfoUrl);
-        this.updatedAt = ZonedDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -77,7 +83,7 @@ public class Title {
      */
     public void removeTitleInfoUrl(TitleInfoUrl titleInfoUrl) {
         this.titleInfoUrls.remove(titleInfoUrl);
-        this.updatedAt = ZonedDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -112,11 +118,11 @@ public class Title {
         return series;
     }
 
-    public ZonedDateTime getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public ZonedDateTime getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
@@ -133,11 +139,11 @@ public class Title {
         this.series = series != null ? series : new ArrayList<>();
     }
 
-    public void setCreatedAt(ZonedDateTime createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public void setUpdatedAt(ZonedDateTime updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

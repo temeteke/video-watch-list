@@ -1,6 +1,6 @@
 package com.example.videowatchlog.domain.model;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -16,10 +16,10 @@ import java.util.Objects;
 public class ViewingRecord {
     private final Long id;
     private final Long episodeId;
-    private final ZonedDateTime watchedAt;
+    private final LocalDateTime watchedAt;
     private final Integer rating;
     private final String comment;
-    private final ZonedDateTime recordedAt;
+    private final LocalDateTime recordedAt;
 
     /**
      * Constructor for ViewingRecord entity.
@@ -32,8 +32,8 @@ public class ViewingRecord {
      * @param recordedAt Date and time when this record was created (required)
      * @throws IllegalArgumentException if validation fails
      */
-    public ViewingRecord(Long id, Long episodeId, ZonedDateTime watchedAt, Integer rating,
-                        String comment, ZonedDateTime recordedAt) {
+    public ViewingRecord(Long id, Long episodeId, LocalDateTime watchedAt, Integer rating,
+                        String comment, LocalDateTime recordedAt) {
         this.id = id;
         this.episodeId = Objects.requireNonNull(episodeId, "episodeId must not be null");
         this.watchedAt = Objects.requireNonNull(watchedAt, "watchedAt must not be null");
@@ -44,6 +44,20 @@ public class ViewingRecord {
         this.recordedAt = Objects.requireNonNull(recordedAt, "recordedAt must not be null");
 
         validateWatchedAtNotFuture(watchedAt);
+    }
+
+    /**
+     * Factory method to create a new ViewingRecord.
+     *
+     * @param episodeId Parent episode ID
+     * @param watchedAt Date and time when the episode was watched
+     * @param rating User rating (1-5)
+     * @param comment User comment (optional)
+     * @return New ViewingRecord
+     */
+    public static ViewingRecord create(Long episodeId, LocalDateTime watchedAt, Integer rating, String comment) {
+        LocalDateTime now = LocalDateTime.now();
+        return new ViewingRecord(null, episodeId, watchedAt, rating, comment, now);
     }
 
     /**
@@ -79,8 +93,8 @@ public class ViewingRecord {
      * @param watchedAt Date to validate
      * @throws IllegalArgumentException if validation fails
      */
-    private void validateWatchedAtNotFuture(ZonedDateTime watchedAt) {
-        if (watchedAt.isAfter(ZonedDateTime.now())) {
+    private void validateWatchedAtNotFuture(LocalDateTime watchedAt) {
+        if (watchedAt.isAfter(LocalDateTime.now())) {
             throw new IllegalArgumentException("WatchedAt must not be in the future");
         }
     }
@@ -94,7 +108,7 @@ public class ViewingRecord {
         return episodeId;
     }
 
-    public ZonedDateTime getWatchedAt() {
+    public LocalDateTime getWatchedAt() {
         return watchedAt;
     }
 
@@ -106,7 +120,7 @@ public class ViewingRecord {
         return comment;
     }
 
-    public ZonedDateTime getRecordedAt() {
+    public LocalDateTime getRecordedAt() {
         return recordedAt;
     }
 

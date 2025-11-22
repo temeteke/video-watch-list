@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Nested;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -98,27 +98,60 @@ class EpisodeTest {
         }
 
         @Test
-        @DisplayName("視聴済みエピソードは直接状態変更ができない（バリデーションエラー）")
+        @DisplayName("視聴済みエピソードは直接状態変更ができない（IllegalStateException）")
         void shouldNotDirectlyChangeWatchedStatus() {
             // Given
             Episode episode = Episode.create(1L, "第1話");
             episode.markAsWatched();
 
-            // Then: Direct state change should not be allowed
-            // This is handled by business logic through use cases
+            // When & Then
+            assertThatThrownBy(() -> episode.markAsUnwatched())
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining("Cannot mark as unwatched directly");
         }
 
         @Test
         @DisplayName("すべての視聴履歴を削除すると未視聴に戻る")
         void shouldRevertToUnwatchedWhenAllRecordsDeleted() {
             // Given
-            Episode episode = Episode.create(1L, "第1話");
+            Long episodeId = 1L;
+            Episode episode = new Episode(episodeId, 1L, "第1話", null, WatchStatus.UNWATCHED, null, LocalDateTime.now(), LocalDateTime.now());
             episode.markAsWatched();
-            ViewingRecord record = ViewingRecord.create(episode.getId(), ZonedDateTime.now(), 5, "Great!");
+            ViewingRecord record = ViewingRecord.create(episode.getId(), LocalDateTime.now(), 5, "Great!");
             episode.addViewingRecord(record);
 
             // When
             episode.removeViewingRecord(record);
+
+            // Then
+            assertThat(episode.getWatchStatus()).isEqualTo(WatchStatus.UNWATCHED);
+        }
+
+        @Test
+        @DisplayName("視聴履歴がある場合、markAsUnwatchedIfNoRecords()は例外を投げる")
+        void shouldThrowExceptionWhenMarkingUnwatchedWithRecords() {
+            // Given
+            Long episodeId = 1L;
+            Episode episode = new Episode(episodeId, 1L, "第1話", null, WatchStatus.UNWATCHED, null, LocalDateTime.now(), LocalDateTime.now());
+            episode.markAsWatched();
+            ViewingRecord record = ViewingRecord.create(episode.getId(), LocalDateTime.now(), 5, "Great!");
+            episode.addViewingRecord(record);
+
+            // When & Then
+            assertThatThrownBy(() -> episode.markAsUnwatchedIfNoRecords())
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining("Cannot mark as unwatched when viewing records exist");
+        }
+
+        @Test
+        @DisplayName("視聴履歴がない場合、markAsUnwatchedIfNoRecords()で未視聴に戻る")
+        void shouldMarkAsUnwatchedWhenNoRecords() {
+            // Given
+            Long episodeId = 1L;
+            Episode episode = new Episode(episodeId, 1L, "第1話", null, WatchStatus.WATCHED, null, LocalDateTime.now(), LocalDateTime.now());
+
+            // When
+            episode.markAsUnwatchedIfNoRecords();
 
             // Then
             assertThat(episode.getWatchStatus()).isEqualTo(WatchStatus.UNWATCHED);
@@ -168,13 +201,14 @@ class EpisodeTest {
         @DisplayName("視聴履歴を追加できる")
         void shouldAddViewingRecord() {
             // Given
-            Episode episode = Episode.create(1L, "第1話");
+            Long episodeId = 1L;
+            Episode episode = new Episode(episodeId, 1L, "第1話", null, WatchStatus.UNWATCHED, null, LocalDateTime.now(), LocalDateTime.now());
             episode.markAsWatched();
 
             // When
             ViewingRecord record = ViewingRecord.create(
                     episode.getId(),
-                    ZonedDateTime.now(),
+                    LocalDateTime.now(),
                     5,
                     "Excellent!"
             );
@@ -188,11 +222,12 @@ class EpisodeTest {
         @DisplayName("視聴履歴を削除できる")
         void shouldRemoveViewingRecord() {
             // Given
-            Episode episode = Episode.create(1L, "第1話");
+            Long episodeId = 1L;
+            Episode episode = new Episode(episodeId, 1L, "第1話", null, WatchStatus.UNWATCHED, null, LocalDateTime.now(), LocalDateTime.now());
             episode.markAsWatched();
             ViewingRecord record = ViewingRecord.create(
                     episode.getId(),
-                    ZonedDateTime.now(),
+                    LocalDateTime.now(),
                     5,
                     "Excellent!"
             );
@@ -216,7 +251,7 @@ class EpisodeTest {
         void shouldUpdateEpisodeInfo() {
             // Given
             Episode episode = Episode.create(1L, "第1話");
-            ZonedDateTime originalUpdatedAt = episode.getUpdatedAt();
+            LocalDateTime originalUpdatedAt = episode.getUpdatedAt();
 
             // When
             episode.updateEpisodeInfo("第1話「巨人襲来」");

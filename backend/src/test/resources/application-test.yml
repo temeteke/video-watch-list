@@ -3,18 +3,13 @@ spring:
     name: videowatchlog
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/videowatchlog_test
+    url: jdbc:postgresql://db:5432/videowatchlog
     username: videowatchuser
     password: password
     driver-class-name: org.postgresql.Driver
 
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: false
-
   flyway:
-    enabled: false
+    enabled: true
 
 mybatis:
   mapper-locations: classpath:mybatis/mapper/*.xml

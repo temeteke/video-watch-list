@@ -23,9 +23,9 @@ public interface SeriesMapper {
     List<Series> findByTitleId(@Param("titleId") Long titleId);
 
     /**
-     * シリーズを挿入します
+     * シリーズを挿入します（IDが自動設定される）
      */
-    Series insert(Series series);
+    void insert(Series series);
 
     /**
      * シリーズを更新します

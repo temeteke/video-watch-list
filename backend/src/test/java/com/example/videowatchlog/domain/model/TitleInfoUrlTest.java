@@ -83,7 +83,7 @@ class TitleInfoUrlTest {
     @Test
     void shouldAcceptUrlAtMaxLength() {
         // Given
-        String url = "https://example.com/" + "a".repeat(1981); // Exactly 2000 characters
+        String url = "https://example.com/" + "a".repeat(1980); // Exactly 2000 characters (20 + 1980)
 
         // When
         TitleInfoUrl titleInfoUrl = new TitleInfoUrl(url);

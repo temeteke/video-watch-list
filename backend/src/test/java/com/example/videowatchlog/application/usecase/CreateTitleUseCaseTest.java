@@ -65,8 +65,8 @@ class CreateTitleUseCaseTest {
     }
 
     @Test
-    @DisplayName("デフォルトシリーズが自動生成される")
-    void shouldCreateDefaultSeries() {
+    @DisplayName("タイトルが正しく保存される")
+    void shouldSaveTitle() {
         // Given
         CreateTitleRequestDTO request = new CreateTitleRequestDTO("鬼滅の刃", null);
         when(duplicationCheckService.isDuplicate("鬼滅の刃")).thenReturn(false);
@@ -81,8 +81,7 @@ class CreateTitleUseCaseTest {
 
         // Then
         verify(titleRepository, times(1)).save(argThat(title ->
-                title.getName().equals("鬼滅の刃") &&
-                        !title.getSeries().isEmpty()
+                title.getName().equals("鬼滅の刃")
         ));
     }
 }

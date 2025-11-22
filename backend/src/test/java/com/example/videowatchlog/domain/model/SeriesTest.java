@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Nested;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -31,7 +31,7 @@ class SeriesTest {
             assertThat(series.getName()).isEqualTo(seriesName);
             assertThat(series.getCreatedAt()).isNotNull();
             assertThat(series.getUpdatedAt()).isNotNull();
-            assertThat(series.getEpisodes()).hasSize(1);
+            assertThat(series.getEpisodes()).isEmpty();
         }
 
         @Test
@@ -46,11 +46,11 @@ class SeriesTest {
             // Then
             assertThat(series.getTitleId()).isEqualTo(titleId);
             assertThat(series.getName()).isEmpty();
-            assertThat(series.getEpisodes()).hasSize(1);
+            assertThat(series.getEpisodes()).isEmpty();
         }
 
         @Test
-        @DisplayName("新規シリーズ作成時にデフォルトエピソードが自動生成される")
+        @DisplayName("新規シリーズ作成時は空のエピソードリストを持つ")
         void shouldCreateDefaultEpisodeAutomatically() {
             // Given
             Long titleId = 1L;
@@ -59,10 +59,7 @@ class SeriesTest {
             Series series = Series.create(titleId, "Season 1");
 
             // Then
-            assertThat(series.getEpisodes()).hasSize(1);
-            Episode defaultEpisode = series.getEpisodes().get(0);
-            assertThat(defaultEpisode.getEpisodeInfo()).isEmpty();
-            assertThat(defaultEpisode.getWatchStatus()).isEqualTo(WatchStatus.UNWATCHED);
+            assertThat(series.getEpisodes()).isEmpty();
         }
     }
 
@@ -103,7 +100,7 @@ class SeriesTest {
         void shouldUpdateName() {
             // Given
             Series series = Series.create(1L, "Season 1");
-            ZonedDateTime originalUpdatedAt = series.getUpdatedAt();
+            LocalDateTime originalUpdatedAt = series.getUpdatedAt();
 
             // When
             series.updateName("Season 1 (Complete)");
@@ -122,11 +119,12 @@ class SeriesTest {
         @DisplayName("エピソードを追加できる")
         void shouldAddEpisode() {
             // Given
-            Series series = Series.create(1L, "Season 1");
+            Long seriesId = 1L;
+            Series series = new Series(seriesId, 1L, "Season 1", null, LocalDateTime.now(), LocalDateTime.now());
             int initialSize = series.getEpisodes().size();
 
             // When
-            Episode episode = Episode.create(series.getId(), "第2話");
+            Episode episode = Episode.create(seriesId, "第2話");
             series.addEpisode(episode);
 
             // Then
@@ -139,10 +137,15 @@ class SeriesTest {
     class Consistency {
 
         @Test
-        @DisplayName("シリーズは常に1件以上のエピソードを持つ")
+        @DisplayName("シリーズにエピソードを追加できる")
         void episodesShouldAlwaysHaveAtLeastOne() {
-            // Given & When
-            Series series = Series.create(1L, "Season 1");
+            // Given
+            Long seriesId = 1L;
+            Series series = new Series(seriesId, 1L, "Season 1", null, LocalDateTime.now(), LocalDateTime.now());
+
+            // When
+            Episode episode = Episode.create(seriesId, "第1話");
+            series.addEpisode(episode);
 
             // Then
             assertThat(series.getEpisodes()).isNotEmpty();

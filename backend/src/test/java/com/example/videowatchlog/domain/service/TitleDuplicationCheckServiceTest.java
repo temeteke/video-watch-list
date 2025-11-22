@@ -54,15 +54,19 @@ class TitleDuplicationCheckServiceTest {
     @Test
     @DisplayName("大文字小文字を区別せずに重複チェックする")
     void shouldIgnoreCaseWhenCheckingDuplicate() {
-        // Given
-        String titleName = "進撃の巨人";
-        when(titleRepository.existsByName("進撃の巨人")).thenReturn(true);
+        // Given: データベースに "Attack on Titan" が登録されている
+        String existingTitle = "Attack on Titan";
+        String searchTitle = "ATTACK ON TITAN"; // 大文字で検索
+
+        // データベース層で大文字小文字を区別しないチェックを行うため、
+        // 異なる大文字小文字でも重複として検出される
+        when(titleRepository.existsByName(searchTitle)).thenReturn(true);
 
         // When
-        boolean isDuplicate = service.isDuplicate(titleName);
+        boolean isDuplicate = service.isDuplicate(searchTitle);
 
         // Then
         assertThat(isDuplicate).isTrue();
-        verify(titleRepository, times(1)).existsByName("進撃の巨人");
+        verify(titleRepository, times(1)).existsByName(searchTitle);
     }
 }

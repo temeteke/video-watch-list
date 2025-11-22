@@ -29,7 +29,8 @@ public class ViewingRecordRepositoryImpl implements ViewingRecordRepository {
 
     @Override
     public ViewingRecord save(ViewingRecord viewingRecord) {
-        return viewingRecordMapper.insert(viewingRecord);
+        viewingRecordMapper.insert(viewingRecord);
+        return viewingRecord;
     }
 
     @Override

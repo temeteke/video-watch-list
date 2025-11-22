@@ -23,9 +23,9 @@ public interface EpisodeMapper {
     List<Episode> findBySeriesId(@Param("seriesId") Long seriesId);
 
     /**
-     * エピソードを挿入します
+     * エピソードを挿入します（IDが自動設定される）
      */
-    Episode insert(Episode episode);
+    void insert(Episode episode);
 
     /**
      * エピソードを更新します

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Nested;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -20,7 +20,7 @@ class ViewingRecordTest {
         void shouldCreateViewingRecord() {
             // Given
             Long episodeId = 1L;
-            ZonedDateTime watchedAt = ZonedDateTime.now().minusDays(1);
+            LocalDateTime watchedAt = LocalDateTime.now().minusDays(1);
             int rating = 5;
             String comment = "Excellent episode!";
 
@@ -41,14 +41,14 @@ class ViewingRecordTest {
         void shouldCreateWithoutComment() {
             // Given
             Long episodeId = 1L;
-            ZonedDateTime watchedAt = ZonedDateTime.now();
+            LocalDateTime watchedAt = LocalDateTime.now();
             int rating = 4;
 
             // When
             ViewingRecord record = ViewingRecord.create(episodeId, watchedAt, rating, null);
 
             // Then
-            assertThat(record.getComment()).isEmpty();
+            assertThat(record.getComment()).isNull();
         }
     }
 
@@ -61,7 +61,7 @@ class ViewingRecordTest {
         void shouldNotCreateWithRatingLessThan1() {
             assertThatThrownBy(() -> ViewingRecord.create(
                     1L,
-                    ZonedDateTime.now(),
+                    LocalDateTime.now(),
                     0,
                     "Bad"
             )).isInstanceOf(IllegalArgumentException.class);
@@ -72,7 +72,7 @@ class ViewingRecordTest {
         void shouldNotCreateWithRatingGreaterThan5() {
             assertThatThrownBy(() -> ViewingRecord.create(
                     1L,
-                    ZonedDateTime.now(),
+                    LocalDateTime.now(),
                     6,
                     "Great"
             )).isInstanceOf(IllegalArgumentException.class);
@@ -84,7 +84,7 @@ class ViewingRecordTest {
             for (int rating = 1; rating <= 5; rating++) {
                 ViewingRecord record = ViewingRecord.create(
                         1L,
-                        ZonedDateTime.now(),
+                        LocalDateTime.now(),
                         rating,
                         "Test"
                 );
@@ -98,7 +98,7 @@ class ViewingRecordTest {
             String longComment = "a".repeat(2001);
             assertThatThrownBy(() -> ViewingRecord.create(
                     1L,
-                    ZonedDateTime.now(),
+                    LocalDateTime.now(),
                     5,
                     longComment
             )).isInstanceOf(IllegalArgumentException.class);
@@ -110,7 +110,7 @@ class ViewingRecordTest {
             String comment = "a".repeat(2000);
             ViewingRecord record = ViewingRecord.create(
                     1L,
-                    ZonedDateTime.now(),
+                    LocalDateTime.now(),
                     5,
                     comment
             );
@@ -122,7 +122,7 @@ class ViewingRecordTest {
         void shouldNotCreateWithFutureDate() {
             assertThatThrownBy(() -> ViewingRecord.create(
                     1L,
-                    ZonedDateTime.now().plusDays(1),
+                    LocalDateTime.now().plusDays(1),
                     5,
                     "Future"
             )).isInstanceOf(IllegalArgumentException.class);
@@ -139,7 +139,7 @@ class ViewingRecordTest {
             // Given
             ViewingRecord record = ViewingRecord.create(
                     1L,
-                    ZonedDateTime.now().minusDays(1),
+                    LocalDateTime.now().minusDays(1),
                     5,
                     "Great"
             );

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Nested;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -31,17 +31,12 @@ class TitleTest {
             assertThat(title.getCreatedAt()).isNotNull();
             assertThat(title.getUpdatedAt()).isNotNull();
             assertThat(title.getTitleInfoUrls()).isEmpty();
-            assertThat(title.getSeries()).hasSize(1);
-            
-            // Default series should be created
-            Series defaultSeries = title.getSeries().get(0);
-            assertThat(defaultSeries.getName()).isEmpty();
-            assertThat(defaultSeries.getEpisodes()).hasSize(1);
+            assertThat(title.getSeries()).isEmpty(); // デフォルトシリーズはRepositoryで作成される
         }
 
         @Test
-        @DisplayName("新規作成時にデフォルトシリーズが自動生成される")
-        void shouldCreateDefaultSeriesAutomatically() {
+        @DisplayName("新規作成時はシリーズが空の状態")
+        void shouldCreateWithoutDefaultSeries() {
             // Given
             String titleName = "鬼滅の刃";
 
@@ -49,12 +44,8 @@ class TitleTest {
             Title title = Title.create(titleName);
 
             // Then
-            assertThat(title.getSeries()).hasSize(1);
-            Series defaultSeries = title.getSeries().get(0);
-            assertThat(defaultSeries.getName()).isEmpty();
-            assertThat(defaultSeries.getEpisodes()).hasSize(1);
-            assertThat(defaultSeries.getEpisodes().get(0).getEpisodeInfo()).isEmpty();
-            assertThat(defaultSeries.getEpisodes().get(0).getWatchStatus()).isEqualTo(WatchStatus.UNWATCHED);
+            // デフォルトシリーズはRepository層で保存時に作成される
+            assertThat(title.getSeries()).isEmpty();
         }
     }
 
@@ -109,7 +100,7 @@ class TitleTest {
 
             // Then
             assertThat(title.getTitleInfoUrls()).hasSize(1);
-            assertThat(title.getTitleInfoUrls().get(0).getUrl()).isEqualTo(url);
+            assertThat(title.getTitleInfoUrls().stream().findFirst().get().getUrl()).isEqualTo(url);
         }
 
         @Test
@@ -153,7 +144,7 @@ class TitleTest {
         void shouldUpdateName() {
             // Given
             Title title = Title.create("進撃の巨人");
-            ZonedDateTime originalUpdatedAt = title.getUpdatedAt();
+            LocalDateTime originalUpdatedAt = title.getUpdatedAt();
 
             // When
             title.updateName("進撃の巨人 (改題)");
@@ -169,25 +160,15 @@ class TitleTest {
     class AggregateRootConsistency {
 
         @Test
-        @DisplayName("シリーズは常に1件以上存在する")
-        void seriesShouldAlwaysHaveAtLeastOne() {
+        @DisplayName("新規作成時はシリーズが空だが、Repository保存時にデフォルトシリーズが追加される")
+        void seriesShouldBeEmptyUntilSaved() {
             // Given & When
             Title title = Title.create("進撃の巨人");
 
             // Then
-            assertThat(title.getSeries()).isNotEmpty();
-        }
-
-        @Test
-        @DisplayName("各シリーズはエピソードを1件以上持つ")
-        void eachSeriesShouldHaveAtLeastOneEpisode() {
-            // Given & When
-            Title title = Title.create("進撃の巨人");
-
-            // Then
-            for (Series series : title.getSeries()) {
-                assertThat(series.getEpisodes()).isNotEmpty();
-            }
+            // ドメインモデル作成時は空
+            assertThat(title.getSeries()).isEmpty();
+            // 注: デフォルトシリーズはTitleRepository.save()で作成される
         }
     }
 }

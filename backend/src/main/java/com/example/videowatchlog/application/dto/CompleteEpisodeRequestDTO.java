@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 /**
  * CompleteEpisodeRequestDTO - エピソード視聴完了リクエスト
@@ -13,7 +13,7 @@ import java.time.ZonedDateTime;
 public class CompleteEpisodeRequestDTO {
     @NotNull(message = "視聴完了日時は必須です")
     @PastOrPresent(message = "視聴完了日時は過去である必要があります")
-    private ZonedDateTime watchedAt;
+    private LocalDateTime watchedAt;
 
     @NotNull(message = "評価は必須です")
     @Min(value = 1, message = "評価は1以上である必要があります")
@@ -25,17 +25,17 @@ public class CompleteEpisodeRequestDTO {
 
     public CompleteEpisodeRequestDTO() {}
 
-    public CompleteEpisodeRequestDTO(ZonedDateTime watchedAt, Integer rating, String comment) {
+    public CompleteEpisodeRequestDTO(LocalDateTime watchedAt, Integer rating, String comment) {
         this.watchedAt = watchedAt;
         this.rating = rating;
         this.comment = comment;
     }
 
-    public ZonedDateTime getWatchedAt() {
+    public LocalDateTime getWatchedAt() {
         return watchedAt;
     }
 
-    public void setWatchedAt(ZonedDateTime watchedAt) {
+    public void setWatchedAt(LocalDateTime watchedAt) {
         this.watchedAt = watchedAt;
     }
 

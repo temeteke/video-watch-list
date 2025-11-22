@@ -30,7 +30,8 @@ public class SeriesRepositoryImpl implements SeriesRepository {
     @Override
     public Series save(Series series) {
         if (series.getId() == null) {
-            return seriesMapper.insert(series);
+            seriesMapper.insert(series);
+            return series;
         } else {
             seriesMapper.update(series);
             return series;

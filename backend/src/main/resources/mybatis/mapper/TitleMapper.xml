@@ -10,13 +10,15 @@
         <result property="name" column="name"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
-        <collection property="titleInfoUrls" ofType="com.example.videowatchlog.domain.model.TitleInfoUrl">
-            <constructor>
-                <arg column="info_url" javaType="String"/>
-            </constructor>
-        </collection>
-        <collection property="series" ofType="com.example.videowatchlog.domain.model.Series"
-                    select="selectSeriesByTitleId" column="id"/>
+        <collection property="titleInfoUrls" ofType="com.example.videowatchlog.domain.model.TitleInfoUrl"
+                    select="selectTitleInfoUrlsByTitleId" column="id"/>
+        <!-- Series collection is loaded separately via SeriesRepository when needed -->
+    </resultMap>
+
+    <resultMap id="titleInfoUrlMap" type="com.example.videowatchlog.domain.model.TitleInfoUrl">
+        <constructor>
+            <arg column="url" javaType="String"/>
+        </constructor>
     </resultMap>
 
     <!-- Find By ID -->
@@ -60,10 +62,10 @@
         WHERE LOWER(name) = LOWER(#{name})
     </select>
 
-    <!-- Helper query to select series by title id -->
-    <select id="selectSeriesByTitleId" resultType="com.example.videowatchlog.domain.model.Series">
-        SELECT id, title_id, name, created_at, updated_at
-        FROM series
+    <!-- Helper query to select title info urls by title id -->
+    <select id="selectTitleInfoUrlsByTitleId" resultMap="titleInfoUrlMap">
+        SELECT url
+        FROM title_info_urls
         WHERE title_id = #{id}
         ORDER BY id
     </select>

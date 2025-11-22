@@ -1,6 +1,6 @@
 package com.example.videowatchlog.domain.model;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -23,8 +23,8 @@ public class Episode {
     private final List<WatchPageUrl> watchPageUrls;
     private WatchStatus watchStatus;
     private final List<ViewingRecord> viewingRecords;
-    private final ZonedDateTime createdAt;
-    private ZonedDateTime updatedAt;
+    private final LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     /**
      * Constructor for Episode entity.
@@ -41,7 +41,7 @@ public class Episode {
      */
     public Episode(Long id, Long seriesId, String episodeInfo, List<WatchPageUrl> watchPageUrls,
                    WatchStatus watchStatus, List<ViewingRecord> viewingRecords,
-                   ZonedDateTime createdAt, ZonedDateTime updatedAt) {
+                   LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.seriesId = Objects.requireNonNull(seriesId, "seriesId must not be null");
         validateEpisodeInfo(episodeInfo);
@@ -51,6 +51,28 @@ public class Episode {
         this.viewingRecords = viewingRecords != null ? new ArrayList<>(viewingRecords) : new ArrayList<>();
         this.createdAt = Objects.requireNonNull(createdAt, "createdAt must not be null");
         this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt must not be null");
+    }
+
+    /**
+     * Factory method to create a new Episode.
+     *
+     * @param seriesId Parent series ID
+     * @param episodeInfo Episode information
+     * @return New Episode with UNWATCHED status
+     */
+    public static Episode create(Long seriesId, String episodeInfo) {
+        LocalDateTime now = LocalDateTime.now();
+        return new Episode(null, seriesId, episodeInfo, new ArrayList<>(), WatchStatus.UNWATCHED, new ArrayList<>(), now, now);
+    }
+
+    /**
+     * Factory method to create a new default Episode (with empty episodeInfo).
+     *
+     * @param seriesId Parent series ID
+     * @return New Episode with empty episodeInfo and UNWATCHED status
+     */
+    public static Episode createDefault(Long seriesId) {
+        return create(seriesId, "");
     }
 
     /**
@@ -71,7 +93,7 @@ public class Episode {
      */
     public void markAsWatched() {
         this.watchStatus = WatchStatus.WATCHED;
-        this.updatedAt = ZonedDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -95,7 +117,7 @@ public class Episode {
             throw new IllegalStateException("Cannot mark as unwatched when viewing records exist");
         }
         this.watchStatus = WatchStatus.UNWATCHED;
-        this.updatedAt = ZonedDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -133,11 +155,17 @@ public class Episode {
 
     /**
      * Removes a viewing record.
+     * If all viewing records are deleted, the watch status reverts to UNWATCHED.
      *
      * @param record Viewing record to remove
      */
     public void removeViewingRecord(ViewingRecord record) {
         this.viewingRecords.remove(record);
+        // If all viewing records are deleted, revert to UNWATCHED
+        if (this.viewingRecords.isEmpty()) {
+            this.watchStatus = WatchStatus.UNWATCHED;
+            this.updatedAt = LocalDateTime.now();
+        }
     }
 
     /**
@@ -148,14 +176,14 @@ public class Episode {
     public void updateEpisodeInfo(String episodeInfo) {
         validateEpisodeInfo(episodeInfo);
         this.episodeInfo = episodeInfo != null ? episodeInfo : "";
-        this.updatedAt = ZonedDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     /**
      * Updates the updatedAt timestamp.
      */
     public void touch() {
-        this.updatedAt = ZonedDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     // Getters
@@ -183,11 +211,11 @@ public class Episode {
         return new ArrayList<>(viewingRecords);
     }
 
-    public ZonedDateTime getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public ZonedDateTime getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 

@@ -1,6 +1,6 @@
 package com.example.videowatchlog.application.dto;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 /**
@@ -10,19 +10,19 @@ public class ErrorResponseDTO {
     private int code;
     private String message;
     private Map<String, String> details;
-    private ZonedDateTime timestamp;
+    private LocalDateTime timestamp;
 
     public ErrorResponseDTO(int code, String message) {
         this.code = code;
         this.message = message;
-        this.timestamp = ZonedDateTime.now();
+        this.timestamp = LocalDateTime.now();
     }
 
     public ErrorResponseDTO(int code, String message, Map<String, String> details) {
         this.code = code;
         this.message = message;
         this.details = details;
-        this.timestamp = ZonedDateTime.now();
+        this.timestamp = LocalDateTime.now();
     }
 
     public int getCode() {
@@ -37,7 +37,7 @@ public class ErrorResponseDTO {
         return details;
     }
 
-    public ZonedDateTime getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 }

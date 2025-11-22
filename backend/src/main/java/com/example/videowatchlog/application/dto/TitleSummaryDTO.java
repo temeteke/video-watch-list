@@ -1,6 +1,6 @@
 package com.example.videowatchlog.application.dto;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 /**
  * TitleSummaryDTO - タイトル概要情報
@@ -10,10 +10,10 @@ import java.time.ZonedDateTime;
 public class TitleSummaryDTO {
     private Long id;
     private String name;
-    private ZonedDateTime createdAt;
-    private ZonedDateTime updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-    public TitleSummaryDTO(Long id, String name, ZonedDateTime createdAt, ZonedDateTime updatedAt) {
+    public TitleSummaryDTO(Long id, String name, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.createdAt = createdAt;
@@ -29,11 +29,11 @@ public class TitleSummaryDTO {
         return name;
     }
 
-    public ZonedDateTime getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public ZonedDateTime getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 }

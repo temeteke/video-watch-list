@@ -1,6 +1,7 @@
 package com.example.videowatchlog.domain.service;
 
 import com.example.videowatchlog.domain.repository.TitleRepository;
+import org.springframework.stereotype.Service;
 
 /**
  * TitleDuplicationCheckService ドメインサービス
@@ -8,6 +9,7 @@ import com.example.videowatchlog.domain.repository.TitleRepository;
  * タイトル名の重複をチェックします
  * （大文字小文字区別なし、完全一致チェック）
  */
+@Service
 public class TitleDuplicationCheckService {
     private final TitleRepository titleRepository;
 

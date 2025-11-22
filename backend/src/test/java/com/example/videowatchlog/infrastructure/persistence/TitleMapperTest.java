@@ -4,10 +4,9 @@ import com.example.videowatchlog.domain.model.Title;
 import com.example.videowatchlog.domain.model.WatchStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,8 +16,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("TitleMapper 統合テスト")
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
+@MybatisTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
 @Transactional
 class TitleMapperTest {
@@ -33,8 +32,8 @@ class TitleMapperTest {
         Title title = Title.create("進撃の巨人");
 
         // When
-        Title saved = titleMapper.insert(title);
-        Optional<Title> found = titleMapper.findById(saved.getId());
+        titleMapper.insert(title);
+        Optional<Title> found = titleMapper.findById(title.getId());
 
         // Then
         assertThat(found).isPresent();
@@ -76,11 +75,11 @@ class TitleMapperTest {
     void shouldDeleteTitle() {
         // Given
         Title title = Title.create("進撃の巨人");
-        Title saved = titleMapper.insert(title);
+        titleMapper.insert(title);
 
         // When
-        titleMapper.delete(saved.getId());
-        Optional<Title> found = titleMapper.findById(saved.getId());
+        titleMapper.delete(title.getId());
+        Optional<Title> found = titleMapper.findById(title.getId());
 
         // Then
         assertThat(found).isEmpty();

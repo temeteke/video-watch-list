@@ -23,9 +23,9 @@ public interface ViewingRecordMapper {
     List<ViewingRecord> findByEpisodeId(@Param("episodeId") Long episodeId);
 
     /**
-     * 視聴履歴を挿入します
+     * 視聴履歴を挿入します（IDが自動設定される）
      */
-    ViewingRecord insert(ViewingRecord viewingRecord);
+    void insert(ViewingRecord viewingRecord);
 
     /**
      * 視聴履歴を削除します
