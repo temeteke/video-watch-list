@@ -34,7 +34,7 @@ dev:
 # 本番用コンテナ起動
 up:
 	@echo "本番用コンテナを起動中..."
-	docker-compose up -d db backend frontend
+	docker-compose up -d
 
 # コンテナ停止・削除
 down:
@@ -60,7 +60,7 @@ logs-db:
 # 本番用イメージをビルド
 build:
 	@echo "本番用イメージをビルド中..."
-	docker-compose build backend frontend
+	docker-compose build
 
 # ボリュームを含めてすべて削除
 clean:
