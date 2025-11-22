@@ -33,13 +33,13 @@
     <insert id="insert" parameterType="com.example.videowatchlog.domain.model.Episode"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO episodes (series_id, episode_info, watch_status, created_at, updated_at)
-        VALUES (#{seriesId}, #{episodeInfo}, #{watchStatus}, #{createdAt}, #{updatedAt})
+        VALUES (#{seriesId}, #{episodeInfo}, CAST(#{watchStatus} AS watch_status), #{createdAt}, #{updatedAt})
     </insert>
 
     <update id="update" parameterType="com.example.videowatchlog.domain.model.Episode">
         UPDATE episodes
         SET episode_info = #{episodeInfo},
-            watch_status = #{watchStatus},
+            watch_status = CAST(#{watchStatus} AS watch_status),
             updated_at = #{updatedAt}
         WHERE id = #{id}
     </update>
@@ -49,14 +49,14 @@
     </delete>
 
     <select id="selectWatchPageUrlsByEpisodeId" resultType="com.example.videowatchlog.domain.model.WatchPageUrl">
-        SELECT url, platform
+        SELECT url
         FROM watch_page_urls
         WHERE episode_id = #{id}
         ORDER BY id
     </select>
 
     <select id="selectViewingRecordsByEpisodeId" resultType="com.example.videowatchlog.domain.model.ViewingRecord">
-        SELECT id, episode_id, watched_at, rating, comment, created_at as recorded_at
+        SELECT id, episode_id, watched_at, rating, comment, recorded_at
         FROM viewing_records
         WHERE episode_id = #{id}
         ORDER BY recorded_at DESC

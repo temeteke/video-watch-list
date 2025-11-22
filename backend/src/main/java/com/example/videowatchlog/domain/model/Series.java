@@ -46,6 +46,20 @@ public class Series {
     }
 
     /**
+     * MyBatis用のデフォルトコンストラクタ。
+     * 外部から直接呼び出してはならない。
+     * パッケージプライベート。
+     */
+    Series() {
+        this.id = null;
+        this.titleId = null;
+        this.name = "";
+        this.episodes = new ArrayList<>();
+        this.createdAt = null;
+        this.updatedAt = null;
+    }
+
+    /**
      * Factory method to create a new Series.
      * Note: Episodes should be added separately after Series is persisted.
      *

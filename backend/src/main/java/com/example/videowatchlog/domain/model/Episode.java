@@ -54,6 +54,22 @@ public class Episode {
     }
 
     /**
+     * MyBatis用のデフォルトコンストラクタ。
+     * 外部から直接呼び出してはならない。
+     * パッケージプライベート。
+     */
+    Episode() {
+        this.id = null;
+        this.seriesId = null;
+        this.episodeInfo = "";
+        this.watchPageUrls = new ArrayList<>();
+        this.watchStatus = WatchStatus.UNWATCHED;
+        this.viewingRecords = new ArrayList<>();
+        this.createdAt = null;
+        this.updatedAt = null;
+    }
+
+    /**
      * Factory method to create a new Episode.
      *
      * @param seriesId Parent series ID

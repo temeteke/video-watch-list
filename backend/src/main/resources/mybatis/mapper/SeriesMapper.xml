@@ -44,7 +44,7 @@
         DELETE FROM series WHERE id = #{id}
     </delete>
 
-    <select id="selectEpisodesBySeriesId" resultType="com.example.videowatchlog.domain.model.Episode">
+    <select id="selectEpisodesBySeriesId" resultMap="com.example.videowatchlog.infrastructure.persistence.EpisodeMapper.episodeMap">
         SELECT id, series_id, episode_info, watch_status, created_at, updated_at
         FROM episodes
         WHERE series_id = #{id}
