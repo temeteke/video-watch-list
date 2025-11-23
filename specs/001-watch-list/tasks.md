@@ -268,13 +268,13 @@
 
 ### Frontend - API Client (User Story 2)
 
-- [ ] T130 [US2] frontend/src/tests/unit/api/viewing-records.test.ts を作成（API クライアントのテスト: completeEpisode, addViewingRecord, deleteViewingRecord）
-- [ ] T131 [US2] frontend/src/lib/api/viewing-records.ts を作成（API クライアント実装）
+- [x] T130 [US2] frontend/src/tests/unit/api/viewing-records.test.ts を作成（API クライアントのテスト: completeEpisode, addViewingRecord, deleteViewingRecord）
+- [x] T131 [US2] frontend/src/lib/api/viewing-records.ts を作成（API クライアント実装）
 
 ### Frontend - Components (User Story 2)
 
-- [ ] T132 [US2] frontend/src/tests/unit/components/episode/CompleteEpisodeForm.test.tsx を作成（視聴完了フォームのテスト: 日時・評価・感想入力）
-- [ ] T133 [US2] frontend/src/components/episode/CompleteEpisodeForm.tsx を作成（日時ピッカー、評価（1-5）セレクタ、感想テキストエリア）
+- [x] T132 [US2] frontend/src/tests/unit/components/episode/CompleteEpisodeForm.test.tsx を作成（視聴完了フォームのテスト: 日時・評価・感想入力）
+- [x] T133 [US2] frontend/src/components/episode/CompleteEpisodeForm.tsx を作成（日時ピッカー、評価（1-5）セレクタ、感想テキストエリア）
 - [ ] T134 [US2] [P] frontend/src/tests/unit/components/episode/ViewingRecordList.test.tsx を作成（視聴履歴一覧のテスト: 新しい順表示確認）
 - [ ] T135 [US2] [P] frontend/src/components/episode/ViewingRecordList.tsx を作成（視聴履歴一覧表示、削除ボタン）
 - [ ] T136 [US2] [P] frontend/src/tests/unit/components/episode/AddViewingRecordForm.test.tsx を作成
