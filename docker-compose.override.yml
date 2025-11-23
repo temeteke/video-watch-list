@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # 開発用バックエンド設定
   backend-dev:
