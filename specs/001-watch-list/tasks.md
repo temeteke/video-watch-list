@@ -254,12 +254,12 @@
 
 - [x] T120 [US2] backend/src/test/java/com/example/videowatchlog/application/usecase/CompleteEpisodeUseCaseTest.java を作成（TDD: 視聴完了のテスト - UNWATCHED → WATCHED遷移、ViewingRecord作成、状態変更不可の確認）
 - [x] T121 [US2] backend/src/main/java/com/example/videowatchlog/application/usecase/CompleteEpisodeUseCase.java を作成（execute メソッド: Episode.watchStatus = WATCHED, ViewingRecord作成）
-- [ ] T122 [US2] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/AddViewingRecordUseCaseTest.java を作成（複数回視聴追加のテスト）
-- [ ] T123 [US2] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/AddViewingRecordUseCase.java を作成（WATCHED状態のエピソードにのみ追加可能）
-- [ ] T124 [US2] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/DeleteViewingRecordUseCaseTest.java を作成（視聴履歴削除のテスト: すべて削除時にUNWATCHED復帰）
-- [ ] T125 [US2] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/DeleteViewingRecordUseCase.java を作成（削除後、Episode.viewingRecords.isEmpty() なら watchStatus = UNWATCHED）
-- [ ] T126 [US2] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/GetViewingRecordsUseCaseTest.java を作成（視聴履歴一覧取得のテスト: 新しい順ソート確認）
-- [ ] T127 [US2] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/GetViewingRecordsUseCase.java を作成（recordedAt DESC でソート）
+- [x] T122 [US2] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/AddViewingRecordUseCaseTest.java を作成（複数回視聴追加のテスト）
+- [x] T123 [US2] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/AddViewingRecordUseCase.java を作成（WATCHED状態のエピソードにのみ追加可能）
+- [x] T124 [US2] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/DeleteViewingRecordUseCaseTest.java を作成（視聴履歴削除のテスト: すべて削除時にUNWATCHED復帰）
+- [x] T125 [US2] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/DeleteViewingRecordUseCase.java を作成（削除後、Episode.viewingRecords.isEmpty() なら watchStatus = UNWATCHED）
+- [x] T126 [US2] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/GetViewingRecordsUseCaseTest.java を作成（視聴履歴一覧取得のテスト: 新しい順ソート確認）
+- [x] T127 [US2] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/GetViewingRecordsUseCase.java を作成（recordedAt DESC でソート）
 
 ### Backend - Presentation Layer (User Story 2)
 
