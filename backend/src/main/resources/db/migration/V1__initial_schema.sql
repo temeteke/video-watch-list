@@ -1,5 +1,5 @@
 -- Create watch_status enum type
-CREATE TYPE watch_status AS ENUM ('UNWATCHED', 'WATCHING', 'COMPLETED');
+CREATE TYPE watch_status AS ENUM ('UNWATCHED', 'WATCHED');
 
 -- Create titles table
 CREATE TABLE titles (

@@ -263,8 +263,8 @@
 
 ### Backend - Presentation Layer (User Story 2)
 
-- [ ] T128 [US2] backend/src/test/java/com/example/videowatchlog/integration/ViewingRecordControllerIntegrationTest.java を作成（統合テスト: POST /episodes/{id}/complete, POST /episodes/{id}/viewing-records, DELETE /viewing-records/{id}）
-- [ ] T129 [US2] backend/src/main/java/com/example/videowatchlog/presentation/controller/ViewingRecordController.java を作成（@RestController）
+- [x] T128 [US2] backend/src/test/java/com/example/videowatchlog/integration/ViewingRecordControllerIntegrationTest.java を作成（統合テスト: POST /episodes/{id}/complete, POST /episodes/{id}/viewing-records, DELETE /viewing-records/{id}）
+- [x] T129 [US2] backend/src/main/java/com/example/videowatchlog/presentation/controller/ViewingRecordController.java を作成（@RestController）
 
 ### Frontend - API Client (User Story 2)
 
