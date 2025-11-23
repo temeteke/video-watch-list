@@ -1,0 +1,203 @@
+package com.example.videowatchlog.application.usecase;
+
+import com.example.videowatchlog.domain.model.Episode;
+import com.example.videowatchlog.domain.model.ViewingRecord;
+import com.example.videowatchlog.domain.model.WatchStatus;
+import com.example.videowatchlog.domain.repository.EpisodeRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+/**
+ * Tests for CompleteEpisodeUseCase.
+ * Tests the workflow of marking an episode as watched and recording a viewing record.
+ */
+@DisplayName("CompleteEpisodeUseCase")
+class CompleteEpisodeUseCaseTest {
+    @Mock
+    private EpisodeRepository episodeRepository;
+
+    private CompleteEpisodeUseCase useCase;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        useCase = new CompleteEpisodeUseCase(episodeRepository);
+    }
+
+    @Test
+    @DisplayName("should mark unwatched episode as watched and create viewing record")
+    void testCompleteUnwatchedEpisode() {
+        // Arrange
+        Long episodeId = 1L;
+        Episode episode = Episode.create(1L, "Episode 1");
+        episode = new Episode(episodeId, 1L, "Episode 1", episode.getWatchPageUrls(),
+                WatchStatus.UNWATCHED, episode.getViewingRecords(), LocalDateTime.now(), LocalDateTime.now());
+
+        LocalDateTime watchedAt = LocalDateTime.now().minusHours(1);
+        Integer rating = 4;
+        String comment = "Great episode!";
+
+        when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
+
+        // Act
+        useCase.execute(episodeId, watchedAt, rating, comment);
+
+        // Assert
+        assertEquals(WatchStatus.WATCHED, episode.getWatchStatus());
+        assertEquals(1, episode.getViewingRecords().size());
+
+        ViewingRecord record = episode.getViewingRecords().get(0);
+        assertEquals(episodeId, record.getEpisodeId());
+        assertEquals(watchedAt, record.getWatchedAt());
+        assertEquals(rating, record.getRating());
+        assertEquals(comment, record.getComment());
+
+        verify(episodeRepository, times(1)).findById(episodeId);
+        verify(episodeRepository, times(1)).save(episode);
+    }
+
+    @Test
+    @DisplayName("should throw exception when trying to complete already watched episode")
+    void testCompleteWatchedEpisodeFails() {
+        // Arrange
+        Long episodeId = 1L;
+        Episode episode = Episode.create(1L, "Episode 1");
+        episode.markAsWatched();
+
+        LocalDateTime watchedAt = LocalDateTime.now().minusHours(1);
+        Integer rating = 4;
+        String comment = "Great episode!";
+
+        when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
+
+        // Act & Assert
+        assertThrows(IllegalStateException.class, () ->
+                useCase.execute(episodeId, watchedAt, rating, comment),
+                "Should not allow completing an already watched episode"
+        );
+
+        verify(episodeRepository, never()).save(episode);
+    }
+
+    @Test
+    @DisplayName("should throw exception for invalid rating below minimum")
+    void testInvalidRatingBelowMinimum() {
+        // Arrange
+        Long episodeId = 1L;
+        Episode episode = Episode.create(1L, "Episode 1");
+
+        LocalDateTime watchedAt = LocalDateTime.now().minusHours(1);
+        Integer rating = 0; // Invalid: must be 1-5
+        String comment = "Good episode";
+
+        when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                useCase.execute(episodeId, watchedAt, rating, comment),
+                "Should not allow rating below 1"
+        );
+
+        verify(episodeRepository, never()).save(episode);
+    }
+
+    @Test
+    @DisplayName("should throw exception for invalid rating above maximum")
+    void testInvalidRatingAboveMaximum() {
+        // Arrange
+        Long episodeId = 1L;
+        Episode episode = Episode.create(1L, "Episode 1");
+
+        LocalDateTime watchedAt = LocalDateTime.now().minusHours(1);
+        Integer rating = 6; // Invalid: must be 1-5
+        String comment = "Good episode";
+
+        when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                useCase.execute(episodeId, watchedAt, rating, comment),
+                "Should not allow rating above 5"
+        );
+
+        verify(episodeRepository, never()).save(episode);
+    }
+
+    @Test
+    @DisplayName("should throw exception for future watched date")
+    void testFutureWatchedAtFails() {
+        // Arrange
+        Long episodeId = 1L;
+        Episode episode = Episode.create(1L, "Episode 1");
+
+        LocalDateTime watchedAt = LocalDateTime.now().plusHours(1); // Future date
+        Integer rating = 4;
+        String comment = "Great episode!";
+
+        when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                useCase.execute(episodeId, watchedAt, rating, comment),
+                "Should not allow future watched date"
+        );
+
+        verify(episodeRepository, never()).save(episode);
+    }
+
+    @Test
+    @DisplayName("should allow null comment")
+    void testCompleteWithoutComment() {
+        // Arrange
+        Long episodeId = 1L;
+        Episode episode = Episode.create(1L, "Episode 1");
+
+        LocalDateTime watchedAt = LocalDateTime.now().minusHours(1);
+        Integer rating = 5;
+        String comment = null;
+
+        when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
+
+        // Act
+        useCase.execute(episodeId, watchedAt, rating, comment);
+
+        // Assert
+        assertEquals(WatchStatus.WATCHED, episode.getWatchStatus());
+        assertEquals(1, episode.getViewingRecords().size());
+
+        ViewingRecord record = episode.getViewingRecords().get(0);
+        assertNull(record.getComment());
+
+        verify(episodeRepository, times(1)).save(episode);
+    }
+
+    @Test
+    @DisplayName("should throw exception if episode not found")
+    void testEpisodeNotFound() {
+        // Arrange
+        Long episodeId = 999L;
+
+        LocalDateTime watchedAt = LocalDateTime.now().minusHours(1);
+        Integer rating = 4;
+        String comment = "Great episode!";
+
+        when(episodeRepository.findById(episodeId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                useCase.execute(episodeId, watchedAt, rating, comment),
+                "Should throw exception when episode not found"
+        );
+
+        verify(episodeRepository, never()).save(any());
+    }
+}

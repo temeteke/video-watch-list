@@ -252,8 +252,8 @@
 
 ### Backend - Application Layer (User Story 2)
 
-- [ ] T120 [US2] backend/src/test/java/com/example/videowatchlog/application/usecase/CompleteEpisodeUseCaseTest.java を作成（TDD: 視聴完了のテスト - UNWATCHED → WATCHED遷移、ViewingRecord作成、状態変更不可の確認）
-- [ ] T121 [US2] backend/src/main/java/com/example/videowatchlog/application/usecase/CompleteEpisodeUseCase.java を作成（execute メソッド: Episode.watchStatus = WATCHED, ViewingRecord作成）
+- [x] T120 [US2] backend/src/test/java/com/example/videowatchlog/application/usecase/CompleteEpisodeUseCaseTest.java を作成（TDD: 視聴完了のテスト - UNWATCHED → WATCHED遷移、ViewingRecord作成、状態変更不可の確認）
+- [x] T121 [US2] backend/src/main/java/com/example/videowatchlog/application/usecase/CompleteEpisodeUseCase.java を作成（execute メソッド: Episode.watchStatus = WATCHED, ViewingRecord作成）
 - [ ] T122 [US2] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/AddViewingRecordUseCaseTest.java を作成（複数回視聴追加のテスト）
 - [ ] T123 [US2] [P] backend/src/main/java/com/example/videowatchlog/application/usecase/AddViewingRecordUseCase.java を作成（WATCHED状態のエピソードにのみ追加可能）
 - [ ] T124 [US2] [P] backend/src/test/java/com/example/videowatchlog/application/usecase/DeleteViewingRecordUseCaseTest.java を作成（視聴履歴削除のテスト: すべて削除時にUNWATCHED復帰）
