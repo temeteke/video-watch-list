@@ -307,39 +307,39 @@
 
 ### Backend - Application Layer (User Story 3)
 
-- [ ] T141 [US3] backend/src/test/java/com/example/videowatchlog/application/usecase/SearchTitlesUseCaseTest.java を作成（TDD: タイトル検索のテスト - 部分一致、視聴状態フィルタ、パフォーマンス確認）
-- [ ] T142 [US3] backend/src/main/java/com/example/videowatchlog/application/usecase/SearchTitlesUseCase.java を作成（execute メソッド: TitleRepository.search(query, watchStatus)）
+- [x] T141 [US3] backend/src/test/java/com/example/videowatchlog/application/usecase/SearchTitlesUseCaseTest.java を作成（TDD: タイトル検索のテスト - 部分一致、視聴状態フィルタ、パフォーマンス確認）
+- [x] T142 [US3] backend/src/main/java/com/example/videowatchlog/application/usecase/SearchTitlesUseCase.java を作成（execute メソッド: TitleRepository.search(query, watchStatus)）
 
 ### Backend - Repository Extension (User Story 3)
 
-- [ ] T143 [US3] backend/src/main/java/com/example/videowatchlog/domain/repository/TitleRepository.java に search メソッドを追加（String query, WatchStatus watchStatus）
-- [ ] T144 [US3] backend/src/main/resources/mybatis/mapper/TitleMapper.xml に search クエリを追加（LIKE検索、watchStatus JOIN、インデックス活用）
-- [ ] T145 [US3] [P] backend/src/test/java/com/example/videowatchlog/infrastructure/persistence/TitleRepositoryImplTest.java に search テストを追加
-- [ ] T146 [US3] [P] backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/TitleRepositoryImpl.java に search 実装を追加
+- [x] T143 [US3] backend/src/main/java/com/example/videowatchlog/domain/repository/TitleRepository.java に search メソッドを追加（String query, WatchStatus watchStatus）
+- [x] T144 [US3] backend/src/main/resources/mybatis/mapper/TitleMapper.xml に search クエリを追加（LIKE検索、watchStatus JOIN、インデックス活用）
+- [x] T145 [US3] [P] backend/src/test/java/com/example/videowatchlog/infrastructure/persistence/TitleRepositoryImplTest.java に search テストを追加
+- [x] T146 [US3] [P] backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/TitleRepositoryImpl.java に search 実装を追加
 
 ### Backend - Presentation Layer (User Story 3)
 
-- [ ] T147 [US3] backend/src/test/java/com/example/videowatchlog/integration/TitleControllerIntegrationTest.java に GET /titles?query=&watchStatus= テストを追加
-- [ ] T148 [US3] backend/src/main/java/com/example/videowatchlog/presentation/controller/TitleController.java に getTitles メソッドを追加（@GetMapping, @RequestParam query, @RequestParam watchStatus）
+- [x] T147 [US3] backend/src/test/java/com/example/videowatchlog/integration/TitleControllerIntegrationTest.java に GET /titles?query=&watchStatus= テストを追加
+- [x] T148 [US3] backend/src/main/java/com/example/videowatchlog/presentation/controller/TitleController.java に getTitles メソッドを追加（@GetMapping, @RequestParam query, @RequestParam watchStatus）
 
 ### Frontend - API Client (User Story 3)
 
-- [ ] T149 [US3] frontend/src/tests/unit/api/titles.test.ts に searchTitles テストを追加
-- [ ] T150 [US3] frontend/src/lib/api/titles.ts に searchTitles 実装を追加（URLSearchParams使用）
+- [x] T149 [US3] frontend/src/tests/unit/api/titles.test.ts に searchTitles テストを追加
+- [x] T150 [US3] frontend/src/lib/api/titles.ts に searchTitles 実装を追加（URLSearchParams使用）
 
 ### Frontend - Components (User Story 3)
 
-- [ ] T151 [US3] frontend/src/tests/unit/components/common/SearchBar.test.tsx を作成（検索バーのテスト: 部分一致入力、フィルタ選択、クリアボタン）
-- [ ] T152 [US3] frontend/src/components/common/SearchBar.tsx を作成（検索入力、視聴状態フィルタドロップダウン、クリアボタン）
+- [x] T151 [US3] frontend/src/tests/unit/components/common/SearchBar.test.tsx を作成（検索バーのテスト: 部分一致入力、フィルタ選択、クリアボタン）
+- [x] T152 [US3] frontend/src/components/common/SearchBar.tsx を作成（検索入力、視聴状態フィルタドロップダウン、クリアボタン）
 
 ### Frontend - Pages (User Story 3)
 
-- [ ] T153 [US3] frontend/src/tests/integration/app/page.test.tsx に検索・フィルタ機能のテストを追加
-- [ ] T154 [US3] frontend/src/app/page.tsx に SearchBar コンポーネントを統合
+- [x] T153 [US3] frontend/src/tests/integration/app/page.test.tsx に検索・フィルタ機能のテストを追加
+- [x] T154 [US3] frontend/src/app/page.tsx に SearchBar コンポーネントを統合
 
 ### E2E Tests (User Story 3)
 
-- [ ] T155 [US3] frontend/tests/e2e/user-story-3.spec.ts を作成（E2E テスト: Acceptance Scenario 1-4 をカバー、パフォーマンス確認）
+- [x] T155 [US3] frontend/tests/e2e/user-story-3.spec.ts を作成（E2E テスト: Acceptance Scenario 1-4 をカバー、パフォーマンス確認）
 
 ---
 
@@ -349,40 +349,40 @@
 
 ### Error Handling (Backend)
 
-- [ ] T156 backend/src/main/java/com/example/videowatchlog/presentation/exception/GlobalExceptionHandler.java を作成（@ControllerAdvice, ErrorResponseDTO生成）
-- [ ] T157 [P] backend/src/main/java/com/example/videowatchlog/domain/exception/TitleDuplicateException.java を作成
-- [ ] T158 [P] backend/src/main/java/com/example/videowatchlog/domain/exception/TitleNotFoundException.java を作成
-- [ ] T159 [P] backend/src/main/java/com/example/videowatchlog/domain/exception/InvalidWatchStatusTransitionException.java を作成
+- [x] T156 backend/src/main/java/com/example/videowatchlog/presentation/exception/GlobalExceptionHandler.java を作成（@ControllerAdvice, ErrorResponseDTO生成）
+- [x] T157 [P] backend/src/main/java/com/example/videowatchlog/domain/exception/TitleDuplicateException.java を作成
+- [x] T158 [P] backend/src/main/java/com/example/videowatchlog/domain/exception/TitleNotFoundException.java を作成
+- [x] T159 [P] backend/src/main/java/com/example/videowatchlog/domain/exception/InvalidWatchStatusTransitionException.java を作成
 
 ### Validation (Backend)
 
-- [ ] T160 backend/src/main/java/com/example/videowatchlog/application/dto/CreateTitleRequestDTO.java に @Valid, @NotBlank, @Size アノテーションを追加
-- [ ] T161 [P] すべての DTO に適切なバリデーションアノテーションを追加（@Valid, @Min, @Max, @Pattern, @Future）
+- [x] T160 backend/src/main/java/com/example/videowatchlog/application/dto/CreateTitleRequestDTO.java に @Valid, @NotBlank, @Size アノテーションを追加
+- [x] T161 [P] すべての DTO に適切なバリデーションアノテーションを追加（@Valid, @Min, @Max, @Pattern, @Future）
 
 ### Error Handling (Frontend)
 
-- [ ] T162 frontend/src/lib/utils/error-handler.ts を作成（API エラーハンドリング、ユーザーフレンドリーなエラーメッセージ変換）
-- [ ] T163 [P] frontend/src/components/common/ErrorBoundary.tsx を作成（React Error Boundary）
-- [ ] T164 [P] frontend/src/components/common/Toast.tsx を作成（エラー・成功メッセージ表示用トースト通知）
+- [x] T162 frontend/src/lib/utils/error-handler.ts を作成（API エラーハンドリング、ユーザーフレンドリーなエラーメッセージ変換）
+- [x] T163 [P] frontend/src/components/common/ErrorBoundary.tsx を作成（React Error Boundary）
+- [x] T164 [P] frontend/src/components/common/Toast.tsx を作成（エラー・成功メッセージ表示用トースト通知）
 
 ### Confirmation Dialogs (Frontend)
 
-- [ ] T165 frontend/src/components/common/ConfirmDialog.tsx を作成（削除確認ダイアログ: タイトル・シリーズ削除時に使用）
+- [x] T165 frontend/src/components/common/ConfirmDialog.tsx を作成（削除確認ダイアログ: タイトル・シリーズ削除時に使用）
 
 ### Performance Optimization
 
-- [ ] T166 backend/src/main/resources/mybatis/mapper/TitleMapper.xml のクエリを最適化（N+1問題回避、JOIN最適化）
-- [ ] T167 [P] frontend/src/lib/utils/debounce.ts を作成（検索入力のデバウンス処理）
+- [x] T166 backend/src/main/resources/mybatis/mapper/TitleMapper.xml のクエリを最適化（N+1問題回避、JOIN最適化）
+- [x] T167 [P] frontend/src/lib/utils/debounce.ts を作成（検索入力のデバウンス処理）
 
 ### Documentation
 
-- [ ] T168 backend/README.md を作成（セットアップ手順、API エンドポイント一覧、テスト実行方法）
-- [ ] T169 [P] frontend/README.md を作成（セットアップ手順、コンポーネント構造、テスト実行方法）
+- [x] T168 backend/README.md を作成（セットアップ手順、API エンドポイント一覧、テスト実行方法）
+- [x] T169 [P] frontend/README.md を作成（セットアップ手順、コンポーネント構造、テスト実行方法）
 
 ### Docker & Deployment
 
-- [ ] T170 docker-compose.yml を検証し、開発環境で正常に起動することを確認
-- [ ] T171 [P] .github/workflows/ci.yml を作成（CI/CD パイプライン: テスト自動実行、ビルド確認）
+- [x] T170 docker-compose.yml を検証し、開発環境で正常に起動することを確認
+- [x] T171 [P] .github/workflows/ci.yml を作成（CI/CD パイプライン: テスト自動実行、ビルド確認）
 
 ---
 
