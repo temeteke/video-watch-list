@@ -4,12 +4,16 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { titlesApi } from '@/lib/api/titles';
 import { TitleSummary } from '@/types/title';
+import { WatchStatus } from '@/types/episode';
 import TitleList from '@/components/title/TitleList';
+import SearchBar from '@/components/common/SearchBar';
 
 export default function HomePage() {
   const [titles, setTitles] = useState<TitleSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string | undefined>();
+  const [searchWatchStatus, setSearchWatchStatus] = useState<WatchStatus | undefined>();
 
   useEffect(() => {
     loadTitles();
@@ -19,6 +23,21 @@ export default function HomePage() {
     try {
       setLoading(true);
       const data = await titlesApi.getAllTitles();
+      setTitles(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'エラーが発生しました');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = async (query: string | undefined, watchStatus: WatchStatus | undefined) => {
+    try {
+      setLoading(true);
+      setSearchQuery(query);
+      setSearchWatchStatus(watchStatus);
+      setError(null);
+      const data = await titlesApi.searchTitles(query, watchStatus);
       setTitles(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'エラーが発生しました');
@@ -40,6 +59,8 @@ export default function HomePage() {
     <main>
       <h1>視聴予定リスト</h1>
       <Link href="/titles/new">新規タイトル作成</Link>
+
+      <SearchBar onSearch={handleSearch} isLoading={loading} />
 
       {loading && <p>読み込み中...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}

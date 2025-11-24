@@ -5,6 +5,7 @@ import {
   CreateTitleRequest,
   UpdateTitleRequest,
 } from '@/types/title';
+import { WatchStatus } from '@/types/episode';
 
 const BASE_URL = '/titles';
 
@@ -27,5 +28,21 @@ export const titlesApi = {
 
   async getAllTitles(): Promise<TitleSummary[]> {
     return apiClient.get<TitleSummary[]>(BASE_URL);
+  },
+
+  async searchTitles(
+    query?: string,
+    watchStatus?: WatchStatus
+  ): Promise<TitleSummary[]> {
+    const params = new URLSearchParams();
+    if (query) {
+      params.append('query', query);
+    }
+    if (watchStatus) {
+      params.append('watchStatus', watchStatus);
+    }
+    const queryString = params.toString();
+    const url = queryString ? `${BASE_URL}/search?${queryString}` : `${BASE_URL}/search`;
+    return apiClient.get<TitleSummary[]>(url);
   },
 };
