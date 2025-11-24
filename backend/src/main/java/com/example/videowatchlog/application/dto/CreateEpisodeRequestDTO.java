@@ -1,5 +1,6 @@
 package com.example.videowatchlog.application.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 
@@ -7,7 +8,8 @@ import java.util.List;
  * CreateEpisodeRequestDTO - エピソード作成リクエスト
  */
 public class CreateEpisodeRequestDTO {
-    @Size(min = 0, max = 200, message = "エピソード情報は200文字以下である必要があります")
+    @NotBlank(message = "エピソード情報は必須です")
+    @Size(min = 1, max = 200, message = "エピソード情報は1～200文字である必要があります")
     private String episodeInfo;
 
     private List<String> watchPageUrls;

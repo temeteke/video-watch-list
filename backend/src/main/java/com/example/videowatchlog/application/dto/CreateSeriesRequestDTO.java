@@ -1,12 +1,14 @@
 package com.example.videowatchlog.application.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 /**
  * CreateSeriesRequestDTO - シリーズ作成リクエスト
  */
 public class CreateSeriesRequestDTO {
-    @Size(min = 0, max = 100, message = "シーズン名は100文字以下である必要があります")
+    @NotBlank(message = "シーズン名は必須です")
+    @Size(min = 1, max = 100, message = "シーズン名は1～100文字である必要があります")
     private String name;
 
     public CreateSeriesRequestDTO() {}

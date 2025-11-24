@@ -62,7 +62,10 @@
         WHERE LOWER(name) = LOWER(#{name})
     </select>
 
-    <!-- Search -->
+    <!-- Search - N+1回避、JOIN最適化済み -->
+    <!-- DISTINCT を使用してタイトルの重複を排除（複数エピソードがある場合） -->
+    <!-- WHERE 句で early filter を実施してパフォーマンスを最適化 -->
+    <!-- インデックス: titles.name, episodes.watch_status 推奨 -->
     <select id="search" resultMap="titleMap">
         SELECT DISTINCT t.id, t.name, t.created_at, t.updated_at
         FROM titles t
