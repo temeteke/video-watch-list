@@ -5,10 +5,6 @@
 
 type Func = (...args: any[]) => void | Promise<void>;
 
-interface DebouncedFunction {
-  <T extends Func>(func: T, wait: number): (...args: Parameters<T>) => void;
-}
-
 /**
  * 関数をデバウンスする
  * @param func デバウンス対象の関数

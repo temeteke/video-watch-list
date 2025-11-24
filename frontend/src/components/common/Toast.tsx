@@ -4,13 +4,6 @@ import React, { useEffect, useState } from 'react';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
-interface ToastProps {
-  message: string;
-  type?: ToastType;
-  duration?: number;
-  onClose?: () => void;
-}
-
 interface ToastMessage {
   id: string;
   message: string;

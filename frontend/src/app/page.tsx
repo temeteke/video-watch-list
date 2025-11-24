@@ -12,8 +12,6 @@ export default function HomePage() {
   const [titles, setTitles] = useState<TitleSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string | undefined>();
-  const [searchWatchStatus, setSearchWatchStatus] = useState<WatchStatus | undefined>();
 
   useEffect(() => {
     loadTitles();
@@ -34,8 +32,6 @@ export default function HomePage() {
   const handleSearch = async (query: string | undefined, watchStatus: WatchStatus | undefined) => {
     try {
       setLoading(true);
-      setSearchQuery(query);
-      setSearchWatchStatus(watchStatus);
       setError(null);
       const data = await titlesApi.searchTitles(query, watchStatus);
       setTitles(data);

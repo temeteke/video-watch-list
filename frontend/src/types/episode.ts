@@ -2,6 +2,8 @@
  * Episode（エピソード）関連の型定義
  */
 
+export type WatchStatus = 'WATCHED' | 'UNWATCHED';
+
 export interface EpisodeDetail {
   id: number;
   seriesId: number;

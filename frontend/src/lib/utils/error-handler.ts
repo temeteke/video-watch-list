@@ -2,19 +2,6 @@
  * API エラーハンドリングと ユーザーフレンドリーなエラーメッセージ変換
  */
 
-interface ApiError {
-  message: string;
-  code?: string;
-  status?: number;
-}
-
-interface ErrorResponse {
-  message: string;
-  code: string;
-  timestamp: string;
-  path: string;
-}
-
 /**
  * API エラーレスポンスをユーザーフレンドリーなメッセージに変換
  */
