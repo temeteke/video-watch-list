@@ -1,7 +1,11 @@
 import { apiClient } from './client';
-import { CreateEpisodeRequest, UpdateEpisodeRequest } from '@/types/episode';
+import { CreateEpisodeRequest, UpdateEpisodeRequest, EpisodeDetail } from '@/types/episode';
 
 export const episodesApi = {
+  async getEpisodeDetail(episodeId: number): Promise<EpisodeDetail> {
+    return apiClient.get<EpisodeDetail>(`/episodes/${episodeId}`);
+  },
+
   async createEpisode(seriesId: number, request: CreateEpisodeRequest): Promise<void> {
     return apiClient.post<void>(`/series/${seriesId}/episodes`, request);
   },

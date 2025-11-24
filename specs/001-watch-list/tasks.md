@@ -282,12 +282,12 @@
 
 ### Frontend - Pages (User Story 2)
 
-- [ ] T138 [US2] frontend/src/tests/integration/app/episodes/[id]/page.test.tsx を作成（エピソード詳細ページ統合テスト: 視聴完了、視聴履歴表示）
-- [ ] T139 [US2] frontend/src/app/episodes/[id]/page.tsx を作成（エピソード詳細ページ: 視聴完了ボタン、視聴履歴一覧）
+- [x] T138 [US2] frontend/src/tests/integration/app/episodes/[id]/page.test.tsx を作成（エピソード詳細ページ統合テスト: 視聴完了、視聴履歴表示）
+- [x] T139 [US2] frontend/src/app/episodes/[id]/page.tsx を作成（エピソード詳細ページ: 視聴完了ボタン、視聴履歴一覧）
 
 ### E2E Tests (User Story 2)
 
-- [ ] T140 [US2] frontend/tests/e2e/user-story-2.spec.ts を作成（E2E テスト: Acceptance Scenario 1-4 をカバー）
+- [x] T140 [US2] frontend/tests/e2e/user-story-2.spec.ts を作成（E2E テスト: Acceptance Scenario 1-4 をカバー）
 
 ---
 
