@@ -275,10 +275,10 @@
 
 - [x] T132 [US2] frontend/src/tests/unit/components/episode/CompleteEpisodeForm.test.tsx を作成（視聴完了フォームのテスト: 日時・評価・感想入力）
 - [x] T133 [US2] frontend/src/components/episode/CompleteEpisodeForm.tsx を作成（日時ピッカー、評価（1-5）セレクタ、感想テキストエリア）
-- [ ] T134 [US2] [P] frontend/src/tests/unit/components/episode/ViewingRecordList.test.tsx を作成（視聴履歴一覧のテスト: 新しい順表示確認）
-- [ ] T135 [US2] [P] frontend/src/components/episode/ViewingRecordList.tsx を作成（視聴履歴一覧表示、削除ボタン）
-- [ ] T136 [US2] [P] frontend/src/tests/unit/components/episode/AddViewingRecordForm.test.tsx を作成
-- [ ] T137 [US2] [P] frontend/src/components/episode/AddViewingRecordForm.tsx を作成（追加視聴記録フォーム）
+- [x] T134 [US2] [P] frontend/src/tests/unit/components/episode/ViewingRecordList.test.tsx を作成（視聴履歴一覧のテスト: 新しい順表示確認）
+- [x] T135 [US2] [P] frontend/src/components/episode/ViewingRecordList.tsx を作成（視聴履歴一覧表示、削除ボタン）
+- [x] T136 [US2] [P] frontend/src/tests/unit/components/episode/AddViewingRecordForm.test.tsx を作成
+- [x] T137 [US2] [P] frontend/src/components/episode/AddViewingRecordForm.tsx を作成（追加視聴記録フォーム）
 
 ### Frontend - Pages (User Story 2)
 
