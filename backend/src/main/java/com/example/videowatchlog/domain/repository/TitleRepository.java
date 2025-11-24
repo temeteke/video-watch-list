@@ -1,6 +1,7 @@
 package com.example.videowatchlog.domain.repository;
 
 import com.example.videowatchlog.domain.model.Title;
+import com.example.videowatchlog.domain.model.WatchStatus;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,4 +43,12 @@ public interface TitleRepository {
      * @return 存在する場合 true
      */
     boolean existsByName(String name);
+
+    /**
+     * タイトルを検索します
+     * @param query 検索クエリ (null の場合は全タイトル)
+     * @param watchStatus 視聴状態でのフィルタリング (null の場合はフィルタリングなし)
+     * @return 条件にマッチした Title リスト
+     */
+    List<Title> search(String query, WatchStatus watchStatus);
 }

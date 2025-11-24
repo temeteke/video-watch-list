@@ -62,6 +62,17 @@
         WHERE LOWER(name) = LOWER(#{name})
     </select>
 
+    <!-- Search -->
+    <select id="search" resultMap="titleMap">
+        SELECT DISTINCT t.id, t.name, t.created_at, t.updated_at
+        FROM titles t
+        INNER JOIN series s ON t.id = s.title_id
+        INNER JOIN episodes e ON s.id = e.series_id
+        WHERE (#{query} IS NULL OR LOWER(t.name) LIKE LOWER(CONCAT('%', #{query}, '%')))
+          AND (#{watchStatus} IS NULL OR e.watch_status = #{watchStatus}::text)
+        ORDER BY t.created_at DESC
+    </select>
+
     <!-- Helper query to select title info urls by title id -->
     <select id="selectTitleInfoUrlsByTitleId" resultMap="titleInfoUrlMap">
         SELECT url

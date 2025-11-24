@@ -8,6 +8,8 @@ import com.example.videowatchlog.application.usecase.DeleteTitleUseCase;
 import com.example.videowatchlog.application.usecase.GetAllTitlesUseCase;
 import com.example.videowatchlog.application.usecase.GetTitleDetailUseCase;
 import com.example.videowatchlog.application.usecase.UpdateTitleUseCase;
+import com.example.videowatchlog.application.usecase.SearchTitlesUseCase;
+import com.example.videowatchlog.domain.model.WatchStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,18 +28,21 @@ public class TitleController {
     private final GetTitleDetailUseCase getTitleDetailUseCase;
     private final UpdateTitleUseCase updateTitleUseCase;
     private final DeleteTitleUseCase deleteTitleUseCase;
+    private final SearchTitlesUseCase searchTitlesUseCase;
 
     public TitleController(
             CreateTitleUseCase createTitleUseCase,
             GetAllTitlesUseCase getAllTitlesUseCase,
             GetTitleDetailUseCase getTitleDetailUseCase,
             UpdateTitleUseCase updateTitleUseCase,
-            DeleteTitleUseCase deleteTitleUseCase) {
+            DeleteTitleUseCase deleteTitleUseCase,
+            SearchTitlesUseCase searchTitlesUseCase) {
         this.createTitleUseCase = createTitleUseCase;
         this.getAllTitlesUseCase = getAllTitlesUseCase;
         this.getTitleDetailUseCase = getTitleDetailUseCase;
         this.updateTitleUseCase = updateTitleUseCase;
         this.deleteTitleUseCase = deleteTitleUseCase;
+        this.searchTitlesUseCase = searchTitlesUseCase;
     }
 
     @PostMapping
@@ -49,6 +54,14 @@ public class TitleController {
     @GetMapping
     public ResponseEntity<List<TitleSummaryDTO>> getAllTitles() {
         List<TitleSummaryDTO> result = getAllTitlesUseCase.execute();
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<TitleSummaryDTO>> searchTitles(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) WatchStatus watchStatus) {
+        List<TitleSummaryDTO> result = searchTitlesUseCase.execute(query, watchStatus);
         return ResponseEntity.ok(result);
     }
 

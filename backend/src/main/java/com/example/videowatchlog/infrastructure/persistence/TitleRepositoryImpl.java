@@ -3,6 +3,7 @@ package com.example.videowatchlog.infrastructure.persistence;
 import com.example.videowatchlog.domain.model.Episode;
 import com.example.videowatchlog.domain.model.Series;
 import com.example.videowatchlog.domain.model.Title;
+import com.example.videowatchlog.domain.model.WatchStatus;
 import com.example.videowatchlog.domain.repository.TitleRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,5 +67,10 @@ public class TitleRepositoryImpl implements TitleRepository {
     @Override
     public boolean existsByName(String name) {
         return titleMapper.existsByName(name);
+    }
+
+    @Override
+    public List<Title> search(String query, WatchStatus watchStatus) {
+        return titleMapper.search(query, watchStatus);
     }
 }

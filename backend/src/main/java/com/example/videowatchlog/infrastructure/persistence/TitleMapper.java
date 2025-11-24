@@ -1,6 +1,7 @@
 package com.example.videowatchlog.infrastructure.persistence;
 
 import com.example.videowatchlog.domain.model.Title;
+import com.example.videowatchlog.domain.model.WatchStatus;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import java.util.List;
@@ -51,4 +52,12 @@ public interface TitleMapper {
      * @return 存在する場合true
      */
     boolean existsByName(@Param("name") String name);
+
+    /**
+     * タイトルを検索します
+     * @param query 検索クエリ (null の場合は条件なし)
+     * @param watchStatus 視聴状態でのフィルタリング (null の場合は条件なし)
+     * @return 条件にマッチしたタイトルリスト
+     */
+    List<Title> search(@Param("query") String query, @Param("watchStatus") WatchStatus watchStatus);
 }
