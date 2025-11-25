@@ -1,5 +1,6 @@
 package com.example.videowatchlog.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -10,16 +11,20 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+    @Value("${cors.allowed-origins:http://localhost:3000}")
+    private String allowedOrigins;
+
     /**
      * CORS設定を追加
      *
-     * 開発環境ではフロントエンド（localhost:3000）からのアクセスを許可する。
-     * 本番環境では環境変数や設定ファイルで許可するオリジンを変更できる。
+     * 環境変数 CORS_ALLOWED_ORIGINS でカンマ区切りのオリジンを指定できる。
+     * デフォルトではlocalhost:3000とlocalhost:3001を許可する。
      */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        String[] origins = allowedOrigins.split(",");
         registry.addMapping("/**")
-                .allowedOriginPatterns("http://localhost:3000")
+                .allowedOrigins(origins)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)
