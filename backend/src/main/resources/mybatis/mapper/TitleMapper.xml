@@ -71,8 +71,13 @@
         FROM titles t
         INNER JOIN series s ON t.id = s.title_id
         INNER JOIN episodes e ON s.id = e.series_id
-        WHERE (#{query} IS NULL OR LOWER(t.name) LIKE LOWER(CONCAT('%', #{query}, '%')))
-          AND (#{watchStatus} IS NULL OR e.watch_status = #{watchStatus}::text)
+        WHERE 1=1
+        <if test="query != null">
+            AND LOWER(t.name) LIKE LOWER(CONCAT('%', #{query}, '%'))
+        </if>
+        <if test="watchStatus != null">
+            AND e.watch_status = #{watchStatus}::watch_status
+        </if>
         ORDER BY t.created_at DESC
     </select>
 
