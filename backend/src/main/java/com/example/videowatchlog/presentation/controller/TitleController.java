@@ -1,6 +1,7 @@
 package com.example.videowatchlog.presentation.controller;
 
 import com.example.videowatchlog.application.dto.CreateTitleRequestDTO;
+import com.example.videowatchlog.application.dto.TitleDetailDTO;
 import com.example.videowatchlog.application.dto.TitleSummaryDTO;
 import com.example.videowatchlog.application.dto.UpdateTitleRequestDTO;
 import com.example.videowatchlog.application.usecase.CreateTitleUseCase;
@@ -66,8 +67,8 @@ public class TitleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TitleSummaryDTO> getTitleDetail(@PathVariable Long id) {
-        TitleSummaryDTO result = getTitleDetailUseCase.execute(id);
+    public ResponseEntity<TitleDetailDTO> getTitleDetail(@PathVariable Long id) {
+        TitleDetailDTO result = getTitleDetailUseCase.execute(id);
         return ResponseEntity.ok(result);
     }
 
