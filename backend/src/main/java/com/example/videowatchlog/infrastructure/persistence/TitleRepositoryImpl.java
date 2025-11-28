@@ -29,12 +29,22 @@ public class TitleRepositoryImpl implements TitleRepository {
 
     @Override
     public Optional<Title> findById(Long id) {
-        return titleMapper.findById(id);
+        Optional<Title> title = titleMapper.findById(id);
+        if (title.isPresent()) {
+            List<Series> series = seriesMapper.findByTitleId(id);
+            title.get().setSeries(series);
+        }
+        return title;
     }
 
     @Override
     public List<Title> findAll() {
-        return titleMapper.findAll();
+        List<Title> titles = titleMapper.findAll();
+        for (Title title : titles) {
+            List<Series> series = seriesMapper.findByTitleId(title.getId());
+            title.setSeries(series);
+        }
+        return titles;
     }
 
     @Override
@@ -71,6 +81,11 @@ public class TitleRepositoryImpl implements TitleRepository {
 
     @Override
     public List<Title> search(String query, WatchStatus watchStatus) {
-        return titleMapper.search(query, watchStatus);
+        List<Title> titles = titleMapper.search(query, watchStatus);
+        for (Title title : titles) {
+            List<Series> series = seriesMapper.findByTitleId(title.getId());
+            title.setSeries(series);
+        }
+        return titles;
     }
 }

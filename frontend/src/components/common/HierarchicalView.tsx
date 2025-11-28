@@ -32,7 +32,10 @@ export default function HierarchicalView({
                   </li>
                 ))}
               </ul>
-              <button onClick={() => onAddEpisode?.(series.id)}>
+              <button onClick={() => {
+                console.log('Episode add button clicked for series:', series.id);
+                onAddEpisode?.(series.id);
+              }}>
                 エピソード追加
               </button>
             </div>

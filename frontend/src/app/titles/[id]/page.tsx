@@ -20,6 +20,7 @@ export default function TitleDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [showSeriesForm, setShowSeriesForm] = useState(false);
   const [showEpisodeForm, setShowEpisodeForm] = useState<number | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     loadTitle();
@@ -49,11 +50,18 @@ export default function TitleDetailPage() {
 
   const handleAddEpisode = async (seriesId: number, episodeInfo: string, urls: string[]) => {
     try {
+      setIsSubmitting(true);
+      console.log('Adding episode:', { seriesId, episodeInfo, urls });
       await episodesApi.createEpisode(seriesId, { episodeInfo, watchPageUrls: urls });
+      console.log('Episode added successfully');
       await loadTitle();
       setShowEpisodeForm(null);
     } catch (err) {
+      console.error('Failed to add episode:', err);
+      alert(`エピソード追加に失敗しました: ${err instanceof Error ? err.message : String(err)}`);
       throw err;
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -74,6 +82,7 @@ export default function TitleDetailPage() {
       {showEpisodeForm && title.series.find(s => s.id === showEpisodeForm) && (
         <EpisodeForm
           onSubmit={(info, urls) => handleAddEpisode(showEpisodeForm, info, urls)}
+          isLoading={isSubmitting}
         />
       )}
     </main>

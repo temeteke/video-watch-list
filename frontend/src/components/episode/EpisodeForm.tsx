@@ -20,12 +20,18 @@ export default function EpisodeForm({ onSubmit, isLoading = false }: EpisodeForm
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      if (!episodeInfo.trim()) {
+        alert('エピソード情報を入力してください');
+        return;
+      }
       const filledUrls = urls.filter(url => url.trim());
       await onSubmit(episodeInfo, filledUrls);
       setEpisodeInfo('');
       setUrls(['']);
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'エラーが発生しました');
+      const errorMessage = error instanceof Error ? error.message : 'エラーが発生しました';
+      console.error('EpisodeForm error:', errorMessage);
+      alert(errorMessage);
     }
   };
 
