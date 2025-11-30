@@ -55,7 +55,7 @@ cp .env.example .env
 ```
 
 デフォルト値:
-- `POSTGRES_USER=videowatchuser`
+- `POSTGRES_USER=videowatchlog`
 - `POSTGRES_PASSWORD=password`
 - `POSTGRES_DB=videowatchlog`
 
@@ -66,9 +66,11 @@ make dev
 ```
 
 これにより以下のサービスが起動します:
-- **バックエンド**: http://localhost:8080
-- **フロントエンド**: http://localhost:3000
-- **データベース**: localhost:5432
+- **バックエンド**: http://localhost:8080 (または環境変数 `BACKEND_PORT` で指定)
+- **フロントエンド**: http://localhost:3000 (または環境変数 `FRONTEND_PORT` で指定)
+- **データベース**: localhost:5432 (または環境変数 `DB_PORT` で指定)
+
+ポートをカスタマイズする場合は `.env` ファイルで設定してください。
 
 ## 開発コマンド
 
@@ -230,6 +232,14 @@ make logs-backend  # ログを確認
 
 `backend/src/main/java/com/example/videowatchlog/config/WebConfig.java` で許可オリジンを確認してください。
 
+### データベース接続エラー
+
+データベース接続でエラーが発生する場合:
+1. `.env` ファイルの設定を確認
+2. データベースユーザー名とDB名が一致していることを確認（デフォルト: `videowatchlog`）
+3. `docker-compose logs db` でデータベースログを確認
+4. 必要に応じて `make rebuild` でクリーンビルド
+
 ## ライセンス
 
 （ライセンス情報を記載）
@@ -244,6 +254,6 @@ make logs-backend  # ログを確認
 
 ---
 
-**最終更新**: 2025-11-23
-**現在のフェーズ**: Phase 4 (User Story 2 - 視聴記録管理)
-**ブランチ**: `001-watch-list`
+**最終更新**: 2025-11-30
+**現在のフェーズ**: 実装完了 (All User Stories)
+**ブランチ**: `master`
