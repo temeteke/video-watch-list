@@ -1,0 +1,57 @@
+services:
+  # 開発用バックエンド設定
+  backend-dev:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: builder
+    container_name: video-watch-list-backend-dev
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB:-videowatchlog}
+      DB_USER: ${POSTGRES_USER:-videowatchuser}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-password}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/build
+      - maven_cache:/root/.m2
+    working_dir: /build
+    command: mvn spring-boot:run
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - video-watch-list-network
+
+  # テスト実行用サービス
+  test:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: builder
+    container_name: video-watch-list-test
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB:-videowatchlog}
+      DB_USER: ${POSTGRES_USER:-videowatchuser}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-password}
+    volumes:
+      - ./backend:/build
+      - maven_cache:/root/.m2
+    working_dir: /build
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - video-watch-list-network
+    profiles:
+      - test
+
+volumes:
+  maven_cache:
+    driver: local

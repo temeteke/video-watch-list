@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.videowatchlog.infrastructure.persistence.SeriesMapper">
+
+    <resultMap id="seriesMap" type="com.example.videowatchlog.domain.model.Series">
+        <id property="id" column="id"/>
+        <result property="titleId" column="title_id"/>
+        <result property="name" column="name"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <collection property="episodes" ofType="com.example.videowatchlog.domain.model.Episode"
+                    select="selectEpisodesBySeriesId" column="id"/>
+    </resultMap>
+
+    <select id="findById" resultMap="seriesMap">
+        SELECT id, title_id, name, created_at, updated_at
+        FROM series
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByTitleId" resultMap="seriesMap">
+        SELECT id, title_id, name, created_at, updated_at
+        FROM series
+        WHERE title_id = #{titleId}
+        ORDER BY id
+    </select>
+
+    <insert id="insert" parameterType="com.example.videowatchlog.domain.model.Series"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO series (title_id, name, created_at, updated_at)
+        VALUES (#{titleId}, #{name}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <update id="update" parameterType="com.example.videowatchlog.domain.model.Series">
+        UPDATE series
+        SET name = #{name},
+            updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM series WHERE id = #{id}
+    </delete>
+
+    <select id="selectEpisodesBySeriesId" resultMap="com.example.videowatchlog.infrastructure.persistence.EpisodeMapper.episodeMap">
+        SELECT id, series_id, episode_info, watch_status, created_at, updated_at
+        FROM episodes
+        WHERE series_id = #{id}
+        ORDER BY id
+    </select>
+
+</mapper>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.videowatchlog.infrastructure.persistence.TitleMapper">
+
+    <!-- Result Maps -->
+    <resultMap id="titleMap" type="com.example.videowatchlog.domain.model.Title">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <collection property="titleInfoUrls" ofType="com.example.videowatchlog.domain.model.TitleInfoUrl"
+                    select="selectTitleInfoUrlsByTitleId" column="id"/>
+        <!-- Series collection is loaded separately via SeriesRepository when needed -->
+    </resultMap>
+
+    <resultMap id="titleInfoUrlMap" type="com.example.videowatchlog.domain.model.TitleInfoUrl">
+        <constructor>
+            <arg column="url" javaType="String"/>
+        </constructor>
+    </resultMap>
+
+    <!-- Find By ID -->
+    <select id="findById" resultMap="titleMap">
+        SELECT id, name, created_at, updated_at
+        FROM titles
+        WHERE id = #{id}
+    </select>
+
+    <!-- Find All -->
+    <select id="findAll" resultMap="titleMap">
+        SELECT id, name, created_at, updated_at
+        FROM titles
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- Insert -->
+    <insert id="insert" parameterType="com.example.videowatchlog.domain.model.Title"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO titles (name, created_at, updated_at)
+        VALUES (#{name}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <!-- Update -->
+    <update id="update" parameterType="com.example.videowatchlog.domain.model.Title">
+        UPDATE titles
+        SET name = #{name},
+            updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
+
+    <!-- Delete (with cascade) -->
+    <delete id="delete">
+        DELETE FROM titles WHERE id = #{id}
+    </delete>
+
+    <!-- Check Exists By Name -->
+    <select id="existsByName" resultType="boolean">
+        SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END
+        FROM titles
+        WHERE LOWER(name) = LOWER(#{name})
+    </select>
+
+    <!-- Search - N+1回避、JOIN最適化済み -->
+    <!-- DISTINCT を使用してタイトルの重複を排除（複数エピソードがある場合） -->
+    <!-- WHERE 句で early filter を実施してパフォーマンスを最適化 -->
+    <!-- インデックス: titles.name, episodes.watch_status 推奨 -->
+    <select id="search" resultMap="titleMap">
+        SELECT DISTINCT t.id, t.name, t.created_at, t.updated_at
+        FROM titles t
+        INNER JOIN series s ON t.id = s.title_id
+        INNER JOIN episodes e ON s.id = e.series_id
+        WHERE 1=1
+        <if test="query != null">
+            AND LOWER(t.name) LIKE LOWER(CONCAT('%', #{query}, '%'))
+        </if>
+        <if test="watchStatus != null">
+            AND e.watch_status = #{watchStatus}::watch_status
+        </if>
+        ORDER BY t.created_at DESC
+    </select>
+
+    <!-- Helper query to select title info urls by title id -->
+    <select id="selectTitleInfoUrlsByTitleId" resultMap="titleInfoUrlMap">
+        SELECT url
+        FROM title_info_urls
+        WHERE title_id = #{id}
+        ORDER BY id
+    </select>
+
+</mapper>
