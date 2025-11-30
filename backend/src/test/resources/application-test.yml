@@ -4,7 +4,7 @@ spring:
 
   datasource:
     url: jdbc:postgresql://db:5432/videowatchlog
-    username: videowatchuser
+    username: videowatchlog
     password: password
     driver-class-name: org.postgresql.Driver
 
