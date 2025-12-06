@@ -40,15 +40,10 @@ class SearchTitlesUseCaseTest {
     void shouldSearchTitlesByQuery() {
         // Given
         LocalDateTime now = LocalDateTime.now();
-        Title title1 = Title.create("進撃の巨人");
-        title1.setId(1L);
-        title1.setCreatedAt(now);
-        title1.setUpdatedAt(now);
-
-        Title title2 = Title.create("鬼滅の刃");
-        title2.setId(2L);
-        title2.setCreatedAt(now);
-        title2.setUpdatedAt(now);
+        Title title1 = new Title(1L, "進撃の巨人", new java.util.LinkedHashSet<>(),
+                                new java.util.ArrayList<>(), now, now);
+        Title title2 = new Title(2L, "鬼滅の刃", new java.util.LinkedHashSet<>(),
+                                new java.util.ArrayList<>(), now, now);
 
         List<Title> titles = Arrays.asList(title1);
         when(titleRepository.search("進撃", null)).thenReturn(titles);
@@ -67,10 +62,8 @@ class SearchTitlesUseCaseTest {
     void shouldFilterByWatchStatus() {
         // Given
         LocalDateTime now = LocalDateTime.now();
-        Title title1 = Title.create("進撃の巨人");
-        title1.setId(1L);
-        title1.setCreatedAt(now);
-        title1.setUpdatedAt(now);
+        Title title1 = new Title(1L, "進撃の巨人", new java.util.LinkedHashSet<>(),
+                                new java.util.ArrayList<>(), now, now);
 
         List<Title> titles = Arrays.asList(title1);
         when(titleRepository.search(null, WatchStatus.UNWATCHED)).thenReturn(titles);
@@ -88,10 +81,8 @@ class SearchTitlesUseCaseTest {
     void shouldFilterByQueryAndWatchStatus() {
         // Given
         LocalDateTime now = LocalDateTime.now();
-        Title title1 = Title.create("進撃の巨人");
-        title1.setId(1L);
-        title1.setCreatedAt(now);
-        title1.setUpdatedAt(now);
+        Title title1 = new Title(1L, "進撃の巨人", new java.util.LinkedHashSet<>(),
+                                new java.util.ArrayList<>(), now, now);
 
         List<Title> titles = Arrays.asList(title1);
         when(titleRepository.search("進撃", WatchStatus.WATCHED)).thenReturn(titles);
@@ -122,15 +113,10 @@ class SearchTitlesUseCaseTest {
     void shouldReturnAllTitlesWhenBothParametersAreNull() {
         // Given
         LocalDateTime now = LocalDateTime.now();
-        Title title1 = Title.create("進撃の巨人");
-        title1.setId(1L);
-        title1.setCreatedAt(now);
-        title1.setUpdatedAt(now);
-
-        Title title2 = Title.create("鬼滅の刃");
-        title2.setId(2L);
-        title2.setCreatedAt(now);
-        title2.setUpdatedAt(now);
+        Title title1 = new Title(1L, "進撃の巨人", new java.util.LinkedHashSet<>(),
+                                new java.util.ArrayList<>(), now, now);
+        Title title2 = new Title(2L, "鬼滅の刃", new java.util.LinkedHashSet<>(),
+                                new java.util.ArrayList<>(), now, now);
 
         List<Title> titles = Arrays.asList(title1, title2);
         when(titleRepository.search(null, null)).thenReturn(titles);
@@ -147,15 +133,10 @@ class SearchTitlesUseCaseTest {
     void shouldReturnMultipleResults() {
         // Given
         LocalDateTime now = LocalDateTime.now();
-        Title title1 = Title.create("進撃の巨人 Season 1");
-        title1.setId(1L);
-        title1.setCreatedAt(now);
-        title1.setUpdatedAt(now);
-
-        Title title2 = Title.create("進撃の巨人 Season 2");
-        title2.setId(2L);
-        title2.setCreatedAt(now);
-        title2.setUpdatedAt(now);
+        Title title1 = new Title(1L, "進撃の巨人 Season 1", new java.util.LinkedHashSet<>(),
+                                new java.util.ArrayList<>(), now, now);
+        Title title2 = new Title(2L, "進撃の巨人 Season 2", new java.util.LinkedHashSet<>(),
+                                new java.util.ArrayList<>(), now, now);
 
         List<Title> titles = Arrays.asList(title1, title2);
         when(titleRepository.search("進撃", null)).thenReturn(titles);
@@ -174,10 +155,8 @@ class SearchTitlesUseCaseTest {
     void shouldSearchCaseInsensitively() {
         // Given
         LocalDateTime now = LocalDateTime.now();
-        Title title1 = Title.create("進撃の巨人");
-        title1.setId(1L);
-        title1.setCreatedAt(now);
-        title1.setUpdatedAt(now);
+        Title title1 = new Title(1L, "進撃の巨人", new java.util.LinkedHashSet<>(),
+                                new java.util.ArrayList<>(), now, now);
 
         List<Title> titles = Arrays.asList(title1);
         // Repository側で大文字小文字区別なし処理するはず

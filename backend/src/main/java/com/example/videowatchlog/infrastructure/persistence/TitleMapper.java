@@ -1,7 +1,7 @@
 package com.example.videowatchlog.infrastructure.persistence;
 
-import com.example.videowatchlog.domain.model.Title;
 import com.example.videowatchlog.domain.model.WatchStatus;
+import com.example.videowatchlog.infrastructure.persistence.entity.TitleEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.Optional;
 /**
  * TitleMapper - MyBatis マッパーインターフェース
  *
- * Title エンティティの永続化操作を定義します
+ * TitleEntity の永続化操作を定義します
  */
 @Mapper
 public interface TitleMapper {
@@ -18,27 +18,27 @@ public interface TitleMapper {
     /**
      * IDでタイトルを検索します
      * @param id タイトルID
-     * @return タイトル（存在しない場合はEmpty）
+     * @return タイトルエンティティ（存在しない場合はEmpty）
      */
-    Optional<Title> findById(@Param("id") Long id);
+    Optional<TitleEntity> findById(@Param("id") Long id);
 
     /**
      * すべてのタイトルを取得します
-     * @return タイトルリスト
+     * @return タイトルエンティティリスト
      */
-    List<Title> findAll();
+    List<TitleEntity> findAll();
 
     /**
      * タイトルを挿入します
-     * @param title 挿入するタイトル（IDが自動設定される）
+     * @param titleEntity 挿入するタイトルエンティティ（IDが自動設定される）
      */
-    void insert(Title title);
+    void insert(TitleEntity titleEntity);
 
     /**
      * タイトルを更新します
-     * @param title 更新するタイトル
+     * @param titleEntity 更新するタイトルエンティティ
      */
-    void update(Title title);
+    void update(TitleEntity titleEntity);
 
     /**
      * タイトルを削除します（カスケード削除）
@@ -57,7 +57,14 @@ public interface TitleMapper {
      * タイトルを検索します
      * @param query 検索クエリ (null の場合は条件なし)
      * @param watchStatus 視聴状態でのフィルタリング (null の場合は条件なし)
-     * @return 条件にマッチしたタイトルリスト
+     * @return 条件にマッチしたタイトルエンティティリスト
      */
-    List<Title> search(@Param("query") String query, @Param("watchStatus") WatchStatus watchStatus);
+    List<TitleEntity> search(@Param("query") String query, @Param("watchStatus") WatchStatus watchStatus);
+
+    /**
+     * タイトルIDでタイトル情報URLを取得します
+     * @param titleId タイトルID
+     * @return タイトル情報URLのリスト
+     */
+    List<com.example.videowatchlog.domain.model.TitleInfoUrl> selectTitleInfoUrlsByTitleId(@Param("id") Long titleId);
 }

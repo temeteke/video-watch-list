@@ -1,6 +1,6 @@
 package com.example.videowatchlog.infrastructure.persistence;
 
-import com.example.videowatchlog.domain.model.ViewingRecord;
+import com.example.videowatchlog.infrastructure.persistence.entity.ViewingRecordEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import java.util.List;
@@ -15,17 +15,17 @@ public interface ViewingRecordMapper {
     /**
      * IDで視聴履歴を検索します
      */
-    Optional<ViewingRecord> findById(@Param("id") Long id);
+    Optional<ViewingRecordEntity> findById(@Param("id") Long id);
 
     /**
      * エピソードIDで視聴履歴を検索します（新しい順）
      */
-    List<ViewingRecord> findByEpisodeId(@Param("episodeId") Long episodeId);
+    List<ViewingRecordEntity> findByEpisodeId(@Param("episodeId") Long episodeId);
 
     /**
      * 視聴履歴を挿入します（IDが自動設定される）
      */
-    void insert(ViewingRecord viewingRecord);
+    void insert(ViewingRecordEntity viewingRecordEntity);
 
     /**
      * 視聴履歴を削除します

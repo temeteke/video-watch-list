@@ -5,14 +5,12 @@
 <mapper namespace="com.example.videowatchlog.infrastructure.persistence.TitleMapper">
 
     <!-- Result Maps -->
-    <resultMap id="titleMap" type="com.example.videowatchlog.domain.model.Title">
+    <resultMap id="titleEntityMap" type="com.example.videowatchlog.infrastructure.persistence.entity.TitleEntity">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
-        <collection property="titleInfoUrls" ofType="com.example.videowatchlog.domain.model.TitleInfoUrl"
-                    select="selectTitleInfoUrlsByTitleId" column="id"/>
-        <!-- Series collection is loaded separately via SeriesRepository when needed -->
+        <!-- TitleInfoUrls and Series collections are loaded separately in RepositoryImpl -->
     </resultMap>
 
     <resultMap id="titleInfoUrlMap" type="com.example.videowatchlog.domain.model.TitleInfoUrl">
@@ -22,28 +20,28 @@
     </resultMap>
 
     <!-- Find By ID -->
-    <select id="findById" resultMap="titleMap">
+    <select id="findById" resultMap="titleEntityMap">
         SELECT id, name, created_at, updated_at
         FROM titles
         WHERE id = #{id}
     </select>
 
     <!-- Find All -->
-    <select id="findAll" resultMap="titleMap">
+    <select id="findAll" resultMap="titleEntityMap">
         SELECT id, name, created_at, updated_at
         FROM titles
         ORDER BY created_at DESC
     </select>
 
     <!-- Insert -->
-    <insert id="insert" parameterType="com.example.videowatchlog.domain.model.Title"
+    <insert id="insert" parameterType="com.example.videowatchlog.infrastructure.persistence.entity.TitleEntity"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO titles (name, created_at, updated_at)
         VALUES (#{name}, #{createdAt}, #{updatedAt})
     </insert>
 
     <!-- Update -->
-    <update id="update" parameterType="com.example.videowatchlog.domain.model.Title">
+    <update id="update" parameterType="com.example.videowatchlog.infrastructure.persistence.entity.TitleEntity">
         UPDATE titles
         SET name = #{name},
             updated_at = #{updatedAt}
@@ -66,7 +64,7 @@
     <!-- DISTINCT を使用してタイトルの重複を排除（複数エピソードがある場合） -->
     <!-- WHERE 句で early filter を実施してパフォーマンスを最適化 -->
     <!-- インデックス: titles.name, episodes.watch_status 推奨 -->
-    <select id="search" resultMap="titleMap">
+    <select id="search" resultMap="titleEntityMap">
         SELECT DISTINCT t.id, t.name, t.created_at, t.updated_at
         FROM titles t
         INNER JOIN series s ON t.id = s.title_id

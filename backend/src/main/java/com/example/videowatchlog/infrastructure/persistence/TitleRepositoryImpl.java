@@ -29,42 +29,79 @@ public class TitleRepositoryImpl implements TitleRepository {
 
     @Override
     public Optional<Title> findById(Long id) {
-        Optional<Title> title = titleMapper.findById(id);
-        if (title.isPresent()) {
-            List<Series> series = seriesMapper.findByTitleId(id);
-            title.get().setSeries(series);
+        Optional<com.example.videowatchlog.infrastructure.persistence.entity.TitleEntity> entityOpt = titleMapper.findById(id);
+        if (entityOpt.isEmpty()) {
+            return Optional.empty();
         }
-        return title;
+
+        // Load TitleInfoUrls
+        List<com.example.videowatchlog.domain.model.TitleInfoUrl> titleInfoUrlsList = titleMapper.selectTitleInfoUrlsByTitleId(id);
+        java.util.Set<com.example.videowatchlog.domain.model.TitleInfoUrl> titleInfoUrls = new java.util.LinkedHashSet<>(titleInfoUrlsList);
+
+        // Load Series (convert SeriesEntity -> Series)
+        List<com.example.videowatchlog.infrastructure.persistence.entity.SeriesEntity> seriesEntities = seriesMapper.findByTitleId(id);
+        List<Series> series = seriesEntities.stream()
+                .map(se -> se.toDomain(new java.util.ArrayList<>()))
+                .toList();
+
+        return Optional.of(entityOpt.get().toDomain(titleInfoUrls, series));
     }
 
     @Override
     public List<Title> findAll() {
-        List<Title> titles = titleMapper.findAll();
-        for (Title title : titles) {
-            List<Series> series = seriesMapper.findByTitleId(title.getId());
-            title.setSeries(series);
-        }
-        return titles;
+        List<com.example.videowatchlog.infrastructure.persistence.entity.TitleEntity> entities = titleMapper.findAll();
+        return entities.stream()
+                .map(entity -> {
+                    // Load TitleInfoUrls
+                    List<com.example.videowatchlog.domain.model.TitleInfoUrl> titleInfoUrlsList = titleMapper.selectTitleInfoUrlsByTitleId(entity.getId());
+                    java.util.Set<com.example.videowatchlog.domain.model.TitleInfoUrl> titleInfoUrls = new java.util.LinkedHashSet<>(titleInfoUrlsList);
+
+                    // Load Series (convert SeriesEntity -> Series)
+                    List<com.example.videowatchlog.infrastructure.persistence.entity.SeriesEntity> seriesEntities = seriesMapper.findByTitleId(entity.getId());
+                    List<Series> series = seriesEntities.stream()
+                            .map(se -> se.toDomain(new java.util.ArrayList<>()))
+                            .toList();
+
+                    return entity.toDomain(titleInfoUrls, series);
+                })
+                .toList();
     }
 
     @Override
     @Transactional
     public Title save(Title title) {
         if (title.getId() == null) {
-            // 1. Titleを挿入（IDが自動設定される）
-            titleMapper.insert(title);
+            // 1. Title -> TitleEntity に変換して挿入（IDが自動設定される）
+            com.example.videowatchlog.infrastructure.persistence.entity.TitleEntity entity =
+                    com.example.videowatchlog.infrastructure.persistence.entity.TitleEntity.fromDomain(title);
+            titleMapper.insert(entity);
 
             // 2. デフォルトSeriesを作成して挿入
-            Series defaultSeries = Series.createDefault(title.getId());
-            seriesMapper.insert(defaultSeries);
+            Series defaultSeries = Series.createDefault(entity.getId());
+            com.example.videowatchlog.infrastructure.persistence.entity.SeriesEntity seriesEntity =
+                    com.example.videowatchlog.infrastructure.persistence.entity.SeriesEntity.fromDomain(defaultSeries);
+            seriesMapper.insert(seriesEntity);
 
-            // 3. デフォルトEpisodeを作成して挿入
-            Episode defaultEpisode = Episode.createDefault(defaultSeries.getId());
-            episodeMapper.insert(defaultEpisode);
+            // 3. デフォルトEpisodeを作成して挿入（SeriesEntityのIDを使用）
+            Episode defaultEpisode = Episode.createDefault(seriesEntity.getId());
+            com.example.videowatchlog.infrastructure.persistence.entity.EpisodeEntity episodeEntity =
+                    com.example.videowatchlog.infrastructure.persistence.entity.EpisodeEntity.fromDomain(defaultEpisode);
+            episodeMapper.insert(episodeEntity);
 
-            return title;
+            // 4. IDが設定された新しいTitleインスタンスを返す（不変なため新規作成）
+            return new Title(
+                    entity.getId(),
+                    title.getName(),
+                    title.getTitleInfoUrls(),
+                    title.getSeries(),
+                    title.getCreatedAt(),
+                    title.getUpdatedAt()
+            );
         } else {
-            titleMapper.update(title);
+            // Title -> TitleEntity に変換して更新
+            com.example.videowatchlog.infrastructure.persistence.entity.TitleEntity entity =
+                    com.example.videowatchlog.infrastructure.persistence.entity.TitleEntity.fromDomain(title);
+            titleMapper.update(entity);
             return title;
         }
     }
@@ -81,11 +118,21 @@ public class TitleRepositoryImpl implements TitleRepository {
 
     @Override
     public List<Title> search(String query, WatchStatus watchStatus) {
-        List<Title> titles = titleMapper.search(query, watchStatus);
-        for (Title title : titles) {
-            List<Series> series = seriesMapper.findByTitleId(title.getId());
-            title.setSeries(series);
-        }
-        return titles;
+        List<com.example.videowatchlog.infrastructure.persistence.entity.TitleEntity> entities = titleMapper.search(query, watchStatus);
+        return entities.stream()
+                .map(entity -> {
+                    // Load TitleInfoUrls
+                    List<com.example.videowatchlog.domain.model.TitleInfoUrl> titleInfoUrlsList = titleMapper.selectTitleInfoUrlsByTitleId(entity.getId());
+                    java.util.Set<com.example.videowatchlog.domain.model.TitleInfoUrl> titleInfoUrls = new java.util.LinkedHashSet<>(titleInfoUrlsList);
+
+                    // Load Series (convert SeriesEntity -> Series)
+                    List<com.example.videowatchlog.infrastructure.persistence.entity.SeriesEntity> seriesEntities = seriesMapper.findByTitleId(entity.getId());
+                    List<Series> series = seriesEntities.stream()
+                            .map(se -> se.toDomain(new java.util.ArrayList<>()))
+                            .toList();
+
+                    return entity.toDomain(titleInfoUrls, series);
+                })
+                .toList();
     }
 }

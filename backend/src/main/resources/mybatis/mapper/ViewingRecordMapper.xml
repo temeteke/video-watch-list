@@ -4,7 +4,7 @@
 
 <mapper namespace="com.example.videowatchlog.infrastructure.persistence.ViewingRecordMapper">
 
-    <resultMap id="viewingRecordMap" type="com.example.videowatchlog.domain.model.ViewingRecord">
+    <resultMap id="viewingRecordEntityMap" type="com.example.videowatchlog.infrastructure.persistence.entity.ViewingRecordEntity">
         <id property="id" column="id"/>
         <result property="episodeId" column="episode_id"/>
         <result property="watchedAt" column="watched_at"/>
@@ -13,22 +13,22 @@
         <result property="recordedAt" column="recorded_at"/>
     </resultMap>
 
-    <select id="findById" resultMap="viewingRecordMap">
-        SELECT id, episode_id, watched_at, rating, comment, created_at as recorded_at
+    <select id="findById" resultMap="viewingRecordEntityMap">
+        SELECT id, episode_id, watched_at, rating, comment, recorded_at
         FROM viewing_records
         WHERE id = #{id}
     </select>
 
-    <select id="findByEpisodeId" resultMap="viewingRecordMap">
-        SELECT id, episode_id, watched_at, rating, comment, created_at as recorded_at
+    <select id="findByEpisodeId" resultMap="viewingRecordEntityMap">
+        SELECT id, episode_id, watched_at, rating, comment, recorded_at
         FROM viewing_records
         WHERE episode_id = #{episodeId}
         ORDER BY recorded_at DESC
     </select>
 
-    <insert id="insert" parameterType="com.example.videowatchlog.domain.model.ViewingRecord"
+    <insert id="insert" parameterType="com.example.videowatchlog.infrastructure.persistence.entity.ViewingRecordEntity"
             useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO viewing_records (episode_id, watched_at, rating, comment, created_at)
+        INSERT INTO viewing_records (episode_id, watched_at, rating, comment, recorded_at)
         VALUES (#{episodeId}, #{watchedAt}, #{rating}, #{comment}, #{recordedAt})
     </insert>
 

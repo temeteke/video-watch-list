@@ -1,12 +1,14 @@
 package com.example.videowatchlog.infrastructure.persistence;
 
 import com.example.videowatchlog.domain.model.Title;
-import com.example.videowatchlog.domain.model.WatchStatus;
+import com.example.videowatchlog.infrastructure.persistence.entity.TitleEntity;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,15 +27,25 @@ class TitleMapperTest {
     @Autowired
     private TitleMapper titleMapper;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void cleanDatabase() {
+        // Clean up test data from previous runs
+        jdbcTemplate.execute("TRUNCATE TABLE viewing_records, episodes, series, title_info_urls, titles RESTART IDENTITY CASCADE");
+    }
+
     @Test
     @DisplayName("タイトルを保存し、IDで検索できる")
     void shouldSaveAndFindTitle() {
         // Given
         Title title = Title.create("進撃の巨人");
+        TitleEntity entity = TitleEntity.fromDomain(title);
 
         // When
-        titleMapper.insert(title);
-        Optional<Title> found = titleMapper.findById(title.getId());
+        titleMapper.insert(entity);
+        Optional<TitleEntity> found = titleMapper.findById(entity.getId());
 
         // Then
         assertThat(found).isPresent();
@@ -46,14 +58,16 @@ class TitleMapperTest {
         // Given
         Title title1 = Title.create("進撃の巨人");
         Title title2 = Title.create("鬼滅の刃");
-        titleMapper.insert(title1);
-        titleMapper.insert(title2);
+        TitleEntity entity1 = TitleEntity.fromDomain(title1);
+        TitleEntity entity2 = TitleEntity.fromDomain(title2);
+        titleMapper.insert(entity1);
+        titleMapper.insert(entity2);
 
         // When
-        List<Title> titles = titleMapper.findAll();
+        List<TitleEntity> entities = titleMapper.findAll();
 
         // Then
-        assertThat(titles).hasSize(2);
+        assertThat(entities).hasSize(2);
     }
 
     @Test
@@ -61,7 +75,8 @@ class TitleMapperTest {
     void shouldCheckExistenceByName() {
         // Given
         Title title = Title.create("進撃の巨人");
-        titleMapper.insert(title);
+        TitleEntity entity = TitleEntity.fromDomain(title);
+        titleMapper.insert(entity);
 
         // When
         boolean exists = titleMapper.existsByName("進撃の巨人");
@@ -75,11 +90,12 @@ class TitleMapperTest {
     void shouldDeleteTitle() {
         // Given
         Title title = Title.create("進撃の巨人");
-        titleMapper.insert(title);
+        TitleEntity entity = TitleEntity.fromDomain(title);
+        titleMapper.insert(entity);
 
         // When
-        titleMapper.delete(title.getId());
-        Optional<Title> found = titleMapper.findById(title.getId());
+        titleMapper.delete(entity.getId());
+        Optional<TitleEntity> found = titleMapper.findById(entity.getId());
 
         // Then
         assertThat(found).isEmpty();

@@ -1,6 +1,6 @@
 package com.example.videowatchlog.infrastructure.persistence;
 
-import com.example.videowatchlog.domain.model.Series;
+import com.example.videowatchlog.infrastructure.persistence.entity.SeriesEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import java.util.List;
@@ -15,22 +15,22 @@ public interface SeriesMapper {
     /**
      * IDでシリーズを検索します
      */
-    Optional<Series> findById(@Param("id") Long id);
+    Optional<SeriesEntity> findById(@Param("id") Long id);
 
     /**
      * タイトルIDでシリーズを検索します
      */
-    List<Series> findByTitleId(@Param("titleId") Long titleId);
+    List<SeriesEntity> findByTitleId(@Param("titleId") Long titleId);
 
     /**
      * シリーズを挿入します（IDが自動設定される）
      */
-    void insert(Series series);
+    void insert(SeriesEntity seriesEntity);
 
     /**
      * シリーズを更新します
      */
-    void update(Series series);
+    void update(SeriesEntity seriesEntity);
 
     /**
      * シリーズを削除します

@@ -8,22 +8,23 @@ import java.util.Set;
 
 /**
  * タイトル エンティティ（集約ルート）
- * 
+ *
  * ドラマ・アニメ・映画作品全体を表します。
  * 内部的には必ず1件以上のシリーズを持ちます。
  */
 public class Title {
-    private Long id;
+    private final Long id;
     private String name;
     private Set<TitleInfoUrl> titleInfoUrls;
     private List<Series> series;
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     /**
      * プライベートコンストラクタ（DDD: 集約ルートの完全性を保証するため）
      */
     private Title(String name, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = null;  // 新規作成時はnull
         this.name = name;
         this.titleInfoUrls = new LinkedHashSet<>();
         this.series = new ArrayList<>();
@@ -33,13 +34,28 @@ public class Title {
     }
 
     /**
-     * MyBatis用デフォルトコンストラクタ（パッケージプライベート）
-     * リフレクションによるインスタンス化のために使用されます
+     * Public constructor for creating Title instances.
+     * Used by persistence layer (Entity conversion).
+     *
+     * @param id Unique identifier (null for new entities)
+     * @param name Title name (1-200 characters)
+     * @param titleInfoUrls Set of title info URLs
+     * @param series List of series
+     * @param createdAt Creation timestamp
+     * @param updatedAt Last update timestamp
+     * @throws IllegalArgumentException if validation fails
      */
-    Title() {
-        this.titleInfoUrls = new LinkedHashSet<>();
-        this.series = new ArrayList<>();
+    public Title(Long id, String name, Set<TitleInfoUrl> titleInfoUrls, List<Series> series,
+                 LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        validateName(name);
+        this.name = name;
+        this.titleInfoUrls = titleInfoUrls != null ? new LinkedHashSet<>(titleInfoUrls) : new LinkedHashSet<>();
+        this.series = series != null ? new ArrayList<>(series) : new ArrayList<>();
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
+
 
     /**
      * タイトルを作成します（ファクトリメソッド）
@@ -126,24 +142,4 @@ public class Title {
         return updatedAt;
     }
 
-    // Setters (for persistence)
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setTitleInfoUrls(Set<TitleInfoUrl> titleInfoUrls) {
-        this.titleInfoUrls = titleInfoUrls != null ? titleInfoUrls : new LinkedHashSet<>();
-    }
-
-    public void setSeries(List<Series> series) {
-        this.series = series != null ? series : new ArrayList<>();
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 }

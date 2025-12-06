@@ -36,8 +36,9 @@ class CreateTitleUseCaseTest {
         when(duplicationCheckService.isDuplicate("進撃の巨人")).thenReturn(false);
         when(titleRepository.save(any(Title.class))).thenAnswer(invocation -> {
             Title title = invocation.getArgument(0);
-            title.setId(1L);
-            return title;
+            // 不変なため、IDが設定された新しいインスタンスを返す
+            return new Title(1L, title.getName(), title.getTitleInfoUrls(), title.getSeries(),
+                           title.getCreatedAt(), title.getUpdatedAt());
         });
 
         // When
@@ -72,8 +73,9 @@ class CreateTitleUseCaseTest {
         when(duplicationCheckService.isDuplicate("鬼滅の刃")).thenReturn(false);
         when(titleRepository.save(any(Title.class))).thenAnswer(invocation -> {
             Title title = invocation.getArgument(0);
-            title.setId(1L);
-            return title;
+            // 不変なため、IDが設定された新しいインスタンスを返す
+            return new Title(1L, title.getName(), title.getTitleInfoUrls(), title.getSeries(),
+                           title.getCreatedAt(), title.getUpdatedAt());
         });
 
         // When

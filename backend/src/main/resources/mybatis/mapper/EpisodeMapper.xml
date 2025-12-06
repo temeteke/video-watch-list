@@ -4,39 +4,35 @@
 
 <mapper namespace="com.example.videowatchlog.infrastructure.persistence.EpisodeMapper">
 
-    <resultMap id="episodeMap" type="com.example.videowatchlog.domain.model.Episode">
+    <resultMap id="episodeEntityMap" type="com.example.videowatchlog.infrastructure.persistence.entity.EpisodeEntity">
         <id property="id" column="id"/>
         <result property="seriesId" column="series_id"/>
         <result property="episodeInfo" column="episode_info"/>
         <result property="watchStatus" column="watch_status"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
-        <collection property="watchPageUrls" ofType="com.example.videowatchlog.domain.model.WatchPageUrl"
-                    select="selectWatchPageUrlsByEpisodeId" column="id"/>
-        <collection property="viewingRecords" ofType="com.example.videowatchlog.domain.model.ViewingRecord"
-                    select="selectViewingRecordsByEpisodeId" column="id"/>
     </resultMap>
 
-    <select id="findById" resultMap="episodeMap">
+    <select id="findById" resultMap="episodeEntityMap">
         SELECT id, series_id, episode_info, watch_status, created_at, updated_at
         FROM episodes
         WHERE id = #{id}
     </select>
 
-    <select id="findBySeriesId" resultMap="episodeMap">
+    <select id="findBySeriesId" resultMap="episodeEntityMap">
         SELECT id, series_id, episode_info, watch_status, created_at, updated_at
         FROM episodes
         WHERE series_id = #{seriesId}
         ORDER BY id
     </select>
 
-    <insert id="insert" parameterType="com.example.videowatchlog.domain.model.Episode"
+    <insert id="insert" parameterType="com.example.videowatchlog.infrastructure.persistence.entity.EpisodeEntity"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO episodes (series_id, episode_info, watch_status, created_at, updated_at)
         VALUES (#{seriesId}, #{episodeInfo}, CAST(#{watchStatus} AS watch_status), #{createdAt}, #{updatedAt})
     </insert>
 
-    <update id="update" parameterType="com.example.videowatchlog.domain.model.Episode">
+    <update id="update" parameterType="com.example.videowatchlog.infrastructure.persistence.entity.EpisodeEntity">
         UPDATE episodes
         SET episode_info = #{episodeInfo},
             watch_status = CAST(#{watchStatus} AS watch_status),
@@ -61,5 +57,14 @@
         WHERE episode_id = #{id}
         ORDER BY recorded_at DESC
     </select>
+
+    <insert id="insertWatchPageUrl">
+        INSERT INTO watch_page_urls (episode_id, url)
+        VALUES (#{episodeId}, #{url})
+    </insert>
+
+    <delete id="deleteWatchPageUrlsByEpisodeId">
+        DELETE FROM watch_page_urls WHERE episode_id = #{episodeId}
+    </delete>
 
 </mapper>
