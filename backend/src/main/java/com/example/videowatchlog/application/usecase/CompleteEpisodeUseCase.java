@@ -4,7 +4,7 @@ import com.example.videowatchlog.domain.model.Episode;
 import com.example.videowatchlog.domain.model.ViewingRecord;
 import com.example.videowatchlog.domain.model.WatchStatus;
 import com.example.videowatchlog.domain.repository.EpisodeRepository;
-import com.example.videowatchlog.domain.service.EntityIdentityService;
+import com.example.videowatchlog.domain.service.ViewingRecordIdService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,11 +21,11 @@ import java.util.Objects;
  */
 @Service
 public class CompleteEpisodeUseCase {
-    private final EntityIdentityService identityService;
+    private final ViewingRecordIdService viewingRecordIdService;
     private final EpisodeRepository episodeRepository;
 
-    public CompleteEpisodeUseCase(EntityIdentityService identityService, EpisodeRepository episodeRepository) {
-        this.identityService = Objects.requireNonNull(identityService, "identityService must not be null");
+    public CompleteEpisodeUseCase(ViewingRecordIdService viewingRecordIdService, EpisodeRepository episodeRepository) {
+        this.viewingRecordIdService = Objects.requireNonNull(viewingRecordIdService, "viewingRecordIdService must not be null");
         this.episodeRepository = Objects.requireNonNull(episodeRepository, "episodeRepository must not be null");
     }
 
@@ -55,7 +55,7 @@ public class CompleteEpisodeUseCase {
         }
 
         // Create viewing record (validation happens in ViewingRecord constructor)
-        Long id = identityService.generateId();
+        Long id = viewingRecordIdService.generateId();
         ViewingRecord viewingRecord = ViewingRecord.create(id, episodeId, watchedAt, rating, comment);
 
         // Update episode state

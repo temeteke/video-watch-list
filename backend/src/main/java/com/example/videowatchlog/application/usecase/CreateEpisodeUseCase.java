@@ -6,7 +6,7 @@ import com.example.videowatchlog.domain.model.Series;
 import com.example.videowatchlog.domain.model.WatchPageUrl;
 import com.example.videowatchlog.domain.repository.EpisodeRepository;
 import com.example.videowatchlog.domain.repository.SeriesRepository;
-import com.example.videowatchlog.domain.service.EntityIdentityService;
+import com.example.videowatchlog.domain.service.EpisodeIdService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,12 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class CreateEpisodeUseCase {
-    private final EntityIdentityService identityService;
+    private final EpisodeIdService episodeIdService;
     private final EpisodeRepository episodeRepository;
     private final SeriesRepository seriesRepository;
 
-    public CreateEpisodeUseCase(EntityIdentityService identityService, EpisodeRepository episodeRepository, SeriesRepository seriesRepository) {
-        this.identityService = identityService;
+    public CreateEpisodeUseCase(EpisodeIdService episodeIdService, EpisodeRepository episodeRepository, SeriesRepository seriesRepository) {
+        this.episodeIdService = episodeIdService;
         this.episodeRepository = episodeRepository;
         this.seriesRepository = seriesRepository;
     }
@@ -30,7 +30,7 @@ public class CreateEpisodeUseCase {
         Series series = seriesRepository.findById(seriesId)
                 .orElseThrow(() -> new IllegalArgumentException("シリーズが見つかりません"));
 
-        Long id = identityService.generateId();
+        Long id = episodeIdService.generateId();
         Episode episode = Episode.create(id, seriesId, request.getEpisodeInfo());
 
         if (request.getWatchPageUrls() != null && !request.getWatchPageUrls().isEmpty()) {

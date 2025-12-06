@@ -5,7 +5,6 @@ import com.example.videowatchlog.domain.model.Series;
 import com.example.videowatchlog.domain.model.Title;
 import com.example.videowatchlog.domain.model.WatchStatus;
 import com.example.videowatchlog.domain.repository.TitleRepository;
-import com.example.videowatchlog.domain.service.EntityIdentityService;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -18,13 +17,11 @@ import java.util.Optional;
  */
 @Repository
 public class TitleRepositoryImpl implements TitleRepository {
-    private final EntityIdentityService identityService;
     private final TitleMapper titleMapper;
     private final SeriesMapper seriesMapper;
     private final EpisodeMapper episodeMapper;
 
-    public TitleRepositoryImpl(EntityIdentityService identityService, TitleMapper titleMapper, SeriesMapper seriesMapper, EpisodeMapper episodeMapper) {
-        this.identityService = identityService;
+    public TitleRepositoryImpl(TitleMapper titleMapper, SeriesMapper seriesMapper, EpisodeMapper episodeMapper) {
         this.titleMapper = titleMapper;
         this.seriesMapper = seriesMapper;
         this.episodeMapper = episodeMapper;

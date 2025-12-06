@@ -5,7 +5,10 @@ import com.example.videowatchlog.domain.model.Series;
 import com.example.videowatchlog.domain.model.Title;
 import com.example.videowatchlog.domain.model.ViewingRecord;
 import com.example.videowatchlog.domain.model.WatchStatus;
-import com.example.videowatchlog.domain.service.EntityIdentityService;
+import com.example.videowatchlog.domain.service.TitleIdService;
+import com.example.videowatchlog.domain.service.SeriesIdService;
+import com.example.videowatchlog.domain.service.EpisodeIdService;
+import com.example.videowatchlog.domain.service.ViewingRecordIdService;
 import com.example.videowatchlog.application.dto.ViewingRecordRequestDTO;
 import com.example.videowatchlog.infrastructure.persistence.EpisodeRepositoryImpl;
 import com.example.videowatchlog.infrastructure.persistence.SeriesRepositoryImpl;
@@ -43,7 +46,16 @@ class ViewingRecordControllerIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private EntityIdentityService identityService;
+    private TitleIdService titleIdService;
+
+    @Autowired
+    private SeriesIdService seriesIdService;
+
+    @Autowired
+    private EpisodeIdService episodeIdService;
+
+    @Autowired
+    private ViewingRecordIdService viewingRecordIdService;
 
     @Autowired
     private TitleRepositoryImpl titleRepository;
@@ -61,15 +73,15 @@ class ViewingRecordControllerIntegrationTest {
     @BeforeEach
     void setUp() {
         // Create test data: Title → Series → Episode
-        Long titleId = identityService.generateId();
+        Long titleId = titleIdService.generateId();
         testTitle = Title.create(titleId, "Test Drama");
         testTitle = titleRepository.save(testTitle);
 
-        Long seriesId = identityService.generateId();
+        Long seriesId = seriesIdService.generateId();
         testSeries = Series.create(seriesId, testTitle.getId(), "Season 1");
         testSeries = seriesRepository.save(testSeries);
 
-        Long episodeId = identityService.generateId();
+        Long episodeId = episodeIdService.generateId();
         testEpisode = Episode.create(episodeId, testSeries.getId(), "Episode 1");
         testEpisode = episodeRepository.save(testEpisode);
     }
@@ -123,7 +135,7 @@ class ViewingRecordControllerIntegrationTest {
     void testDeleteViewingRecord() throws Exception {
         // Arrange: Create episode with viewing record
         testEpisode.markAsWatched();
-        Long recordId = identityService.generateId();
+        Long recordId = viewingRecordIdService.generateId();
         ViewingRecord record = ViewingRecord.create(recordId, testEpisode.getId(), LocalDateTime.now().minusHours(1), 4, "Good");
         testEpisode.addViewingRecord(record);
         testEpisode = episodeRepository.save(testEpisode);

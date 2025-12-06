@@ -5,7 +5,7 @@ import com.example.videowatchlog.application.dto.TitleSummaryDTO;
 import com.example.videowatchlog.domain.model.Title;
 import com.example.videowatchlog.domain.model.TitleInfoUrl;
 import com.example.videowatchlog.domain.repository.TitleRepository;
-import com.example.videowatchlog.domain.service.EntityIdentityService;
+import com.example.videowatchlog.domain.service.TitleIdService;
 import com.example.videowatchlog.domain.service.TitleDuplicationCheckService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,15 +17,15 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class CreateTitleUseCase {
-    private final EntityIdentityService identityService;
+    private final TitleIdService titleIdService;
     private final TitleRepository titleRepository;
     private final TitleDuplicationCheckService duplicationCheckService;
 
     public CreateTitleUseCase(
-            EntityIdentityService identityService,
+            TitleIdService titleIdService,
             TitleRepository titleRepository,
             TitleDuplicationCheckService duplicationCheckService) {
-        this.identityService = identityService;
+        this.titleIdService = titleIdService;
         this.titleRepository = titleRepository;
         this.duplicationCheckService = duplicationCheckService;
     }
@@ -45,7 +45,7 @@ public class CreateTitleUseCase {
         }
 
         // ID採番（ドメインサービス）
-        Long id = identityService.generateId();
+        Long id = titleIdService.generateId();
 
         // タイトルを作成（デフォルトシリーズ・エピソードが自動生成される）
         Title title = Title.create(id, request.getName());

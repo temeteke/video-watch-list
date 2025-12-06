@@ -4,7 +4,7 @@ import com.example.videowatchlog.domain.model.Episode;
 import com.example.videowatchlog.domain.model.ViewingRecord;
 import com.example.videowatchlog.domain.model.WatchStatus;
 import com.example.videowatchlog.domain.repository.EpisodeRepository;
-import com.example.videowatchlog.domain.service.EntityIdentityService;
+import com.example.videowatchlog.domain.service.ViewingRecordIdService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 @DisplayName("CompleteEpisodeUseCase")
 class CompleteEpisodeUseCaseTest {
     @Mock
-    private EntityIdentityService identityService;
+    private ViewingRecordIdService viewingRecordIdService;
 
     @Mock
     private EpisodeRepository episodeRepository;
@@ -34,7 +34,7 @@ class CompleteEpisodeUseCaseTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        useCase = new CompleteEpisodeUseCase(identityService, episodeRepository);
+        useCase = new CompleteEpisodeUseCase(viewingRecordIdService, episodeRepository);
     }
 
     @Test
@@ -50,7 +50,7 @@ class CompleteEpisodeUseCaseTest {
         Integer rating = 4;
         String comment = "Great episode!";
 
-        when(identityService.generateId()).thenReturn(1L);
+        when(viewingRecordIdService.generateId()).thenReturn(1L);
         when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
 
         // Act
@@ -104,7 +104,7 @@ class CompleteEpisodeUseCaseTest {
         Integer rating = 0; // Invalid: must be 1-5
         String comment = "Good episode";
 
-        when(identityService.generateId()).thenReturn(1L);
+        when(viewingRecordIdService.generateId()).thenReturn(1L);
         when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
 
         // Act & Assert
@@ -127,7 +127,7 @@ class CompleteEpisodeUseCaseTest {
         Integer rating = 6; // Invalid: must be 1-5
         String comment = "Good episode";
 
-        when(identityService.generateId()).thenReturn(1L);
+        when(viewingRecordIdService.generateId()).thenReturn(1L);
         when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
 
         // Act & Assert
@@ -150,7 +150,7 @@ class CompleteEpisodeUseCaseTest {
         Integer rating = 4;
         String comment = "Great episode!";
 
-        when(identityService.generateId()).thenReturn(1L);
+        when(viewingRecordIdService.generateId()).thenReturn(1L);
         when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
 
         // Act & Assert
@@ -173,7 +173,7 @@ class CompleteEpisodeUseCaseTest {
         Integer rating = 5;
         String comment = null;
 
-        when(identityService.generateId()).thenReturn(1L);
+        when(viewingRecordIdService.generateId()).thenReturn(1L);
         when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
 
         // Act

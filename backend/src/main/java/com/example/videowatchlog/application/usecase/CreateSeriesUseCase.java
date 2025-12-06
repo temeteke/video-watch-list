@@ -5,7 +5,7 @@ import com.example.videowatchlog.domain.model.Series;
 import com.example.videowatchlog.domain.model.Title;
 import com.example.videowatchlog.domain.repository.SeriesRepository;
 import com.example.videowatchlog.domain.repository.TitleRepository;
-import com.example.videowatchlog.domain.service.EntityIdentityService;
+import com.example.videowatchlog.domain.service.SeriesIdService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,12 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class CreateSeriesUseCase {
-    private final EntityIdentityService identityService;
+    private final SeriesIdService seriesIdService;
     private final SeriesRepository seriesRepository;
     private final TitleRepository titleRepository;
 
-    public CreateSeriesUseCase(EntityIdentityService identityService, SeriesRepository seriesRepository, TitleRepository titleRepository) {
-        this.identityService = identityService;
+    public CreateSeriesUseCase(SeriesIdService seriesIdService, SeriesRepository seriesRepository, TitleRepository titleRepository) {
+        this.seriesIdService = seriesIdService;
         this.seriesRepository = seriesRepository;
         this.titleRepository = titleRepository;
     }
@@ -29,7 +29,7 @@ public class CreateSeriesUseCase {
         Title title = titleRepository.findById(titleId)
                 .orElseThrow(() -> new IllegalArgumentException("タイトルが見つかりません"));
 
-        Long id = identityService.generateId();
+        Long id = seriesIdService.generateId();
         Series series = Series.create(id, titleId, request.getName());
         seriesRepository.save(series);
         title.getSeries().add(series);

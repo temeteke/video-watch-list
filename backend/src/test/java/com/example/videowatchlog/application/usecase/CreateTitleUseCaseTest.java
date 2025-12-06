@@ -4,7 +4,7 @@ import com.example.videowatchlog.application.dto.CreateTitleRequestDTO;
 import com.example.videowatchlog.application.dto.TitleSummaryDTO;
 import com.example.videowatchlog.domain.model.Title;
 import com.example.videowatchlog.domain.repository.TitleRepository;
-import com.example.videowatchlog.domain.service.EntityIdentityService;
+import com.example.videowatchlog.domain.service.TitleIdService;
 import com.example.videowatchlog.domain.service.TitleDuplicationCheckService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 class CreateTitleUseCaseTest {
 
     @Mock
-    private EntityIdentityService identityService;
+    private TitleIdService titleIdService;
 
     @Mock
     private TitleRepository titleRepository;
@@ -37,7 +37,7 @@ class CreateTitleUseCaseTest {
     void shouldCreateTitle() {
         // Given
         CreateTitleRequestDTO request = new CreateTitleRequestDTO("進撃の巨人", null);
-        when(identityService.generateId()).thenReturn(1L);
+        when(titleIdService.generateId()).thenReturn(1L);
         when(duplicationCheckService.isDuplicate("進撃の巨人")).thenReturn(false);
         when(titleRepository.save(any(Title.class))).thenAnswer(invocation -> {
             Title title = invocation.getArgument(0);
@@ -53,7 +53,7 @@ class CreateTitleUseCaseTest {
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getName()).isEqualTo("進撃の巨人");
-        verify(identityService, times(1)).generateId();
+        verify(titleIdService, times(1)).generateId();
         verify(duplicationCheckService, times(1)).isDuplicate("進撃の巨人");
         verify(titleRepository, times(1)).save(any(Title.class));
     }
@@ -69,7 +69,7 @@ class CreateTitleUseCaseTest {
         assertThatThrownBy(() -> useCase.execute(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("すでに存在します");
-        verify(identityService, never()).generateId();
+        verify(titleIdService, never()).generateId();
         verify(titleRepository, never()).save(any());
     }
 
@@ -78,7 +78,7 @@ class CreateTitleUseCaseTest {
     void shouldSaveTitle() {
         // Given
         CreateTitleRequestDTO request = new CreateTitleRequestDTO("鬼滅の刃", null);
-        when(identityService.generateId()).thenReturn(2L);
+        when(titleIdService.generateId()).thenReturn(2L);
         when(duplicationCheckService.isDuplicate("鬼滅の刃")).thenReturn(false);
         when(titleRepository.save(any(Title.class))).thenAnswer(invocation -> {
             Title title = invocation.getArgument(0);
@@ -91,7 +91,7 @@ class CreateTitleUseCaseTest {
         useCase.execute(request);
 
         // Then
-        verify(identityService, times(1)).generateId();
+        verify(titleIdService, times(1)).generateId();
         verify(titleRepository, times(1)).save(argThat(title ->
                 title.getId().equals(2L) && title.getName().equals("鬼滅の刃")
         ));
