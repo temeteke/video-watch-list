@@ -5,6 +5,7 @@ import com.example.videowatchlog.domain.model.Series;
 import com.example.videowatchlog.domain.model.Title;
 import com.example.videowatchlog.domain.model.WatchStatus;
 import com.example.videowatchlog.domain.repository.TitleRepository;
+import com.example.videowatchlog.domain.service.EntityIdentityService;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -17,11 +18,13 @@ import java.util.Optional;
  */
 @Repository
 public class TitleRepositoryImpl implements TitleRepository {
+    private final EntityIdentityService identityService;
     private final TitleMapper titleMapper;
     private final SeriesMapper seriesMapper;
     private final EpisodeMapper episodeMapper;
 
-    public TitleRepositoryImpl(TitleMapper titleMapper, SeriesMapper seriesMapper, EpisodeMapper episodeMapper) {
+    public TitleRepositoryImpl(EntityIdentityService identityService, TitleMapper titleMapper, SeriesMapper seriesMapper, EpisodeMapper episodeMapper) {
+        this.identityService = identityService;
         this.titleMapper = titleMapper;
         this.seriesMapper = seriesMapper;
         this.episodeMapper = episodeMapper;
@@ -70,25 +73,16 @@ public class TitleRepositoryImpl implements TitleRepository {
     @Override
     @Transactional
     public Title save(Title title) {
-        if (title.getId() == null) {
-            // 1. Title -> TitleEntity に変換して挿入（IDが自動設定される）
+        // Check if title exists in database
+        boolean exists = titleMapper.findById(title.getId()).isPresent();
+
+        if (!exists) {
+            // 1. Title -> TitleEntity に変換して挿入
             com.example.videowatchlog.infrastructure.persistence.entity.TitleEntity entity =
                     com.example.videowatchlog.infrastructure.persistence.entity.TitleEntity.fromDomain(title);
             titleMapper.insert(entity);
 
-            // 2. デフォルトSeriesを作成して挿入
-            Series defaultSeries = Series.createDefault(entity.getId());
-            com.example.videowatchlog.infrastructure.persistence.entity.SeriesEntity seriesEntity =
-                    com.example.videowatchlog.infrastructure.persistence.entity.SeriesEntity.fromDomain(defaultSeries);
-            seriesMapper.insert(seriesEntity);
-
-            // 3. デフォルトEpisodeを作成して挿入（SeriesEntityのIDを使用）
-            Episode defaultEpisode = Episode.createDefault(seriesEntity.getId());
-            com.example.videowatchlog.infrastructure.persistence.entity.EpisodeEntity episodeEntity =
-                    com.example.videowatchlog.infrastructure.persistence.entity.EpisodeEntity.fromDomain(defaultEpisode);
-            episodeMapper.insert(episodeEntity);
-
-            // 4. IDが設定された新しいTitleインスタンスを返す（不変なため新規作成）
+            // 2. IDが設定された新しいTitleインスタンスを返す（不変なため新規作成）
             return new Title(
                     entity.getId(),
                     title.getName(),

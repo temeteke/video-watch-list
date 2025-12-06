@@ -39,9 +39,9 @@ class GetViewingRecordsUseCaseTest {
         Long episodeId = 1L;
 
         LocalDateTime now = LocalDateTime.now();
-        ViewingRecord record1 = ViewingRecord.create(episodeId, now.minusHours(3), 4, "First");
-        ViewingRecord record2 = ViewingRecord.create(episodeId, now.minusHours(2), 5, "Second");
-        ViewingRecord record3 = ViewingRecord.create(episodeId, now.minusHours(1), 3, "Third");
+        ViewingRecord record1 = ViewingRecord.create(1L, episodeId, now.minusHours(3), 4, "First");
+        ViewingRecord record2 = ViewingRecord.create(2L, episodeId, now.minusHours(2), 5, "Second");
+        ViewingRecord record3 = ViewingRecord.create(3L, episodeId, now.minusHours(1), 3, "Third");
 
         List<ViewingRecord> records = new ArrayList<>();
         records.add(record1);
@@ -85,7 +85,7 @@ class GetViewingRecordsUseCaseTest {
         // Arrange
         Long episodeId = 1L;
 
-        ViewingRecord record = ViewingRecord.create(episodeId, LocalDateTime.now().minusHours(1), 5, "Single");
+        ViewingRecord record = ViewingRecord.create(1L, episodeId, LocalDateTime.now().minusHours(1), 5, "Single");
 
         List<ViewingRecord> records = new ArrayList<>();
         records.add(record);
@@ -110,9 +110,9 @@ class GetViewingRecordsUseCaseTest {
         Long episodeId = 1L;
 
         LocalDateTime base = LocalDateTime.now();
-        ViewingRecord record1 = ViewingRecord.create(episodeId, base.minusHours(1), 3, "First");
-        ViewingRecord record2 = ViewingRecord.create(episodeId, base.minusHours(3), 4, "Third");
-        ViewingRecord record3 = ViewingRecord.create(episodeId, base.minusHours(2), 5, "Second");
+        ViewingRecord record1 = ViewingRecord.create(1L, episodeId, base.minusHours(1), 3, "First");
+        ViewingRecord record2 = ViewingRecord.create(2L, episodeId, base.minusHours(3), 4, "Third");
+        ViewingRecord record3 = ViewingRecord.create(3L, episodeId, base.minusHours(2), 5, "Second");
 
         List<ViewingRecord> unsortedRecords = new ArrayList<>();
         unsortedRecords.add(record1);

@@ -4,6 +4,7 @@ import com.example.videowatchlog.domain.model.Episode;
 import com.example.videowatchlog.domain.model.ViewingRecord;
 import com.example.videowatchlog.domain.model.WatchStatus;
 import com.example.videowatchlog.domain.repository.EpisodeRepository;
+import com.example.videowatchlog.domain.service.EntityIdentityService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +24,9 @@ import static org.mockito.Mockito.*;
 @DisplayName("AddViewingRecordUseCase")
 class AddViewingRecordUseCaseTest {
     @Mock
+    private EntityIdentityService identityService;
+
+    @Mock
     private EpisodeRepository episodeRepository;
 
     private AddViewingRecordUseCase useCase;
@@ -30,7 +34,7 @@ class AddViewingRecordUseCaseTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        useCase = new AddViewingRecordUseCase(episodeRepository);
+        useCase = new AddViewingRecordUseCase(identityService, episodeRepository);
     }
 
     @Test
@@ -38,13 +42,14 @@ class AddViewingRecordUseCaseTest {
     void testAddViewingRecordToWatchedEpisode() {
         // Arrange
         Long episodeId = 1L;
-        Episode episode = Episode.create(1L, "Episode 1");
+        Episode episode = Episode.create(1L, 1L, "Episode 1");
         episode.markAsWatched();
 
         LocalDateTime watchedAt = LocalDateTime.now().minusHours(1);
         Integer rating = 3;
         String comment = "Good episode";
 
+        when(identityService.generateId()).thenReturn(1L);
         when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
 
         // Act
@@ -69,7 +74,7 @@ class AddViewingRecordUseCaseTest {
     void testAddViewingRecordToUnwatchedEpisodeFails() {
         // Arrange
         Long episodeId = 1L;
-        Episode episode = Episode.create(1L, "Episode 1");
+        Episode episode = Episode.create(1L, 1L, "Episode 1");
         // episode is UNWATCHED by default
 
         LocalDateTime watchedAt = LocalDateTime.now().minusHours(1);
@@ -92,13 +97,14 @@ class AddViewingRecordUseCaseTest {
     void testInvalidRating() {
         // Arrange
         Long episodeId = 1L;
-        Episode episode = Episode.create(1L, "Episode 1");
+        Episode episode = Episode.create(1L, 1L, "Episode 1");
         episode.markAsWatched();
 
         LocalDateTime watchedAt = LocalDateTime.now().minusHours(1);
         Integer rating = 10; // Invalid
         String comment = "Good episode";
 
+        when(identityService.generateId()).thenReturn(1L);
         when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
 
         // Act & Assert
@@ -115,13 +121,14 @@ class AddViewingRecordUseCaseTest {
     void testFutureWatchedAt() {
         // Arrange
         Long episodeId = 1L;
-        Episode episode = Episode.create(1L, "Episode 1");
+        Episode episode = Episode.create(1L, 1L, "Episode 1");
         episode.markAsWatched();
 
         LocalDateTime watchedAt = LocalDateTime.now().plusHours(1); // Future
         Integer rating = 4;
         String comment = "Great episode";
 
+        when(identityService.generateId()).thenReturn(1L);
         when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
 
         // Act & Assert
@@ -138,13 +145,14 @@ class AddViewingRecordUseCaseTest {
     void testNullComment() {
         // Arrange
         Long episodeId = 1L;
-        Episode episode = Episode.create(1L, "Episode 1");
+        Episode episode = Episode.create(1L, 1L, "Episode 1");
         episode.markAsWatched();
 
         LocalDateTime watchedAt = LocalDateTime.now().minusHours(1);
         Integer rating = 5;
         String comment = null;
 
+        when(identityService.generateId()).thenReturn(1L);
         when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
 
         // Act

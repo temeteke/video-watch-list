@@ -50,23 +50,25 @@ public class Series {
      * Factory method to create a new Series.
      * Note: Episodes should be added separately after Series is persisted.
      *
+     * @param id Series ID (EntityIdentityServiceで生成)
      * @param titleId Parent title ID
      * @param name Series name
      * @return New Series without episodes
      */
-    public static Series create(Long titleId, String name) {
+    public static Series create(Long id, Long titleId, String name) {
         LocalDateTime now = LocalDateTime.now();
-        return new Series(null, titleId, name, null, now, now);
+        return new Series(id, titleId, name, null, now, now);
     }
 
     /**
      * Factory method to create a new default Series (with empty name) with initial default Episode.
      *
+     * @param id Series ID (EntityIdentityServiceで生成)
      * @param titleId Parent title ID
      * @return New Series with empty name and one default Episode
      */
-    public static Series createDefault(Long titleId) {
-        return create(titleId, "");
+    public static Series createDefault(Long id, Long titleId) {
+        return create(id, titleId, "");
     }
 
     /**

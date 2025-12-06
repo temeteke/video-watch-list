@@ -57,23 +57,25 @@ public class Episode {
     /**
      * Factory method to create a new Episode.
      *
+     * @param id Episode ID (EntityIdentityServiceで生成)
      * @param seriesId Parent series ID
      * @param episodeInfo Episode information
      * @return New Episode with UNWATCHED status
      */
-    public static Episode create(Long seriesId, String episodeInfo) {
+    public static Episode create(Long id, Long seriesId, String episodeInfo) {
         LocalDateTime now = LocalDateTime.now();
-        return new Episode(null, seriesId, episodeInfo, new ArrayList<>(), WatchStatus.UNWATCHED, new ArrayList<>(), now, now);
+        return new Episode(id, seriesId, episodeInfo, new ArrayList<>(), WatchStatus.UNWATCHED, new ArrayList<>(), now, now);
     }
 
     /**
      * Factory method to create a new default Episode (with empty episodeInfo).
      *
+     * @param id Episode ID (EntityIdentityServiceで生成)
      * @param seriesId Parent series ID
      * @return New Episode with empty episodeInfo and UNWATCHED status
      */
-    public static Episode createDefault(Long seriesId) {
-        return create(seriesId, "");
+    public static Episode createDefault(Long id, Long seriesId) {
+        return create(id, seriesId, "");
     }
 
     /**

@@ -19,11 +19,12 @@ class SeriesTest {
         @DisplayName("タイトルIDとシーズン名を指定してシリーズを作成できる")
         void shouldCreateSeriesWithName() {
             // Given
+            Long id = 1L;
             Long titleId = 1L;
             String seriesName = "Season 1";
 
             // When
-            Series series = Series.create(titleId, seriesName);
+            Series series = Series.create(id, titleId, seriesName);
 
             // Then
             assertThat(series).isNotNull();
@@ -38,10 +39,11 @@ class SeriesTest {
         @DisplayName("デフォルトシリーズ（空のシーズン名）を作成できる")
         void shouldCreateDefaultSeries() {
             // Given
+            Long id = 1L;
             Long titleId = 1L;
 
             // When
-            Series series = Series.createDefault(titleId);
+            Series series = Series.createDefault(id, titleId);
 
             // Then
             assertThat(series.getTitleId()).isEqualTo(titleId);
@@ -53,10 +55,11 @@ class SeriesTest {
         @DisplayName("新規シリーズ作成時は空のエピソードリストを持つ")
         void shouldCreateDefaultEpisodeAutomatically() {
             // Given
+            Long id = 1L;
             Long titleId = 1L;
 
             // When
-            Series series = Series.create(titleId, "Season 1");
+            Series series = Series.create(id, titleId, "Season 1");
 
             // Then
             assertThat(series.getEpisodes()).isEmpty();
@@ -71,7 +74,7 @@ class SeriesTest {
         @DisplayName("100文字を超えるシーズン名では作成できない")
         void shouldNotCreateWithTooLongName() {
             String longName = "a".repeat(101);
-            assertThatThrownBy(() -> Series.create(1L, longName))
+            assertThatThrownBy(() -> Series.create(1L, 1L, longName))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -79,14 +82,14 @@ class SeriesTest {
         @DisplayName("100文字のシーズン名で作成できる")
         void shouldCreateWithExactly100Characters() {
             String name = "a".repeat(100);
-            Series series = Series.create(1L, name);
+            Series series = Series.create(1L, 1L, name);
             assertThat(series.getName()).isEqualTo(name);
         }
 
         @Test
         @DisplayName("null のシーズン名ではなく空文字列に変換される")
         void shouldConvertNullNameToEmpty() {
-            Series series = Series.create(1L, null);
+            Series series = Series.create(1L, 1L, null);
             assertThat(series.getName()).isEmpty();
         }
     }
@@ -99,7 +102,7 @@ class SeriesTest {
         @DisplayName("シーズン名を変更できる")
         void shouldUpdateName() {
             // Given
-            Series series = Series.create(1L, "Season 1");
+            Series series = Series.create(1L, 1L, "Season 1");
             LocalDateTime originalUpdatedAt = series.getUpdatedAt();
 
             // When
@@ -124,7 +127,7 @@ class SeriesTest {
             int initialSize = series.getEpisodes().size();
 
             // When
-            Episode episode = Episode.create(seriesId, "第2話");
+            Episode episode = Episode.create(2L, seriesId, "第2話");
             series.addEpisode(episode);
 
             // Then
@@ -144,7 +147,7 @@ class SeriesTest {
             Series series = new Series(seriesId, 1L, "Season 1", null, LocalDateTime.now(), LocalDateTime.now());
 
             // When
-            Episode episode = Episode.create(seriesId, "第1話");
+            Episode episode = Episode.create(1L, seriesId, "第1話");
             series.addEpisode(episode);
 
             // Then

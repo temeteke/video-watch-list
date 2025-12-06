@@ -36,9 +36,16 @@ public class SeriesRepositoryImpl implements SeriesRepository {
     @Override
     public Series save(Series series) {
         SeriesEntity entity = SeriesEntity.fromDomain(series);
-        if (series.getId() == null) {
+        Long seriesId = series.getId();
+
+        // Check if series exists in database
+        boolean exists = seriesMapper.findById(seriesId).isPresent();
+
+        if (!exists) {
+            // Insert new series
             seriesMapper.insert(entity);
         } else {
+            // Update existing series
             seriesMapper.update(entity);
         }
         // Return domain model with the auto-generated or existing ID

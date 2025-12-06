@@ -19,11 +19,12 @@ class EpisodeTest {
         @DisplayName("シリーズIDとエピソード情報を指定してエピソードを作成できる")
         void shouldCreateEpisodeWithInfo() {
             // Given
+            Long id = 1L;
             Long seriesId = 1L;
             String episodeInfo = "第1話";
 
             // When
-            Episode episode = Episode.create(seriesId, episodeInfo);
+            Episode episode = Episode.create(id, seriesId, episodeInfo);
 
             // Then
             assertThat(episode).isNotNull();
@@ -40,10 +41,11 @@ class EpisodeTest {
         @DisplayName("デフォルトエピソード（空のエピソード情報）を作成できる")
         void shouldCreateDefaultEpisode() {
             // Given
+            Long id = 1L;
             Long seriesId = 1L;
 
             // When
-            Episode episode = Episode.createDefault(seriesId);
+            Episode episode = Episode.createDefault(id, seriesId);
 
             // Then
             assertThat(episode.getSeriesId()).isEqualTo(seriesId);
@@ -54,7 +56,7 @@ class EpisodeTest {
         @Test
         @DisplayName("新規作成時は未視聴状態である")
         void shouldCreateWithUnwatchedStatus() {
-            Episode episode = Episode.create(1L, "第1話");
+            Episode episode = Episode.create(1L, 1L, "第1話");
             assertThat(episode.getWatchStatus()).isEqualTo(WatchStatus.UNWATCHED);
         }
     }
@@ -67,7 +69,7 @@ class EpisodeTest {
         @DisplayName("200文字を超えるエピソード情報では作成できない")
         void shouldNotCreateWithTooLongInfo() {
             String longInfo = "a".repeat(201);
-            assertThatThrownBy(() -> Episode.create(1L, longInfo))
+            assertThatThrownBy(() -> Episode.create(1L, 1L, longInfo))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -75,7 +77,7 @@ class EpisodeTest {
         @DisplayName("200文字のエピソード情報で作成できる")
         void shouldCreateWithExactly200Characters() {
             String info = "a".repeat(200);
-            Episode episode = Episode.create(1L, info);
+            Episode episode = Episode.create(1L, 1L, info);
             assertThat(episode.getEpisodeInfo()).isEqualTo(info);
         }
     }
@@ -88,7 +90,7 @@ class EpisodeTest {
         @DisplayName("未視聴エピソードを視聴済みに変更できる")
         void shouldChangeToWatched() {
             // Given
-            Episode episode = Episode.create(1L, "第1話");
+            Episode episode = Episode.create(1L, 1L, "第1話");
 
             // When
             episode.markAsWatched();
@@ -101,7 +103,7 @@ class EpisodeTest {
         @DisplayName("視聴済みエピソードは直接状態変更ができない（IllegalStateException）")
         void shouldNotDirectlyChangeWatchedStatus() {
             // Given
-            Episode episode = Episode.create(1L, "第1話");
+            Episode episode = Episode.create(1L, 1L, "第1話");
             episode.markAsWatched();
 
             // When & Then
@@ -117,7 +119,7 @@ class EpisodeTest {
             Long episodeId = 1L;
             Episode episode = new Episode(episodeId, 1L, "第1話", null, WatchStatus.UNWATCHED, null, LocalDateTime.now(), LocalDateTime.now());
             episode.markAsWatched();
-            ViewingRecord record = ViewingRecord.create(episode.getId(), LocalDateTime.now(), 5, "Great!");
+            ViewingRecord record = ViewingRecord.create(1L, episode.getId(), LocalDateTime.now(), 5, "Great!");
             episode.addViewingRecord(record);
 
             // When
@@ -134,7 +136,7 @@ class EpisodeTest {
             Long episodeId = 1L;
             Episode episode = new Episode(episodeId, 1L, "第1話", null, WatchStatus.UNWATCHED, null, LocalDateTime.now(), LocalDateTime.now());
             episode.markAsWatched();
-            ViewingRecord record = ViewingRecord.create(episode.getId(), LocalDateTime.now(), 5, "Great!");
+            ViewingRecord record = ViewingRecord.create(1L, episode.getId(), LocalDateTime.now(), 5, "Great!");
             episode.addViewingRecord(record);
 
             // When & Then
@@ -166,7 +168,7 @@ class EpisodeTest {
         @DisplayName("視聴ページURLを追加できる")
         void shouldAddWatchPageUrl() {
             // Given
-            Episode episode = Episode.create(1L, "第1話");
+            Episode episode = Episode.create(1L, 1L, "第1話");
             String url = "https://www.netflix.com/進撃の巨人/episode/1";
 
             // When
@@ -181,7 +183,7 @@ class EpisodeTest {
         @DisplayName("同じURLを複数追加した場合、重複が自動削除される")
         void shouldRemoveDuplicateUrls() {
             // Given
-            Episode episode = Episode.create(1L, "第1話");
+            Episode episode = Episode.create(1L, 1L, "第1話");
             String url = "https://www.netflix.com/進撃の巨人/episode/1";
 
             // When
@@ -207,6 +209,7 @@ class EpisodeTest {
 
             // When
             ViewingRecord record = ViewingRecord.create(
+                    1L,
                     episode.getId(),
                     LocalDateTime.now(),
                     5,
@@ -226,6 +229,7 @@ class EpisodeTest {
             Episode episode = new Episode(episodeId, 1L, "第1話", null, WatchStatus.UNWATCHED, null, LocalDateTime.now(), LocalDateTime.now());
             episode.markAsWatched();
             ViewingRecord record = ViewingRecord.create(
+                    1L,
                     episode.getId(),
                     LocalDateTime.now(),
                     5,
@@ -250,7 +254,7 @@ class EpisodeTest {
         @DisplayName("エピソード情報を変更できる")
         void shouldUpdateEpisodeInfo() {
             // Given
-            Episode episode = Episode.create(1L, "第1話");
+            Episode episode = Episode.create(1L, 1L, "第1話");
             LocalDateTime originalUpdatedAt = episode.getUpdatedAt();
 
             // When

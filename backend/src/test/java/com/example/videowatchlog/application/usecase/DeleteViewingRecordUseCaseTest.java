@@ -44,7 +44,7 @@ class DeleteViewingRecordUseCaseTest {
         Long recordId = 1L;
         Long episodeId = 1L;
 
-        Episode episode = Episode.create(1L, "Episode 1");
+        Episode episode = Episode.create(1L, 1L, "Episode 1");
         episode.markAsWatched();
 
         ViewingRecord record1 = new ViewingRecord(1L, episodeId, LocalDateTime.now().minusHours(2), 4, "First", LocalDateTime.now().minusHours(2));
@@ -74,7 +74,7 @@ class DeleteViewingRecordUseCaseTest {
         Long recordId = 1L;
         Long episodeId = 1L;
 
-        Episode episode = Episode.create(1L, "Episode 1");
+        Episode episode = Episode.create(1L, 1L, "Episode 1");
         episode.markAsWatched();
 
         ViewingRecord record = new ViewingRecord(1L, episodeId, LocalDateTime.now().minusHours(1), 4, "Only", LocalDateTime.now().minusHours(1));
@@ -119,7 +119,7 @@ class DeleteViewingRecordUseCaseTest {
         Long recordId = 1L;
         Long episodeId = 1L;
 
-        ViewingRecord record = ViewingRecord.create(episodeId, LocalDateTime.now().minusHours(1), 4, "Test");
+        ViewingRecord record = ViewingRecord.create(1L, episodeId, LocalDateTime.now().minusHours(1), 4, "Test");
 
         when(viewingRecordRepository.findById(recordId)).thenReturn(Optional.of(record));
         when(episodeRepository.findById(episodeId)).thenReturn(Optional.empty());

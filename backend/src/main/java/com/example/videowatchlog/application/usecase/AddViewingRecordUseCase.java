@@ -4,6 +4,7 @@ import com.example.videowatchlog.domain.model.Episode;
 import com.example.videowatchlog.domain.model.ViewingRecord;
 import com.example.videowatchlog.domain.model.WatchStatus;
 import com.example.videowatchlog.domain.repository.EpisodeRepository;
+import com.example.videowatchlog.domain.service.EntityIdentityService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,9 +21,11 @@ import java.util.Objects;
  */
 @Service
 public class AddViewingRecordUseCase {
+    private final EntityIdentityService identityService;
     private final EpisodeRepository episodeRepository;
 
-    public AddViewingRecordUseCase(EpisodeRepository episodeRepository) {
+    public AddViewingRecordUseCase(EntityIdentityService identityService, EpisodeRepository episodeRepository) {
+        this.identityService = Objects.requireNonNull(identityService, "identityService must not be null");
         this.episodeRepository = Objects.requireNonNull(episodeRepository, "episodeRepository must not be null");
     }
 
@@ -52,7 +55,8 @@ public class AddViewingRecordUseCase {
         }
 
         // Create viewing record (validation happens in ViewingRecord constructor)
-        ViewingRecord viewingRecord = ViewingRecord.create(episodeId, watchedAt, rating, comment);
+        Long id = identityService.generateId();
+        ViewingRecord viewingRecord = ViewingRecord.create(id, episodeId, watchedAt, rating, comment);
 
         // Add viewing record to episode
         episode.addViewingRecord(viewingRecord);

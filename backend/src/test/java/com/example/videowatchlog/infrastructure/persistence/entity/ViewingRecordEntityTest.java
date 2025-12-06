@@ -48,7 +48,7 @@ class ViewingRecordEntityTest {
     void fromDomain_shouldConvertCorrectly() {
         // Given
         LocalDateTime watchedAt = LocalDateTime.of(2024, 1, 15, 20, 30);
-        ViewingRecord domain = ViewingRecord.create(100L, watchedAt, 5, "素晴らしいエピソードでした！");
+        ViewingRecord domain = ViewingRecord.create(1L, 100L, watchedAt, 5, "素晴らしいエピソードでした！");
 
         // Simulate persisted entity with ID
         ViewingRecord persistedDomain = new ViewingRecord(1L, 100L, watchedAt, 5,

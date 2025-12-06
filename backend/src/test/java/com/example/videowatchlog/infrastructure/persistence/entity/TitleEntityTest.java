@@ -38,7 +38,7 @@ class TitleEntityTest {
         titleInfoUrls.add(new TitleInfoUrl("https://example.com/title/1"));
 
         List<Series> series = List.of(
-            Series.create(1L, "Season 1")
+            Series.create(1L, 1L, "Season 1")
         );
 
         // When

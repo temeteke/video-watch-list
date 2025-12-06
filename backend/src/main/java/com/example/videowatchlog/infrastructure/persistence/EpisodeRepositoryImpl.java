@@ -62,16 +62,17 @@ public class EpisodeRepositoryImpl implements EpisodeRepository {
     @Override
     public Episode save(Episode episode) {
         EpisodeEntity entity = EpisodeEntity.fromDomain(episode);
-        Long episodeId;
+        Long episodeId = episode.getId();
 
-        if (episode.getId() == null) {
+        // Check if episode exists in database
+        boolean exists = episodeMapper.findById(episodeId).isPresent();
+
+        if (!exists) {
             // Insert new episode
             episodeMapper.insert(entity);
-            episodeId = entity.getId();
         } else {
             // Update existing episode
             episodeMapper.update(entity);
-            episodeId = episode.getId();
         }
 
         // Save WatchPageUrls: delete all and re-insert
@@ -80,16 +81,15 @@ public class EpisodeRepositoryImpl implements EpisodeRepository {
             episodeMapper.insertWatchPageUrl(episodeId, url.getUrl());
         }
 
-        // Save new ViewingRecords (only insert new ones with null ID)
+        // Save new ViewingRecords (only insert ones that don't exist in the database yet)
         for (ViewingRecord record : episode.getViewingRecords()) {
-            if (record.getId() == null) {
+            if (viewingRecordMapper.findById(record.getId()).isEmpty()) {
                 viewingRecordMapper.insert(com.example.videowatchlog.infrastructure.persistence.entity.ViewingRecordEntity.fromDomain(record));
             }
         }
 
-        // Reload from database to get auto-generated IDs for ViewingRecords
-        return findById(episodeId).orElseThrow(() ->
-                new IllegalStateException("Failed to reload episode after save: " + episodeId));
+        // Return the saved episode
+        return episode;
     }
 
     @Override

@@ -39,7 +39,7 @@ class EpisodeEntityTest {
             new WatchPageUrl("https://example.com/watch/1", "Example")
         );
         List<ViewingRecord> viewingRecords = List.of(
-            ViewingRecord.create(1L, LocalDateTime.of(2024, 1, 15, 20, 0), 5, "Great!")
+            ViewingRecord.create(1L, 1L, LocalDateTime.of(2024, 1, 15, 20, 0), 5, "Great!")
         );
 
         // When

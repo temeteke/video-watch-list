@@ -19,13 +19,14 @@ class ViewingRecordTest {
         @DisplayName("視聴履歴を作成できる")
         void shouldCreateViewingRecord() {
             // Given
+            Long id = 1L;
             Long episodeId = 1L;
             LocalDateTime watchedAt = LocalDateTime.now().minusDays(1);
             int rating = 5;
             String comment = "Excellent episode!";
 
             // When
-            ViewingRecord record = ViewingRecord.create(episodeId, watchedAt, rating, comment);
+            ViewingRecord record = ViewingRecord.create(id, episodeId, watchedAt, rating, comment);
 
             // Then
             assertThat(record).isNotNull();
@@ -40,12 +41,13 @@ class ViewingRecordTest {
         @DisplayName("コメントなしで視聴履歴を作成できる")
         void shouldCreateWithoutComment() {
             // Given
+            Long id = 1L;
             Long episodeId = 1L;
             LocalDateTime watchedAt = LocalDateTime.now();
             int rating = 4;
 
             // When
-            ViewingRecord record = ViewingRecord.create(episodeId, watchedAt, rating, null);
+            ViewingRecord record = ViewingRecord.create(id, episodeId, watchedAt, rating, null);
 
             // Then
             assertThat(record.getComment()).isNull();
@@ -61,6 +63,7 @@ class ViewingRecordTest {
         void shouldNotCreateWithRatingLessThan1() {
             assertThatThrownBy(() -> ViewingRecord.create(
                     1L,
+                    1L,
                     LocalDateTime.now(),
                     0,
                     "Bad"
@@ -71,6 +74,7 @@ class ViewingRecordTest {
         @DisplayName("評価が5を超えると作成できない")
         void shouldNotCreateWithRatingGreaterThan5() {
             assertThatThrownBy(() -> ViewingRecord.create(
+                    1L,
                     1L,
                     LocalDateTime.now(),
                     6,
@@ -83,6 +87,7 @@ class ViewingRecordTest {
         void shouldCreateWithValidRating() {
             for (int rating = 1; rating <= 5; rating++) {
                 ViewingRecord record = ViewingRecord.create(
+                        1L,
                         1L,
                         LocalDateTime.now(),
                         rating,
@@ -98,6 +103,7 @@ class ViewingRecordTest {
             String longComment = "a".repeat(2001);
             assertThatThrownBy(() -> ViewingRecord.create(
                     1L,
+                    1L,
                     LocalDateTime.now(),
                     5,
                     longComment
@@ -110,6 +116,7 @@ class ViewingRecordTest {
             String comment = "a".repeat(2000);
             ViewingRecord record = ViewingRecord.create(
                     1L,
+                    1L,
                     LocalDateTime.now(),
                     5,
                     comment
@@ -121,6 +128,7 @@ class ViewingRecordTest {
         @DisplayName("未来の日付では作成できない")
         void shouldNotCreateWithFutureDate() {
             assertThatThrownBy(() -> ViewingRecord.create(
+                    1L,
                     1L,
                     LocalDateTime.now().plusDays(1),
                     5,
@@ -139,13 +147,14 @@ class ViewingRecordTest {
             // Given
             ViewingRecord record = ViewingRecord.create(
                     1L,
+                    1L,
                     LocalDateTime.now().minusDays(1),
                     5,
                     "Great"
             );
 
             // Then: 視聴履歴は読み取り専用フィールドのみ提供
-            assertThat(record.getId()).isNull();  // 作成直後はID未設定
+            assertThat(record.getId()).isEqualTo(1L);
             assertThat(record.getRating()).isEqualTo(5);
             assertThat(record.getComment()).isEqualTo("Great");
         }

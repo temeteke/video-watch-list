@@ -5,6 +5,7 @@ import com.example.videowatchlog.domain.model.Series;
 import com.example.videowatchlog.domain.model.Title;
 import com.example.videowatchlog.domain.model.ViewingRecord;
 import com.example.videowatchlog.domain.model.WatchStatus;
+import com.example.videowatchlog.domain.service.EntityIdentityService;
 import com.example.videowatchlog.application.dto.ViewingRecordRequestDTO;
 import com.example.videowatchlog.infrastructure.persistence.EpisodeRepositoryImpl;
 import com.example.videowatchlog.infrastructure.persistence.SeriesRepositoryImpl;
@@ -42,6 +43,9 @@ class ViewingRecordControllerIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Autowired
+    private EntityIdentityService identityService;
+
+    @Autowired
     private TitleRepositoryImpl titleRepository;
 
     @Autowired
@@ -60,13 +64,16 @@ class ViewingRecordControllerIntegrationTest {
     @BeforeEach
     void setUp() {
         // Create test data: Title → Series → Episode
-        testTitle = Title.create(1L, "Test Drama");
+        Long titleId = identityService.generateId();
+        testTitle = Title.create(titleId, "Test Drama");
         testTitle = titleRepository.save(testTitle);
 
-        testSeries = Series.create(testTitle.getId(), "Season 1");
+        Long seriesId = identityService.generateId();
+        testSeries = Series.create(seriesId, testTitle.getId(), "Season 1");
         testSeries = seriesRepository.save(testSeries);
 
-        testEpisode = Episode.create(testSeries.getId(), "Episode 1");
+        Long episodeId = identityService.generateId();
+        testEpisode = Episode.create(episodeId, testSeries.getId(), "Episode 1");
         testEpisode = episodeRepository.save(testEpisode);
     }
 
@@ -119,7 +126,7 @@ class ViewingRecordControllerIntegrationTest {
     void testDeleteViewingRecord() throws Exception {
         // Arrange: Create episode with viewing record
         testEpisode.markAsWatched();
-        ViewingRecord record = ViewingRecord.create(testEpisode.getId(), LocalDateTime.now().minusHours(1), 4, "Good");
+        ViewingRecord record = ViewingRecord.create(1L, testEpisode.getId(), LocalDateTime.now().minusHours(1), 4, "Good");
         testEpisode.addViewingRecord(record);
         testEpisode = episodeRepository.save(testEpisode);
 

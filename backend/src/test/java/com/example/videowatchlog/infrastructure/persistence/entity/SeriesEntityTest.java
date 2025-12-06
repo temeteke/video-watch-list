@@ -33,7 +33,7 @@ class SeriesEntityTest {
         entity.setUpdatedAt(updatedAt);
 
         List<Episode> episodes = List.of(
-            Episode.create(1L, "Episode 1")
+            Episode.create(1L, 1L, "Episode 1")
         );
 
         // When

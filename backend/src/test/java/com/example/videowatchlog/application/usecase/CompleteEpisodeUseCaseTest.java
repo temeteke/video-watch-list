@@ -4,6 +4,7 @@ import com.example.videowatchlog.domain.model.Episode;
 import com.example.videowatchlog.domain.model.ViewingRecord;
 import com.example.videowatchlog.domain.model.WatchStatus;
 import com.example.videowatchlog.domain.repository.EpisodeRepository;
+import com.example.videowatchlog.domain.service.EntityIdentityService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +24,9 @@ import static org.mockito.Mockito.*;
 @DisplayName("CompleteEpisodeUseCase")
 class CompleteEpisodeUseCaseTest {
     @Mock
+    private EntityIdentityService identityService;
+
+    @Mock
     private EpisodeRepository episodeRepository;
 
     private CompleteEpisodeUseCase useCase;
@@ -30,7 +34,7 @@ class CompleteEpisodeUseCaseTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        useCase = new CompleteEpisodeUseCase(episodeRepository);
+        useCase = new CompleteEpisodeUseCase(identityService, episodeRepository);
     }
 
     @Test
@@ -38,7 +42,7 @@ class CompleteEpisodeUseCaseTest {
     void testCompleteUnwatchedEpisode() {
         // Arrange
         Long episodeId = 1L;
-        Episode episode = Episode.create(1L, "Episode 1");
+        Episode episode = Episode.create(1L, 1L, "Episode 1");
         episode = new Episode(episodeId, 1L, "Episode 1", episode.getWatchPageUrls(),
                 WatchStatus.UNWATCHED, episode.getViewingRecords(), LocalDateTime.now(), LocalDateTime.now());
 
@@ -46,6 +50,7 @@ class CompleteEpisodeUseCaseTest {
         Integer rating = 4;
         String comment = "Great episode!";
 
+        when(identityService.generateId()).thenReturn(1L);
         when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
 
         // Act
@@ -70,7 +75,7 @@ class CompleteEpisodeUseCaseTest {
     void testCompleteWatchedEpisodeFails() {
         // Arrange
         Long episodeId = 1L;
-        Episode episode = Episode.create(1L, "Episode 1");
+        Episode episode = Episode.create(1L, 1L, "Episode 1");
         episode.markAsWatched();
 
         LocalDateTime watchedAt = LocalDateTime.now().minusHours(1);
@@ -93,12 +98,13 @@ class CompleteEpisodeUseCaseTest {
     void testInvalidRatingBelowMinimum() {
         // Arrange
         Long episodeId = 1L;
-        Episode episode = Episode.create(1L, "Episode 1");
+        Episode episode = Episode.create(1L, 1L, "Episode 1");
 
         LocalDateTime watchedAt = LocalDateTime.now().minusHours(1);
         Integer rating = 0; // Invalid: must be 1-5
         String comment = "Good episode";
 
+        when(identityService.generateId()).thenReturn(1L);
         when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
 
         // Act & Assert
@@ -115,12 +121,13 @@ class CompleteEpisodeUseCaseTest {
     void testInvalidRatingAboveMaximum() {
         // Arrange
         Long episodeId = 1L;
-        Episode episode = Episode.create(1L, "Episode 1");
+        Episode episode = Episode.create(1L, 1L, "Episode 1");
 
         LocalDateTime watchedAt = LocalDateTime.now().minusHours(1);
         Integer rating = 6; // Invalid: must be 1-5
         String comment = "Good episode";
 
+        when(identityService.generateId()).thenReturn(1L);
         when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
 
         // Act & Assert
@@ -137,12 +144,13 @@ class CompleteEpisodeUseCaseTest {
     void testFutureWatchedAtFails() {
         // Arrange
         Long episodeId = 1L;
-        Episode episode = Episode.create(1L, "Episode 1");
+        Episode episode = Episode.create(1L, 1L, "Episode 1");
 
         LocalDateTime watchedAt = LocalDateTime.now().plusHours(1); // Future date
         Integer rating = 4;
         String comment = "Great episode!";
 
+        when(identityService.generateId()).thenReturn(1L);
         when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
 
         // Act & Assert
@@ -159,12 +167,13 @@ class CompleteEpisodeUseCaseTest {
     void testCompleteWithoutComment() {
         // Arrange
         Long episodeId = 1L;
-        Episode episode = Episode.create(1L, "Episode 1");
+        Episode episode = Episode.create(1L, 1L, "Episode 1");
 
         LocalDateTime watchedAt = LocalDateTime.now().minusHours(1);
         Integer rating = 5;
         String comment = null;
 
+        when(identityService.generateId()).thenReturn(1L);
         when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
 
         // Act

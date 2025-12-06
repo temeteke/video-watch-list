@@ -49,15 +49,16 @@ public class ViewingRecord {
     /**
      * Factory method to create a new ViewingRecord.
      *
+     * @param id ViewingRecord ID (EntityIdentityServiceで生成)
      * @param episodeId Parent episode ID
      * @param watchedAt Date and time when the episode was watched
      * @param rating User rating (1-5)
      * @param comment User comment (optional)
      * @return New ViewingRecord
      */
-    public static ViewingRecord create(Long episodeId, LocalDateTime watchedAt, Integer rating, String comment) {
+    public static ViewingRecord create(Long id, Long episodeId, LocalDateTime watchedAt, Integer rating, String comment) {
         LocalDateTime now = LocalDateTime.now();
-        return new ViewingRecord(null, episodeId, watchedAt, rating, comment, now);
+        return new ViewingRecord(id, episodeId, watchedAt, rating, comment, now);
     }
 
     /**
