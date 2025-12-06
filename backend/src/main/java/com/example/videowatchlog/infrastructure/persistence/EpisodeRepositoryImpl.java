@@ -81,9 +81,29 @@ public class EpisodeRepositoryImpl implements EpisodeRepository {
             episodeMapper.insertWatchPageUrl(episodeId, url.getUrl());
         }
 
-        // Save new ViewingRecords (only insert ones that don't exist in the database yet)
+        // Save ViewingRecords: handle both additions and deletions
+        List<com.example.videowatchlog.infrastructure.persistence.entity.ViewingRecordEntity> existingRecords = viewingRecordMapper.findByEpisodeId(episodeId);
+
+        // Get IDs of records in the current episode
+        List<Long> currentRecordIds = episode.getViewingRecords().stream()
+                .map(ViewingRecord::getId)
+                .toList();
+
+        // Delete records that are no longer in the episode
+        for (com.example.videowatchlog.infrastructure.persistence.entity.ViewingRecordEntity record : existingRecords) {
+            if (!currentRecordIds.contains(record.getId())) {
+                viewingRecordMapper.delete(record.getId());
+            }
+        }
+
+        // Get IDs of existing records in database
+        List<Long> existingRecordIds = existingRecords.stream()
+                .map(com.example.videowatchlog.infrastructure.persistence.entity.ViewingRecordEntity::getId)
+                .toList();
+
+        // Insert new records that don't exist in the database yet
         for (ViewingRecord record : episode.getViewingRecords()) {
-            if (viewingRecordMapper.findById(record.getId()).isEmpty()) {
+            if (!existingRecordIds.contains(record.getId())) {
                 viewingRecordMapper.insert(com.example.videowatchlog.infrastructure.persistence.entity.ViewingRecordEntity.fromDomain(record));
             }
         }

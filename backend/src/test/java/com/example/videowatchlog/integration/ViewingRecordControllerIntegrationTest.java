@@ -10,7 +10,6 @@ import com.example.videowatchlog.application.dto.ViewingRecordRequestDTO;
 import com.example.videowatchlog.infrastructure.persistence.EpisodeRepositoryImpl;
 import com.example.videowatchlog.infrastructure.persistence.SeriesRepositoryImpl;
 import com.example.videowatchlog.infrastructure.persistence.TitleRepositoryImpl;
-import com.example.videowatchlog.infrastructure.persistence.ViewingRecordRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -53,9 +53,6 @@ class ViewingRecordControllerIntegrationTest {
 
     @Autowired
     private EpisodeRepositoryImpl episodeRepository;
-
-    @Autowired
-    private ViewingRecordRepositoryImpl viewingRecordRepository;
 
     private Title testTitle;
     private Series testSeries;
@@ -94,8 +91,8 @@ class ViewingRecordControllerIntegrationTest {
 
         // Verify episode status changed
         Episode updatedEpisode = episodeRepository.findById(episodeId).orElseThrow();
-        assert updatedEpisode.getWatchStatus() == WatchStatus.WATCHED;
-        assert updatedEpisode.getViewingRecords().size() == 1;
+        assertEquals(WatchStatus.WATCHED, updatedEpisode.getWatchStatus());
+        assertEquals(1, updatedEpisode.getViewingRecords().size());
     }
 
     @Test
@@ -118,7 +115,7 @@ class ViewingRecordControllerIntegrationTest {
 
         // Verify viewing record was added
         Episode updatedEpisode = episodeRepository.findById(episodeId).orElseThrow();
-        assert updatedEpisode.getViewingRecords().size() == 1;
+        assertEquals(1, updatedEpisode.getViewingRecords().size());
     }
 
     @Test
@@ -126,12 +123,10 @@ class ViewingRecordControllerIntegrationTest {
     void testDeleteViewingRecord() throws Exception {
         // Arrange: Create episode with viewing record
         testEpisode.markAsWatched();
-        ViewingRecord record = ViewingRecord.create(1L, testEpisode.getId(), LocalDateTime.now().minusHours(1), 4, "Good");
+        Long recordId = identityService.generateId();
+        ViewingRecord record = ViewingRecord.create(recordId, testEpisode.getId(), LocalDateTime.now().minusHours(1), 4, "Good");
         testEpisode.addViewingRecord(record);
         testEpisode = episodeRepository.save(testEpisode);
-
-        // Get the viewing record ID
-        Long recordId = testEpisode.getViewingRecords().get(0).getId();
 
         // Act & Assert
         mockMvc.perform(delete("/api/v1/viewing-records/{id}", recordId))
@@ -139,8 +134,8 @@ class ViewingRecordControllerIntegrationTest {
 
         // Verify viewing record was deleted and episode reverted to UNWATCHED
         Episode updatedEpisode = episodeRepository.findById(testEpisode.getId()).orElseThrow();
-        assert updatedEpisode.getViewingRecords().isEmpty();
-        assert updatedEpisode.getWatchStatus() == WatchStatus.UNWATCHED;
+        assertTrue(updatedEpisode.getViewingRecords().isEmpty(), "Viewing records should be empty");
+        assertEquals(WatchStatus.UNWATCHED, updatedEpisode.getWatchStatus(), "Episode should be reverted to UNWATCHED");
     }
 
     @Test

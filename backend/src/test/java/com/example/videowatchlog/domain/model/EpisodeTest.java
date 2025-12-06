@@ -247,6 +247,67 @@ class EpisodeTest {
     }
 
     @Nested
+    @DisplayName("ViewingRecord追加時の自動状態更新")
+    class ViewingRecordAdditionAutoUpdate {
+
+        @Test
+        @DisplayName("未視聴エピソードに視聴履歴を追加すると、自動的に視聴済みに変わる")
+        void shouldAutoUpdateToWatchedWhenAddingViewingRecord() {
+            // Given: UNWATCHED の Episode
+            Episode episode = Episode.create(1L, 1L, "第1話");
+            assertThat(episode.getWatchStatus()).isEqualTo(WatchStatus.UNWATCHED);
+
+            // When: ViewingRecord を追加
+            ViewingRecord record = ViewingRecord.create(100L, 1L, LocalDateTime.now(), 5, "面白かった");
+            episode.addViewingRecord(record);
+
+            // Then: WatchStatus が WATCHED に更新される
+            assertThat(episode.getWatchStatus()).isEqualTo(WatchStatus.WATCHED);
+        }
+
+        @Test
+        @DisplayName("既に視聴済みエピソードに視聴履歴を追加しても、状態は変わらない")
+        void shouldRemainWatchedWhenAddingRecordToWatchedEpisode() {
+            // Given: 既に WATCHED 状態
+            Episode episode = Episode.create(1L, 1L, "第1話");
+            episode.markAsWatched();
+            assertThat(episode.getWatchStatus()).isEqualTo(WatchStatus.WATCHED);
+
+            // When: ViewingRecord を追加
+            ViewingRecord record = ViewingRecord.create(100L, 1L, LocalDateTime.now(), 5, "面白かった");
+            episode.addViewingRecord(record);
+
+            // Then: WatchStatus は WATCHED のまま
+            assertThat(episode.getWatchStatus()).isEqualTo(WatchStatus.WATCHED);
+        }
+    }
+
+    @Nested
+    @DisplayName("ViewingRecord削除時の自動状態更新")
+    class ViewingRecordDeletionAutoUpdate {
+
+        @Test
+        @DisplayName("複数の視聴履歴がある場合、1つ削除しても視聴済み状態は変わらない")
+        void shouldRemainWatchedWhenRemovingOneOfMultipleRecords() {
+            // Given: 複数の ViewingRecord を持つ WATCHED エピソード
+            Episode episode = Episode.create(1L, 1L, "第1話");
+            ViewingRecord record1 = ViewingRecord.create(100L, 1L, LocalDateTime.now(), 5, "1回目");
+            ViewingRecord record2 = ViewingRecord.create(101L, 1L, LocalDateTime.now(), 4, "2回目");
+            episode.markAsWatched();
+            episode.addViewingRecord(record1);
+            episode.addViewingRecord(record2);
+            assertThat(episode.getViewingRecords()).hasSize(2);
+
+            // When: 1つの ViewingRecord を削除
+            episode.removeViewingRecord(record1);
+
+            // Then: WatchStatus は WATCHED のまま
+            assertThat(episode.getWatchStatus()).isEqualTo(WatchStatus.WATCHED);
+            assertThat(episode.getViewingRecords()).hasSize(1);
+        }
+    }
+
+    @Nested
     @DisplayName("更新")
     class Update {
 

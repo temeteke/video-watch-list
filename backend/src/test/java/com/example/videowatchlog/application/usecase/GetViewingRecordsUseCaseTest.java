@@ -1,7 +1,8 @@
 package com.example.videowatchlog.application.usecase;
 
+import com.example.videowatchlog.domain.model.Episode;
 import com.example.videowatchlog.domain.model.ViewingRecord;
-import com.example.videowatchlog.domain.repository.ViewingRecordRepository;
+import com.example.videowatchlog.domain.repository.EpisodeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -22,14 +24,14 @@ import static org.mockito.Mockito.*;
 @DisplayName("GetViewingRecordsUseCase")
 class GetViewingRecordsUseCaseTest {
     @Mock
-    private ViewingRecordRepository viewingRecordRepository;
+    private EpisodeRepository episodeRepository;
 
     private GetViewingRecordsUseCase useCase;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        useCase = new GetViewingRecordsUseCase(viewingRecordRepository);
+        useCase = new GetViewingRecordsUseCase(episodeRepository);
     }
 
     @Test
@@ -38,17 +40,17 @@ class GetViewingRecordsUseCaseTest {
         // Arrange
         Long episodeId = 1L;
 
+        Episode episode = Episode.create(episodeId, 1L, "Episode 1");
         LocalDateTime now = LocalDateTime.now();
         ViewingRecord record1 = ViewingRecord.create(1L, episodeId, now.minusHours(3), 4, "First");
         ViewingRecord record2 = ViewingRecord.create(2L, episodeId, now.minusHours(2), 5, "Second");
         ViewingRecord record3 = ViewingRecord.create(3L, episodeId, now.minusHours(1), 3, "Third");
 
-        List<ViewingRecord> records = new ArrayList<>();
-        records.add(record1);
-        records.add(record2);
-        records.add(record3);
+        episode.addViewingRecord(record1);
+        episode.addViewingRecord(record2);
+        episode.addViewingRecord(record3);
 
-        when(viewingRecordRepository.findByEpisodeId(episodeId)).thenReturn(records);
+        when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
 
         // Act
         List<ViewingRecord> result = useCase.execute(episodeId);
@@ -59,7 +61,7 @@ class GetViewingRecordsUseCaseTest {
         assertTrue(result.get(0).getRecordedAt().isAfter(result.get(1).getRecordedAt()));
         assertTrue(result.get(1).getRecordedAt().isAfter(result.get(2).getRecordedAt()));
 
-        verify(viewingRecordRepository, times(1)).findByEpisodeId(episodeId);
+        verify(episodeRepository, times(1)).findById(episodeId);
     }
 
     @Test
@@ -68,7 +70,9 @@ class GetViewingRecordsUseCaseTest {
         // Arrange
         Long episodeId = 1L;
 
-        when(viewingRecordRepository.findByEpisodeId(episodeId)).thenReturn(new ArrayList<>());
+        Episode episode = Episode.create(episodeId, 1L, "Episode 1");
+
+        when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
 
         // Act
         List<ViewingRecord> result = useCase.execute(episodeId);
@@ -76,7 +80,7 @@ class GetViewingRecordsUseCaseTest {
         // Assert
         assertEquals(0, result.size());
 
-        verify(viewingRecordRepository, times(1)).findByEpisodeId(episodeId);
+        verify(episodeRepository, times(1)).findById(episodeId);
     }
 
     @Test
@@ -85,12 +89,11 @@ class GetViewingRecordsUseCaseTest {
         // Arrange
         Long episodeId = 1L;
 
+        Episode episode = Episode.create(episodeId, 1L, "Episode 1");
         ViewingRecord record = ViewingRecord.create(1L, episodeId, LocalDateTime.now().minusHours(1), 5, "Single");
+        episode.addViewingRecord(record);
 
-        List<ViewingRecord> records = new ArrayList<>();
-        records.add(record);
-
-        when(viewingRecordRepository.findByEpisodeId(episodeId)).thenReturn(records);
+        when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
 
         // Act
         List<ViewingRecord> result = useCase.execute(episodeId);
@@ -100,7 +103,7 @@ class GetViewingRecordsUseCaseTest {
         assertEquals(record.getEpisodeId(), result.get(0).getEpisodeId());
         assertEquals(record.getRating(), result.get(0).getRating());
 
-        verify(viewingRecordRepository, times(1)).findByEpisodeId(episodeId);
+        verify(episodeRepository, times(1)).findById(episodeId);
     }
 
     @Test
@@ -109,17 +112,17 @@ class GetViewingRecordsUseCaseTest {
         // Arrange
         Long episodeId = 1L;
 
+        Episode episode = Episode.create(episodeId, 1L, "Episode 1");
         LocalDateTime base = LocalDateTime.now();
         ViewingRecord record1 = ViewingRecord.create(1L, episodeId, base.minusHours(1), 3, "First");
         ViewingRecord record2 = ViewingRecord.create(2L, episodeId, base.minusHours(3), 4, "Third");
         ViewingRecord record3 = ViewingRecord.create(3L, episodeId, base.minusHours(2), 5, "Second");
 
-        List<ViewingRecord> unsortedRecords = new ArrayList<>();
-        unsortedRecords.add(record1);
-        unsortedRecords.add(record2);
-        unsortedRecords.add(record3);
+        episode.addViewingRecord(record1);
+        episode.addViewingRecord(record2);
+        episode.addViewingRecord(record3);
 
-        when(viewingRecordRepository.findByEpisodeId(episodeId)).thenReturn(unsortedRecords);
+        when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
 
         // Act
         List<ViewingRecord> result = useCase.execute(episodeId);
@@ -130,6 +133,6 @@ class GetViewingRecordsUseCaseTest {
         assertTrue(result.get(0).getRecordedAt().isAfter(result.get(1).getRecordedAt()));
         assertTrue(result.get(1).getRecordedAt().isAfter(result.get(2).getRecordedAt()));
 
-        verify(viewingRecordRepository, times(1)).findByEpisodeId(episodeId);
+        verify(episodeRepository, times(1)).findById(episodeId);
     }
 }

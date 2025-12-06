@@ -1,7 +1,7 @@
 package com.example.videowatchlog.application.usecase;
 
 import com.example.videowatchlog.domain.model.ViewingRecord;
-import com.example.videowatchlog.domain.repository.ViewingRecordRepository;
+import com.example.videowatchlog.domain.repository.EpisodeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -17,10 +17,10 @@ import java.util.Objects;
  */
 @Service
 public class GetViewingRecordsUseCase {
-    private final ViewingRecordRepository viewingRecordRepository;
+    private final EpisodeRepository episodeRepository;
 
-    public GetViewingRecordsUseCase(ViewingRecordRepository viewingRecordRepository) {
-        this.viewingRecordRepository = Objects.requireNonNull(viewingRecordRepository, "viewingRecordRepository must not be null");
+    public GetViewingRecordsUseCase(EpisodeRepository episodeRepository) {
+        this.episodeRepository = Objects.requireNonNull(episodeRepository, "episodeRepository must not be null");
     }
 
     /**
@@ -33,8 +33,10 @@ public class GetViewingRecordsUseCase {
         // Validate input
         Objects.requireNonNull(episodeId, "episodeId must not be null");
 
-        // Fetch viewing records
-        List<ViewingRecord> records = viewingRecordRepository.findByEpisodeId(episodeId);
+        // Fetch viewing records from the episode aggregate
+        List<ViewingRecord> records = episodeRepository.findById(episodeId)
+                .map(episode -> new java.util.ArrayList<>(episode.getViewingRecords()))
+                .orElse(new java.util.ArrayList<>());
 
         // Sort by recorded date descending (newest first)
         records.sort(Comparator.comparing(ViewingRecord::getRecordedAt).reversed());

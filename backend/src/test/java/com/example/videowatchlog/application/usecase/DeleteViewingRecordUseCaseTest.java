@@ -4,7 +4,8 @@ import com.example.videowatchlog.domain.model.Episode;
 import com.example.videowatchlog.domain.model.ViewingRecord;
 import com.example.videowatchlog.domain.model.WatchStatus;
 import com.example.videowatchlog.domain.repository.EpisodeRepository;
-import com.example.videowatchlog.domain.repository.ViewingRecordRepository;
+import com.example.videowatchlog.infrastructure.persistence.ViewingRecordMapper;
+import com.example.videowatchlog.infrastructure.persistence.entity.ViewingRecordEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +25,7 @@ import static org.mockito.Mockito.*;
 @DisplayName("DeleteViewingRecordUseCase")
 class DeleteViewingRecordUseCaseTest {
     @Mock
-    private ViewingRecordRepository viewingRecordRepository;
+    private ViewingRecordMapper viewingRecordMapper;
 
     @Mock
     private EpisodeRepository episodeRepository;
@@ -34,7 +35,7 @@ class DeleteViewingRecordUseCaseTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        useCase = new DeleteViewingRecordUseCase(viewingRecordRepository, episodeRepository);
+        useCase = new DeleteViewingRecordUseCase(episodeRepository, viewingRecordMapper);
     }
 
     @Test
@@ -53,7 +54,16 @@ class DeleteViewingRecordUseCaseTest {
         episode.addViewingRecord(record1);
         episode.addViewingRecord(record2);
 
-        when(viewingRecordRepository.findById(recordId)).thenReturn(Optional.of(record1));
+        // Create entity for mocking
+        ViewingRecordEntity entity = new ViewingRecordEntity();
+        entity.setId(1L);
+        entity.setEpisodeId(episodeId);
+        entity.setWatchedAt(LocalDateTime.now().minusHours(2));
+        entity.setRating(4);
+        entity.setComment("First");
+        entity.setRecordedAt(LocalDateTime.now().minusHours(2));
+
+        when(viewingRecordMapper.findById(recordId)).thenReturn(Optional.of(entity));
         when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
 
         // Act
@@ -63,7 +73,6 @@ class DeleteViewingRecordUseCaseTest {
         assertEquals(WatchStatus.WATCHED, episode.getWatchStatus());
         assertEquals(1, episode.getViewingRecords().size());
 
-        verify(viewingRecordRepository, times(1)).delete(recordId);
         verify(episodeRepository, times(1)).save(episode);
     }
 
@@ -80,7 +89,16 @@ class DeleteViewingRecordUseCaseTest {
         ViewingRecord record = new ViewingRecord(1L, episodeId, LocalDateTime.now().minusHours(1), 4, "Only", LocalDateTime.now().minusHours(1));
         episode.addViewingRecord(record);
 
-        when(viewingRecordRepository.findById(recordId)).thenReturn(Optional.of(record));
+        // Create entity for mocking
+        ViewingRecordEntity entity = new ViewingRecordEntity();
+        entity.setId(1L);
+        entity.setEpisodeId(episodeId);
+        entity.setWatchedAt(LocalDateTime.now().minusHours(1));
+        entity.setRating(4);
+        entity.setComment("Only");
+        entity.setRecordedAt(LocalDateTime.now().minusHours(1));
+
+        when(viewingRecordMapper.findById(recordId)).thenReturn(Optional.of(entity));
         when(episodeRepository.findById(episodeId)).thenReturn(Optional.of(episode));
 
         // Act
@@ -90,7 +108,6 @@ class DeleteViewingRecordUseCaseTest {
         assertEquals(WatchStatus.UNWATCHED, episode.getWatchStatus());
         assertEquals(0, episode.getViewingRecords().size());
 
-        verify(viewingRecordRepository, times(1)).delete(recordId);
         verify(episodeRepository, times(1)).save(episode);
     }
 
@@ -100,7 +117,7 @@ class DeleteViewingRecordUseCaseTest {
         // Arrange
         Long recordId = 999L;
 
-        when(viewingRecordRepository.findById(recordId)).thenReturn(Optional.empty());
+        when(viewingRecordMapper.findById(recordId)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -108,7 +125,6 @@ class DeleteViewingRecordUseCaseTest {
                 "Should throw exception when record not found"
         );
 
-        verify(viewingRecordRepository, never()).delete(any());
         verify(episodeRepository, never()).save(any());
     }
 
@@ -119,9 +135,11 @@ class DeleteViewingRecordUseCaseTest {
         Long recordId = 1L;
         Long episodeId = 1L;
 
-        ViewingRecord record = ViewingRecord.create(1L, episodeId, LocalDateTime.now().minusHours(1), 4, "Test");
+        ViewingRecordEntity entity = new ViewingRecordEntity();
+        entity.setId(1L);
+        entity.setEpisodeId(episodeId);
 
-        when(viewingRecordRepository.findById(recordId)).thenReturn(Optional.of(record));
+        when(viewingRecordMapper.findById(recordId)).thenReturn(Optional.of(entity));
         when(episodeRepository.findById(episodeId)).thenReturn(Optional.empty());
 
         // Act & Assert
@@ -130,7 +148,6 @@ class DeleteViewingRecordUseCaseTest {
                 "Should throw exception when episode not found"
         );
 
-        verify(viewingRecordRepository, never()).delete(any());
         verify(episodeRepository, never()).save(any());
     }
 }

@@ -146,6 +146,7 @@ public class Episode {
 
     /**
      * Adds a viewing record.
+     * Automatically updates watch status to WATCHED when adding a record.
      *
      * @param record Viewing record to add
      */
@@ -153,6 +154,12 @@ public class Episode {
         Objects.requireNonNull(record, "ViewingRecord must not be null");
         if (!this.viewingRecords.contains(record)) {
             this.viewingRecords.add(record);
+
+            // Auto-update watch status to WATCHED
+            if (this.watchStatus != WatchStatus.WATCHED) {
+                this.watchStatus = WatchStatus.WATCHED;
+                this.updatedAt = LocalDateTime.now();
+            }
         }
     }
 

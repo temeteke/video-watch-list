@@ -18,9 +18,9 @@ public class ViewingRecordEntity {
     private LocalDateTime recordedAt;
 
     /**
-     * Package-private default constructor for MyBatis.
+     * Default constructor for MyBatis and testing.
      */
-    ViewingRecordEntity() {
+    public ViewingRecordEntity() {
     }
 
     // Getters
