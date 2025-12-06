@@ -60,7 +60,7 @@ class ViewingRecordControllerIntegrationTest {
     @BeforeEach
     void setUp() {
         // Create test data: Title → Series → Episode
-        testTitle = Title.create("Test Drama");
+        testTitle = Title.create(1L, "Test Drama");
         testTitle = titleRepository.save(testTitle);
 
         testSeries = Series.create(testTitle.getId(), "Season 1");

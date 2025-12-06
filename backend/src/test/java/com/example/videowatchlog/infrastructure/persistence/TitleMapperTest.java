@@ -40,7 +40,7 @@ class TitleMapperTest {
     @DisplayName("タイトルを保存し、IDで検索できる")
     void shouldSaveAndFindTitle() {
         // Given
-        Title title = Title.create("進撃の巨人");
+        Title title = Title.create(1L, "進撃の巨人");
         TitleEntity entity = TitleEntity.fromDomain(title);
 
         // When
@@ -56,8 +56,8 @@ class TitleMapperTest {
     @DisplayName("すべてのタイトルを取得できる")
     void shouldFindAllTitles() {
         // Given
-        Title title1 = Title.create("進撃の巨人");
-        Title title2 = Title.create("鬼滅の刃");
+        Title title1 = Title.create(1L, "進撃の巨人");
+        Title title2 = Title.create(2L, "鬼滅の刃");
         TitleEntity entity1 = TitleEntity.fromDomain(title1);
         TitleEntity entity2 = TitleEntity.fromDomain(title2);
         titleMapper.insert(entity1);
@@ -74,7 +74,7 @@ class TitleMapperTest {
     @DisplayName("タイトル名の存在確認（大文字小文字区別なし）")
     void shouldCheckExistenceByName() {
         // Given
-        Title title = Title.create("進撃の巨人");
+        Title title = Title.create(1L, "進撃の巨人");
         TitleEntity entity = TitleEntity.fromDomain(title);
         titleMapper.insert(entity);
 
@@ -89,7 +89,7 @@ class TitleMapperTest {
     @DisplayName("タイトルを削除できる")
     void shouldDeleteTitle() {
         // Given
-        Title title = Title.create("進撃の巨人");
+        Title title = Title.create(1L, "進撃の巨人");
         TitleEntity entity = TitleEntity.fromDomain(title);
         titleMapper.insert(entity);
 

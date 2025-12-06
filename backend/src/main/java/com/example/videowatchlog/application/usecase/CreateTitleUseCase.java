@@ -5,6 +5,7 @@ import com.example.videowatchlog.application.dto.TitleSummaryDTO;
 import com.example.videowatchlog.domain.model.Title;
 import com.example.videowatchlog.domain.model.TitleInfoUrl;
 import com.example.videowatchlog.domain.repository.TitleRepository;
+import com.example.videowatchlog.domain.service.EntityIdentityService;
 import com.example.videowatchlog.domain.service.TitleDuplicationCheckService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,12 +17,15 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class CreateTitleUseCase {
+    private final EntityIdentityService identityService;
     private final TitleRepository titleRepository;
     private final TitleDuplicationCheckService duplicationCheckService;
 
     public CreateTitleUseCase(
+            EntityIdentityService identityService,
             TitleRepository titleRepository,
             TitleDuplicationCheckService duplicationCheckService) {
+        this.identityService = identityService;
         this.titleRepository = titleRepository;
         this.duplicationCheckService = duplicationCheckService;
     }
@@ -40,8 +44,11 @@ public class CreateTitleUseCase {
             throw new IllegalArgumentException("タイトル「" + request.getName() + "」はすでに存在します");
         }
 
+        // ID採番（ドメインサービス）
+        Long id = identityService.generateId();
+
         // タイトルを作成（デフォルトシリーズ・エピソードが自動生成される）
-        Title title = Title.create(request.getName());
+        Title title = Title.create(id, request.getName());
 
         // タイトル情報URLを追加
         if (request.getTitleInfoUrls() != null && !request.getTitleInfoUrls().isEmpty()) {

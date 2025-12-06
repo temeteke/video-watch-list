@@ -46,13 +46,14 @@ public class Title {
     /**
      * タイトルを作成します（ファクトリメソッド）
      *
+     * @param id タイトルID（EntityIdentityServiceで生成）
      * @param name タイトル名（1～200文字）
      * @return 新規作成されたTitle
      * @throws IllegalArgumentException タイトル名が無効な場合
      */
-    public static Title create(String name) {
+    public static Title create(Long id, String name) {
         LocalDateTime now = LocalDateTime.now();
-        return new Title(null, name, new LinkedHashSet<>(), new ArrayList<>(), now, now);
+        return new Title(id, name, new LinkedHashSet<>(), new ArrayList<>(), now, now);
     }
 
     /**
