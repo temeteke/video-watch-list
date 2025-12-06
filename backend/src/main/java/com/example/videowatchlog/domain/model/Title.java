@@ -21,21 +21,8 @@ public class Title {
     private LocalDateTime updatedAt;
 
     /**
-     * プライベートコンストラクタ（DDD: 集約ルートの完全性を保証するため）
-     */
-    private Title(String name, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = null;  // 新規作成時はnull
-        this.name = name;
-        this.titleInfoUrls = new LinkedHashSet<>();
-        this.series = new ArrayList<>();
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        // Note: デフォルトシリーズはリポジトリ層で保存時に作成されます
-    }
-
-    /**
      * Public constructor for creating Title instances.
-     * Used by persistence layer (Entity conversion).
+     * Used by persistence layer (Entity conversion) and domain logic.
      *
      * @param id Unique identifier (null for new entities)
      * @param name Title name (1-200 characters)
@@ -56,7 +43,6 @@ public class Title {
         this.updatedAt = updatedAt;
     }
 
-
     /**
      * タイトルを作成します（ファクトリメソッド）
      *
@@ -65,9 +51,8 @@ public class Title {
      * @throws IllegalArgumentException タイトル名が無効な場合
      */
     public static Title create(String name) {
-        validateName(name);
         LocalDateTime now = LocalDateTime.now();
-        return new Title(name, now, now);
+        return new Title(null, name, new LinkedHashSet<>(), new ArrayList<>(), now, now);
     }
 
     /**
