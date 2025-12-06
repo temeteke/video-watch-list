@@ -26,10 +26,9 @@
         ORDER BY id
     </select>
 
-    <insert id="insert" parameterType="com.example.videowatchlog.infrastructure.persistence.entity.EpisodeEntity"
-            useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO episodes (series_id, episode_info, watch_status, created_at, updated_at)
-        VALUES (#{seriesId}, #{episodeInfo}, CAST(#{watchStatus} AS watch_status), #{createdAt}, #{updatedAt})
+    <insert id="insert" parameterType="com.example.videowatchlog.infrastructure.persistence.entity.EpisodeEntity">
+        INSERT INTO episodes (id, series_id, episode_info, watch_status, created_at, updated_at)
+        VALUES (#{id}, #{seriesId}, #{episodeInfo}, CAST(#{watchStatus} AS watch_status), #{createdAt}, #{updatedAt})
     </insert>
 
     <update id="update" parameterType="com.example.videowatchlog.infrastructure.persistence.entity.EpisodeEntity">

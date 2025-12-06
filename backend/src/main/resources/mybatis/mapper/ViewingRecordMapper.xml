@@ -26,10 +26,9 @@
         ORDER BY recorded_at DESC
     </select>
 
-    <insert id="insert" parameterType="com.example.videowatchlog.infrastructure.persistence.entity.ViewingRecordEntity"
-            useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO viewing_records (episode_id, watched_at, rating, comment, recorded_at)
-        VALUES (#{episodeId}, #{watchedAt}, #{rating}, #{comment}, #{recordedAt})
+    <insert id="insert" parameterType="com.example.videowatchlog.infrastructure.persistence.entity.ViewingRecordEntity">
+        INSERT INTO viewing_records (id, episode_id, watched_at, rating, comment, recorded_at)
+        VALUES (#{id}, #{episodeId}, #{watchedAt}, #{rating}, #{comment}, #{recordedAt})
     </insert>
 
     <delete id="delete">
