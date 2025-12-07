@@ -40,9 +40,9 @@ class GetAllTitlesUseCaseTest {
         // Given
         LocalDateTime now = LocalDateTime.now();
         Title title1 = new Title(1L, "Title 1", new java.util.LinkedHashSet<>(),
-                                new java.util.ArrayList<>(), now, now);
+                                now, now);
         Title title2 = new Title(2L, "Title 2", new java.util.LinkedHashSet<>(),
-                                new java.util.ArrayList<>(), now, now);
+                                now, now);
 
         List<Title> titles = Arrays.asList(title1, title2);
         when(titleRepository.findAll()).thenReturn(titles);

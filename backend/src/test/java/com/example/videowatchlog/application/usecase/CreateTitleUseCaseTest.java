@@ -42,7 +42,8 @@ class CreateTitleUseCaseTest {
         when(titleRepository.save(any(Title.class))).thenAnswer(invocation -> {
             Title title = invocation.getArgument(0);
             // 不変なため、IDが設定された新しいインスタンスを返す
-            return new Title(title.getId(), title.getName(), title.getTitleInfoUrls(), title.getSeries(),
+            // Phase 7: Series パラメータを削除
+            return new Title(title.getId(), title.getName(), title.getTitleInfoUrls(),
                            title.getCreatedAt(), title.getUpdatedAt());
         });
 
@@ -83,7 +84,8 @@ class CreateTitleUseCaseTest {
         when(titleRepository.save(any(Title.class))).thenAnswer(invocation -> {
             Title title = invocation.getArgument(0);
             // 不変なため、IDが設定された新しいインスタンスを返す
-            return new Title(title.getId(), title.getName(), title.getTitleInfoUrls(), title.getSeries(),
+            // Phase 7: Series パラメータを削除
+            return new Title(title.getId(), title.getName(), title.getTitleInfoUrls(),
                            title.getCreatedAt(), title.getUpdatedAt());
         });
 
