@@ -30,18 +30,22 @@ export default function TitleList({ titles, onDelete }: TitleListProps) {
           key={title.id}
           className="card hover:shadow-lg transition-shadow duration-200"
         >
-          <Link
-            href={`/titles/${title.id}`}
-            className="text-primary font-medium hover:text-primary-dark text-lg block mb-md truncate"
-          >
-            {title.name}
-          </Link>
-          <button
-            onClick={() => handleDelete(title.id)}
-            className="btn-danger disabled:opacity-60 disabled:cursor-not-allowed w-full"
-          >
-            削除
-          </button>
+          <div className="flex items-start justify-between gap-2">
+            <Link
+              href={`/titles/${title.id}`}
+              className="text-primary font-medium hover:text-primary-dark text-lg block truncate flex-1"
+            >
+              {title.name}
+            </Link>
+            <button
+              onClick={() => handleDelete(title.id)}
+              className="text-text-light hover:text-danger transition-colors duration-200 p-1 flex-shrink-0"
+              aria-label="削除"
+              title="削除"
+            >
+              🗑️
+            </button>
+          </div>
         </div>
       ))}
     </div>
