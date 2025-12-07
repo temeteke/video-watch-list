@@ -382,12 +382,227 @@ CREATE INDEX idx_watch_page_urls_episode_id ON watch_page_urls(episode_id);
 
 ---
 
+---
+
+## Phase 3: アーキテクチャ改善 - CQRS + 独立集約パターン
+
+**状態**: 計画段階（実装前）
+
+### 背景と課題
+
+現在のデータモデル（Phase 1 設計）では、Title が集約ルートとして Series と Episode を内包する **Giant Aggregate** パターンを採用しており、以下の課題が発生しています：
+
+1. **N+1 クエリ問題**: GetAllTitles で 50 タイトル取得時に 101 クエリ（1 + 50 Series + 50 TitleInfoUrls）
+2. **スケーラビリティの低下**: Series や Episode が増えると、Title のロード時間が増加
+3. **データ整合性の問題**: CreateSeriesUseCase で `title.getSeries().add(series)` をしても、Series テーブルへの保存が確実ではない
+
+### 改善方針
+
+**案A（推奨）: 3つの独立集約に再設計**:
+- Title、Series、Episode をそれぞれ独立した集約ルートに昇格
+- オブジェクト参照を廃止し、ID 参照のみに変更
+- CQRS パターンを適用し、Read Model で JOIN を使用して N+1 問題を解決
+
+### Phase 3 設計の集約構造
+
+#### 新しい集約境界（実装予定）
+
+```
+Write Model（書き込み用）:
+├── Title（集約ルート）
+│   ├── id: Long
+│   ├── name: String
+│   └── titleInfoUrls: Set<TitleInfoUrl>
+│
+├── Series（独立集約ルート）
+│   ├── id: Long
+│   ├── titleId: Long ← ID 参照のみ
+│   └── name: String
+│
+└── Episode（独立集約ルート）
+    ├── id: Long
+    ├── seriesId: Long ← ID 参照のみ
+    ├── episodeInfo: String
+    ├── watchPageUrls: List<WatchPageUrl>
+    └── viewingRecords: List<ViewingRecord>
+
+Read Model（読み取り用）:
+├── TitleListReadModel（タイトル一覧用、JOIN不要）
+├── TitleDetailReadModel（タイトル詳細用、Series + Episode を JOIN で取得）
+├── SeriesReadModel（Series 詳細用）
+└── EpisodeReadModel（Episode 詳細用）
+```
+
+#### 集約ごとの責任
+
+| 集約 | 現在の設計 | Phase 3 の設計 |
+|-----|----------|--------------|
+| **Title** | Series をオブジェクト参照で内包 | Series は titleId で ID 参照のみ |
+| **Series** | Episode をオブジェクト参照で内包 | Episode は seriesId で ID 参照のみ |
+| **Episode** | ViewingRecord を内包 | ViewingRecord は内包のまま（変更なし） |
+
+### CQRS パターン適用の詳細
+
+#### Write Model（書き込み操作用）
+
+**使用場面**:
+- CreateTitle, CreateSeries, CreateEpisode, UpdateTitle など
+- ドメインロジック（バリデーション、ビジネスルール）を実装
+
+**Repository**:
+- TitleRepository: Title + TitleInfoUrl のみ管理
+- SeriesRepository: Series のみ管理（Episode を含まない）
+- EpisodeRepository: Episode + ViewingRecord を管理
+
+**実装例**:
+```java
+// Title から Series フィールドを削除
+public class Title {
+    private final Long id;
+    private String name;
+    private final Set<TitleInfoUrl> titleInfoUrls;
+    // private List<Series> series; ← 削除
+    private final LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}
+
+// Series から Episode フィールドを削除
+public class Series {
+    private final Long id;
+    private final Long titleId;  // ID 参照のみ
+    private String name;
+    // private List<Episode> episodes; ← 削除
+    private final LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}
+```
+
+#### Read Model（読み取り操作用）
+
+**使用場面**:
+- GetAllTitles, GetTitleDetail など
+- ビジネスロジック不要。データ転送の最適化に特化
+
+**リードモデル**:
+```java
+// タイトル一覧用（シンプル）
+public class TitleListReadModel {
+    private Long id;
+    private String name;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}
+
+// タイトル詳細用（Series + Episode を含む）
+public class TitleDetailReadModel {
+    private Long id;
+    private String name;
+    private List<String> titleInfoUrls;
+    private List<SeriesReadModel> series;  // JOIN で取得
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}
+
+public class SeriesReadModel {
+    private Long id;
+    private String name;
+    private List<EpisodeReadModel> episodes;  // JOIN で取得
+}
+
+public class EpisodeReadModel {
+    private Long id;
+    private String episodeInfo;
+    private String watchStatus;
+    private List<String> watchPageUrls;
+    private int viewingRecordCount;
+}
+```
+
+**SQL による JOIN 最適化**:
+```sql
+-- GetAllTitles（1 クエリ）
+SELECT id, name, created_at, updated_at FROM titles ORDER BY created_at DESC;
+
+-- GetTitleDetail（1 クエリ、JOIN）
+SELECT
+    t.id, t.name,
+    s.id, s.name,
+    e.id, e.episode_info, e.watch_status,
+    tiu.url,
+    COUNT(vr.id) as viewing_record_count
+FROM titles t
+LEFT JOIN title_info_urls tiu ON t.id = tiu.title_id
+LEFT JOIN series s ON t.id = s.title_id
+LEFT JOIN episodes e ON s.id = e.series_id
+LEFT JOIN viewing_records vr ON e.id = vr.episode_id
+WHERE t.id = ?
+GROUP BY t.id, s.id, e.id, tiu.url
+ORDER BY s.created_at, e.created_at;
+```
+
+### パフォーマンス改善の期待値
+
+| 操作 | 現在（Phase 1） | Phase 3 後 | 削減率 |
+|------|----------------|----------|-------|
+| GetAllTitles（50タイトル） | 101 クエリ | 1 クエリ | 99% |
+| GetTitleDetail | 2-3 クエリ | 1 クエリ | 50-66% |
+| CreateSeries | Title ロード + Series 保存 | Series 保存のみ | データ整合性向上 |
+| CreateEpisode | Series ロード + Episode 保存 | Episode 保存のみ | データ整合性向上 |
+
+### ER 図の変更（Phase 3）
+
+**現在（Phase 1）**:
+```
+Title (1) ──────< (N) Series (1) ──────< (N) Episode (1) ──────< (N) ViewingRecord
+```
+
+**Phase 3 後（独立集約）**:
+```
+Title (集約ルート)          Series (集約ルート)         Episode (集約ルート)
+├── id                      ├── id                      ├── id
+├── name                     ├── titleId (FK)            ├── seriesId (FK)
+└── titleInfoUrls           └── name                    ├── episodeInfo
+                                                        ├── watchPageUrls
+                                                        └── viewingRecords
+```
+
+### 実装計画（Milestone 構成）
+
+#### Milestone 1: Write Model の分離
+- Title から Series フィールドを削除
+- Series から Episode フィールドを削除
+- TitleRepositoryImpl, SeriesRepositoryImpl を修正（ロード時に子集約をロードしない）
+
+#### Milestone 2: Read Model の追加
+- TitleListReadModel, TitleDetailReadModel, SeriesReadModel, EpisodeReadModel を作成
+- TitleReadMapper（MyBatis）で JOIN クエリを実装
+- TitleReadService を作成
+
+#### Milestone 3: UseCase 修正
+- GetAllTitlesUseCase を Read Model に切り替え
+- GetTitleDetailUseCase を Read Model に切り替え
+- CreateSeriesUseCase, CreateEpisodeUseCase を簡潔化（親集約をロードしない）
+
+#### Milestone 4: テスト検証
+- 全140テストが通過することを確認
+- パフォーマンステスト（N+1 クエリ削減を確認）
+
+---
+
 ## まとめ
 
 このデータモデルは、以下の原則に従って設計されています：
 
-1. **DDD 準拠**: Title を集約ルートとし、Series, Episode, ViewingRecord の整合性を保証
+1. **DDD 準拠**:
+   - **Phase 1**: Title を集約ルートとし、Series, Episode, ViewingRecord の整合性を保証
+   - **Phase 3**（計画）: Title、Series、Episode を独立集約に昇格し、スケーラビリティ向上
+
 2. **不変性**: ViewingRecord は一度記録したら変更不可（削除は可能）
+
 3. **ユビキタス言語**: 日本語（仕様書）↔ 英語（コード）の用語対応を明確化
+
 4. **内部構造の統一性**: すべてのタイトルが最低1件のシリーズ、すべてのシリーズが最低1件のエピソードを持つ
+
 5. **UI 最適化**: 内部構造とは独立したUI層で、条件に応じてレイヤーを動的に非表示
+
+6. **CQRS パターン準備**（Phase 3）: Read と Write を分離し、パフォーマンス最適化（N+1 クエリ削減）と保守性向上を実現
