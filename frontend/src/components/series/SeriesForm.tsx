@@ -21,15 +21,20 @@ export default function SeriesForm({ onSubmit, isLoading = false }: SeriesFormPr
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="flex gap-md">
       <input
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="例: Season 2"
         disabled={isLoading}
+        className="flex-1"
       />
-      <button type="submit" disabled={isLoading}>
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap"
+      >
         シリーズを追加
       </button>
     </form>

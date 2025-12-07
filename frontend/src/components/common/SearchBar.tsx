@@ -29,8 +29,8 @@ export default function SearchBar({ onSearch, isLoading = false }: SearchBarProp
   };
 
   return (
-    <div style={{ marginBottom: '20px' }}>
-      <div style={{ display: 'flex', gap: '10px' }}>
+    <div className="mb-xl">
+      <div className="flex flex-col sm:flex-row gap-md">
         <input
           type="text"
           placeholder="タイトルを検索..."
@@ -38,13 +38,7 @@ export default function SearchBar({ onSearch, isLoading = false }: SearchBarProp
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={isLoading}
-          style={{
-            flex: 1,
-            padding: '8px 12px',
-            fontSize: '16px',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-          }}
+          className={`flex-1 px-md py-sm border border-border-color rounded-md text-base focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-60 disabled:cursor-not-allowed`}
           data-testid="search-input"
         />
 
@@ -52,13 +46,7 @@ export default function SearchBar({ onSearch, isLoading = false }: SearchBarProp
           value={watchStatus || ''}
           onChange={(e) => setWatchStatus((e.target.value as WatchStatus) || undefined)}
           disabled={isLoading}
-          style={{
-            padding: '8px 12px',
-            fontSize: '16px',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            minWidth: '150px',
-          }}
+          className={`px-md py-sm border border-border-color rounded-md text-base min-w-fit sm:w-48 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-60 disabled:cursor-not-allowed`}
           data-testid="watch-status-filter"
         >
           <option value="">すべての状態</option>
@@ -69,16 +57,7 @@ export default function SearchBar({ onSearch, isLoading = false }: SearchBarProp
         <button
           onClick={handleSearch}
           disabled={isLoading}
-          style={{
-            padding: '8px 16px',
-            fontSize: '16px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: isLoading ? 'not-allowed' : 'pointer',
-            opacity: isLoading ? 0.6 : 1,
-          }}
+          className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed"
           data-testid="search-button"
         >
           検索
@@ -87,16 +66,7 @@ export default function SearchBar({ onSearch, isLoading = false }: SearchBarProp
         <button
           onClick={handleClear}
           disabled={isLoading}
-          style={{
-            padding: '8px 16px',
-            fontSize: '16px',
-            backgroundColor: '#6c757d',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: isLoading ? 'not-allowed' : 'pointer',
-            opacity: isLoading ? 0.6 : 1,
-          }}
+          className="px-lg py-sm bg-gray-500 text-white rounded-md font-medium transition-colors duration-200 min-h-touch-target hover:bg-gray-600 active:bg-gray-600 disabled:opacity-60 disabled:cursor-not-allowed"
           data-testid="clear-button"
         >
           クリア

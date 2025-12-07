@@ -20,17 +20,30 @@ export default function TitleList({ titles, onDelete }: TitleListProps) {
   };
 
   if (titles.length === 0) {
-    return <p>タイトルがありません</p>;
+    return <p className="text-center text-text-light py-lg">タイトルがありません</p>;
   }
 
   return (
-    <ul>
+    <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-3">
       {titles.map((title) => (
-        <li key={title.id}>
-          <Link href={`/titles/${title.id}`}>{title.name}</Link>
-          <button onClick={() => handleDelete(title.id)}>削除</button>
-        </li>
+        <div
+          key={title.id}
+          className="card hover:shadow-lg transition-shadow duration-200"
+        >
+          <Link
+            href={`/titles/${title.id}`}
+            className="text-primary font-medium hover:text-primary-dark text-lg block mb-md truncate"
+          >
+            {title.name}
+          </Link>
+          <button
+            onClick={() => handleDelete(title.id)}
+            className="btn-danger disabled:opacity-60 disabled:cursor-not-allowed w-full"
+          >
+            削除
+          </button>
+        </div>
       ))}
-    </ul>
+    </div>
   );
 }

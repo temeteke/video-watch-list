@@ -56,18 +56,18 @@ export default function Toast() {
     return unsubscribe;
   }, []);
 
-  const getBackgroundColor = (type: ToastType) => {
+  const getToastClass = (type: ToastType) => {
     switch (type) {
       case 'success':
-        return '#28a745';
+        return 'bg-success text-white';
       case 'error':
-        return '#dc3545';
+        return 'bg-danger text-white';
       case 'warning':
-        return '#ffc107';
+        return 'bg-warning text-text-dark';
       case 'info':
-        return '#17a2b8';
+        return 'bg-info text-white';
       default:
-        return '#333';
+        return 'bg-text-dark text-white';
     }
   };
 
@@ -88,47 +88,20 @@ export default function Toast() {
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        top: '20px',
-        right: '20px',
-        zIndex: 9999,
-        maxWidth: '400px',
-      }}
+      className="fixed top-lg right-lg z-50 max-w-sm"
       data-testid="toast-container"
     >
       {messages.map((msg) => (
         <div
           key={msg.id}
-          style={{
-            backgroundColor: getBackgroundColor(msg.type),
-            color: 'white',
-            padding: '16px',
-            marginBottom: '12px',
-            borderRadius: '4px',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            animation: 'slideIn 0.3s ease-out',
-          }}
+          className={`${getToastClass(msg.type)} px-lg py-md mb-md rounded-md shadow-md flex items-center gap-md animate-slideIn`}
           data-testid={`toast-${msg.type}`}
         >
-          <span style={{ fontSize: '18px', minWidth: '24px' }}>{getIcon(msg.type)}</span>
-          <span style={{ flex: 1, fontSize: '14px', lineHeight: '1.5' }}>
-            {msg.message}
-          </span>
+          <span className="text-lg min-w-fit">{getIcon(msg.type)}</span>
+          <span className="flex-1 text-sm leading-relaxed">{msg.message}</span>
           <button
             onClick={() => removeToast(msg.id)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'white',
-              fontSize: '20px',
-              cursor: 'pointer',
-              padding: '0',
-              minWidth: '24px',
-            }}
+            className="bg-none border-none text-white text-xl cursor-pointer p-0 min-w-fit hover:opacity-80"
             data-testid={`toast-close-${msg.id}`}
           >
             ✕
@@ -145,6 +118,9 @@ export default function Toast() {
             transform: translateX(0);
             opacity: 1;
           }
+        }
+        .animate-slideIn {
+          animation: slideIn 0.3s ease-out;
         }
       `}</style>
     </div>

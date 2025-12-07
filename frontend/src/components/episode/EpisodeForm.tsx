@@ -36,25 +36,33 @@ export default function EpisodeForm({ onSubmit, isLoading = false }: EpisodeForm
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="space-y-md">
       <input
         type="text"
         value={episodeInfo}
         onChange={(e) => setEpisodeInfo(e.target.value)}
         placeholder="例: 第1話"
         disabled={isLoading}
+        className="w-full"
       />
-      {urls.map((url, index) => (
-        <input
-          key={index}
-          type="url"
-          value={url}
-          onChange={(e) => handleUrlChange(index, e.target.value)}
-          placeholder="https://..."
-          disabled={isLoading}
-        />
-      ))}
-      <button type="submit" disabled={isLoading}>
+      <div className="space-y-md">
+        {urls.map((url, index) => (
+          <input
+            key={index}
+            type="url"
+            value={url}
+            onChange={(e) => handleUrlChange(index, e.target.value)}
+            placeholder="https://..."
+            disabled={isLoading}
+            className="w-full"
+          />
+        ))}
+      </div>
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed w-full sm:w-auto"
+      >
         エピソードを追加
       </button>
     </form>
