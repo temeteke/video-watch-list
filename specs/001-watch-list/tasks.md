@@ -398,25 +398,25 @@
 
 #### Domain Model の修正
 
-- [ ] T172 [P] backend/src/main/java/com/example/videowatchlog/domain/model/Title.java から Series フィールドを削除し、ID 参照のみに修正
-- [ ] T173 [P] backend/src/test/java/com/example/videowatchlog/domain/model/TitleTest.java を更新（Series フィールドが存在しないことを検証）
-- [ ] T174 [P] backend/src/main/java/com/example/videowatchlog/domain/model/Series.java から Episode フィールドを削除し、ID 参照のみに修正
-- [ ] T175 [P] backend/src/test/java/com/example/videowatchlog/domain/model/SeriesTest.java を更新（Episode フィールドが存在しないことを検証）
+- [x] T172 [P] backend/src/main/java/com/example/videowatchlog/domain/model/Title.java から Series フィールドを削除し、ID 参照のみに修正
+- [x] T173 [P] backend/src/test/java/com/example/videowatchlog/domain/model/TitleTest.java を更新（Series フィールドが存在しないことを検証）
+- [x] T174 [P] backend/src/main/java/com/example/videowatchlog/domain/model/Series.java から Episode フィールドを削除し、ID 参照のみに修正
+- [x] T175 [P] backend/src/test/java/com/example/videowatchlog/domain/model/SeriesTest.java を更新（Episode フィールドが存在しないことを検証）
 
 #### Entity・Repository の修正
 
-- [ ] T176 backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/entity/TitleEntity.java の toDomain() シグネチャを変更（Series パラメータを削除）
-- [ ] T177 [P] backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/entity/SeriesEntity.java の toDomain() シグネチャを変更（Episode パラメータを削除）
-- [ ] T178 backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/TitleRepositoryImpl.java を修正（Series をロードしない、N+1 を 51 クエリに削減）
-- [ ] T179 [P] backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/SeriesRepositoryImpl.java を修正（Episode をロードしない）
-- [ ] T180 [P] backend/src/test/java/com/example/videowatchlog/infrastructure/persistence/TitleRepositoryImplTest.java を更新
+- [x] T176 backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/entity/TitleEntity.java の toDomain() シグネチャを変更（Series パラメータを削除）
+- [x] T177 [P] backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/entity/SeriesEntity.java の toDomain() シグネチャを変更（Episode パラメータを削除）
+- [x] T178 backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/TitleRepositoryImpl.java を修正（Series をロードしない、N+1 を 51 クエリに削減）
+- [x] T179 [P] backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/SeriesRepositoryImpl.java を修正（Episode をロードしない）
+- [x] T180 [P] backend/src/test/java/com/example/videowatchlog/infrastructure/persistence/TitleRepositoryImplTest.java を更新
 
 #### UseCase の簡潔化
 
-- [ ] T181 backend/src/main/java/com/example/videowatchlog/application/usecase/CreateSeriesUseCase.java を修正（Title をロードしない、Series のみ保存）
-- [ ] T182 [P] backend/src/test/java/com/example/videowatchlog/application/usecase/CreateSeriesUseCaseTest.java を更新
-- [ ] T183 [P] backend/src/main/java/com/example/videowatchlog/application/usecase/CreateEpisodeUseCase.java を修正（Series をロードしない、Episode のみ保存）
-- [ ] T184 [P] backend/src/test/java/com/example/videowatchlog/application/usecase/CreateEpisodeUseCaseTest.java を更新
+- [x] T181 backend/src/main/java/com/example/videowatchlog/application/usecase/CreateSeriesUseCase.java を修正（Title をロードしない、Series のみ保存）
+- [x] T182 [P] backend/src/test/java/com/example/videowatchlog/application/usecase/CreateSeriesUseCaseTest.java を更新
+- [x] T183 [P] backend/src/main/java/com/example/videowatchlog/application/usecase/CreateEpisodeUseCase.java を修正（Series をロードしない、Episode のみ保存）
+- [x] T184 [P] backend/src/test/java/com/example/videowatchlog/application/usecase/CreateEpisodeUseCaseTest.java を更新
 
 ### Milestone 2: Read Model の追加
 
@@ -424,21 +424,21 @@
 
 #### Read Model クラスの作成
 
-- [ ] T185 backend/src/main/java/com/example/videowatchlog/application/readmodel/TitleListReadModel.java を作成（タイトル一覧用リードモデル）
-- [ ] T186 [P] backend/src/main/java/com/example/videowatchlog/application/readmodel/TitleDetailReadModel.java を作成（タイトル詳細用リードモデル）
-- [ ] T187 [P] backend/src/main/java/com/example/videowatchlog/application/readmodel/SeriesReadModel.java を作成
-- [ ] T188 [P] backend/src/main/java/com/example/videowatchlog/application/readmodel/EpisodeReadModel.java を作成
+- [x] T185 backend/src/main/java/com/example/videowatchlog/application/readmodel/TitleListReadModel.java を作成（タイトル一覧用リードモデル）
+- [x] T186 [P] backend/src/main/java/com/example/videowatchlog/application/readmodel/TitleDetailReadModel.java を作成（タイトル詳細用リードモデル）
+- [x] T187 [P] backend/src/main/java/com/example/videowatchlog/application/readmodel/SeriesReadModel.java を作成
+- [x] T188 [P] backend/src/main/java/com/example/videowatchlog/application/readmodel/EpisodeReadModel.java を作成
 
 #### MyBatis リードマッパー の実装
 
-- [ ] T189 backend/src/main/java/com/example/videowatchlog/application/readmodel/mapper/TitleReadMapper.java を作成（MyBatis Mapper インターフェース）
-- [ ] T190 backend/src/main/resources/mybatis/mapper/readmodel/TitleReadMapper.xml を作成（JOIN SQL 実装: 1 クエリで全階層取得）
-- [ ] T191 [P] backend/src/test/java/com/example/videowatchlog/application/readmodel/mapper/TitleReadMapperTest.java を作成（統合テスト: JOIN が正しく動作することを検証）
+- [x] T189 backend/src/main/java/com/example/videowatchlog/application/readmodel/mapper/TitleReadMapper.java を作成（MyBatis Mapper インターフェース）
+- [x] T190 backend/src/main/resources/mybatis/mapper/readmodel/TitleReadMapper.xml を作成（JOIN SQL 実装: 1 クエリで全階層取得）
+- [x] T191 [P] backend/src/test/java/com/example/videowatchlog/application/readmodel/mapper/TitleReadMapperTest.java を作成（統合テスト: JOIN が正しく動作することを検証）
 
 #### リードサービス の実装
 
-- [ ] T192 backend/src/main/java/com/example/videowatchlog/application/readmodel/service/TitleReadService.java を作成（getAllTitles, getTitleDetail メソッド）
-- [ ] T193 [P] backend/src/test/java/com/example/videowatchlog/application/readmodel/service/TitleReadServiceTest.java を作成（モックテスト）
+- [x] T192 backend/src/main/java/com/example/videowatchlog/application/readmodel/service/TitleReadService.java を作成（getAllTitles, getTitleDetail メソッド）
+- [x] T193 [P] backend/src/test/java/com/example/videowatchlog/application/readmodel/service/TitleReadServiceTest.java を作成（モックテスト）
 
 ### Milestone 3: UseCase の修正（Read と Write の分離）
 
@@ -446,14 +446,14 @@
 
 #### Read 系 UseCase の修正
 
-- [ ] T194 backend/src/main/java/com/example/videowatchlog/application/usecase/GetAllTitlesUseCase.java を修正（TitleReadService を使用、1 クエリに削減）
-- [ ] T195 [P] backend/src/test/java/com/example/videowatchlog/application/usecase/GetAllTitlesUseCaseTest.java を更新（TitleReadService を使用することを検証）
-- [ ] T196 backend/src/main/java/com/example/videowatchlog/application/usecase/GetTitleDetailUseCase.java を修正（TitleReadService を使用、1 クエリ（JOIN）に削減）
-- [ ] T197 [P] backend/src/test/java/com/example/videowatchlog/application/usecase/GetTitleDetailUseCaseTest.java を更新
+- [x] T194 backend/src/main/java/com/example/videowatchlog/application/usecase/GetAllTitlesUseCase.java を修正（TitleReadService を使用、1 クエリに削減）
+- [x] T195 [P] backend/src/test/java/com/example/videowatchlog/application/usecase/GetAllTitlesUseCaseTest.java を更新（TitleReadService を使用することを検証）
+- [x] T196 backend/src/main/java/com/example/videowatchlog/application/usecase/GetTitleDetailUseCase.java を修正（TitleReadService を使用、1 クエリ（JOIN）に削減）
+- [x] T197 [P] backend/src/test/java/com/example/videowatchlog/application/usecase/GetTitleDetailUseCaseTest.java を更新
 
 #### Controller の API レスポンスが変わらないことを検証
 
-- [ ] T198 backend/src/test/java/com/example/videowatchlog/integration/TitleControllerIntegrationTest.java を更新（API レスポンスが変わらないことを確認）
+- [x] T198 backend/src/test/java/com/example/videowatchlog/integration/TitleControllerIntegrationTest.java を更新（API レスポンスが変わらないことを確認）
 
 ### Milestone 4: パフォーマンス検証
 
@@ -461,13 +461,13 @@
 
 #### パフォーマンス テスト
 
-- [ ] T199 backend/src/test/java/com/example/videowatchlog/performance/N1QueryReductionTest.java を作成（パフォーマンステスト: GetAllTitles で 101 → 1 クエリ削減を確認）
-- [ ] T200 [P] backend/src/test/java/com/example/videowatchlog/performance/GetTitleDetailPerformanceTest.java を作成（GetTitleDetail が 1 クエリ（JOIN）で実行されることを確認）
+- [x] T199 backend/src/test/java/com/example/videowatchlog/performance/N1QueryReductionTest.java を作成（パフォーマンステスト: GetAllTitles で 101 → 1 クエリ削減を確認）
+- [x] T200 [P] backend/src/test/java/com/example/videowatchlog/performance/GetTitleDetailPerformanceTest.java を作成（GetTitleDetail が 1 クエリ（JOIN）で実行されることを確認）
 
 #### 全テスト検証
 
-- [ ] T201 すべてのテスト（140+ テスト）が通過することを確認（`mvn test`）
-- [ ] T202 [P] パフォーマンス要件が満たされていることを確認（API p95 < 200ms, ページ p95 < 1秒）
+- [x] T201 すべてのテスト（140+ テスト）が通過することを確認（`mvn test`）
+- [x] T202 [P] パフォーマンス要件が満たされていることを確認（API p95 < 200ms, ページ p95 < 1秒）
 
 ### Milestone 5: ドキュメント更新
 
@@ -475,9 +475,9 @@
 
 #### ドキュメント更新
 
-- [ ] T203 data-model.md の「集約の整合性ルール」セクションを更新（独立集約の説明）
-- [ ] T204 [P] plan.md の Phase 3 セクションに実装完了マーク（✅ COMPLETED）を追記
-- [ ] T205 [P] backend/README.md の「アーキテクチャ」セクションに CQRS パターンの説明を追加
+- [x] T203 data-model.md の「集約の整合性ルール」セクションを更新（独立集約の説明）
+- [x] T204 [P] plan.md の Phase 3 セクションに実装完了マーク（✅ COMPLETED）を追記
+- [x] T205 [P] backend/README.md の「アーキテクチャ」セクションに CQRS パターンの説明を追加
 
 ---
 
