@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { showToast } from '@/components/common/Toast';
 import { CreateTitleRequest } from '@/types/title';
 
 interface TitleFormProps {
@@ -42,8 +43,11 @@ export default function TitleForm({ onSubmit, isLoading = false }: TitleFormProp
         name: name.trim(),
         titleInfoUrls: filledUrls.length > 0 ? filledUrls : undefined,
       });
+      showToast('タイトルを作成しました', 'success');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'エラーが発生しました');
+      const errorMessage = err instanceof Error ? err.message : 'エラーが発生しました';
+      setError(errorMessage);
+      showToast(errorMessage, 'error');
     }
   };
 

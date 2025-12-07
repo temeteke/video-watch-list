@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { showToast } from '@/components/common/Toast';
 
 interface SeriesFormProps {
   onSubmit: (name: string) => Promise<void>;
@@ -15,8 +16,10 @@ export default function SeriesForm({ onSubmit, isLoading = false }: SeriesFormPr
     try {
       await onSubmit(name);
       setName('');
+      showToast('シリーズを追加しました', 'success');
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'エラーが発生しました');
+      const errorMessage = error instanceof Error ? error.message : 'エラーが発生しました';
+      showToast(errorMessage, 'error');
     }
   };
 

@@ -8,6 +8,8 @@ import { EpisodeDetail } from '@/types/episode';
 import CompleteEpisodeForm from '@/components/episode/CompleteEpisodeForm';
 import AddViewingRecordForm from '@/components/episode/AddViewingRecordForm';
 import ViewingRecordList from '@/components/episode/ViewingRecordList';
+import Spinner from '@/components/common/Spinner';
+import Breadcrumb from '@/components/common/Breadcrumb';
 
 export default function EpisodeDetailPage() {
   const params = useParams();
@@ -79,12 +81,19 @@ export default function EpisodeDetailPage() {
     }
   };
 
-  if (loading) return <p>読み込み中...</p>;
+  if (loading) return <Spinner fullScreen />;
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
   if (!episode) return <p>エピソードが見つかりません</p>;
 
   return (
     <main>
+      <Breadcrumb
+        items={[
+          { label: 'ホーム', href: '/' },
+          { label: `エピソード ${episode.episodeInfo}` },
+        ]}
+      />
+
       <button onClick={() => router.back()}>戻る</button>
 
       <section>

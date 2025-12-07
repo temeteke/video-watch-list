@@ -3,6 +3,7 @@
 import React from 'react';
 
 interface ConfirmDialogProps {
+  isOpen: boolean;
   title: string;
   message: string;
   onConfirm: () => void;
@@ -14,6 +15,7 @@ interface ConfirmDialogProps {
 }
 
 export default function ConfirmDialog({
+  isOpen,
   title,
   message,
   onConfirm,
@@ -23,6 +25,7 @@ export default function ConfirmDialog({
   cancelButtonLabel = 'キャンセル',
   variant = 'danger',
 }: ConfirmDialogProps) {
+  if (!isOpen) return null;
   const getConfirmButtonClass = () => {
     switch (variant) {
       case 'danger':

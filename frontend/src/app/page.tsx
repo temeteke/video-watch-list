@@ -7,6 +7,7 @@ import { TitleSummary } from '@/types/title';
 import { WatchStatus } from '@/types/episode';
 import TitleList from '@/components/title/TitleList';
 import SearchBar from '@/components/common/SearchBar';
+import Spinner from '@/components/common/Spinner';
 
 export default function HomePage() {
   const [titles, setTitles] = useState<TitleSummary[]>([]);
@@ -52,15 +53,15 @@ export default function HomePage() {
   };
 
   return (
-    <main>
-      <h1>視聴予定リスト</h1>
-      <Link href="/titles/new">新規タイトル作成</Link>
-
+    <div className="space-y-lg">
       <SearchBar onSearch={handleSearch} isLoading={loading} />
 
-      {loading && <p>読み込み中...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      {!loading && <TitleList titles={titles} onDelete={handleDelete} />}
-    </main>
+      {loading ? (
+        <Spinner fullScreen />
+      ) : (
+        <TitleList titles={titles} onDelete={handleDelete} />
+      )}
+    </div>
   );
 }

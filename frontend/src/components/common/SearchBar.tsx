@@ -30,7 +30,7 @@ export default function SearchBar({ onSearch, isLoading = false }: SearchBarProp
 
   return (
     <div className="mb-xl">
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '12px', alignItems: 'center' }}>
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_auto_auto] gap-md items-stretch">
         <input
           type="text"
           placeholder="タイトルを検索..."
@@ -38,7 +38,7 @@ export default function SearchBar({ onSearch, isLoading = false }: SearchBarProp
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={isLoading}
-          className={`px-md py-sm border border-border-color rounded-md text-base focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-60 disabled:cursor-not-allowed`}
+          className="px-md py-sm border border-border-color rounded-md text-base focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-60 disabled:cursor-not-allowed min-h-touch-target"
           data-testid="search-input"
         />
 
@@ -46,7 +46,7 @@ export default function SearchBar({ onSearch, isLoading = false }: SearchBarProp
           value={watchStatus || ''}
           onChange={(e) => setWatchStatus((e.target.value as WatchStatus) || undefined)}
           disabled={isLoading}
-          className={`px-md py-sm border border-border-color rounded-md text-base focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-60 disabled:cursor-not-allowed`}
+          className="px-md py-sm border border-border-color rounded-md text-base focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-60 disabled:cursor-not-allowed min-h-touch-target"
           data-testid="watch-status-filter"
         >
           <option value="">すべての状態</option>
@@ -57,7 +57,7 @@ export default function SearchBar({ onSearch, isLoading = false }: SearchBarProp
         <button
           onClick={handleSearch}
           disabled={isLoading}
-          className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed"
+          className="btn-primary px-md py-sm disabled:opacity-60 disabled:cursor-not-allowed min-h-touch-target"
           data-testid="search-button"
         >
           検索

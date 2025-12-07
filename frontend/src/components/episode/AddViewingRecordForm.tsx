@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { showToast } from '@/components/common/Toast';
 
 interface AddViewingRecordFormProps {
   onSubmit: (data: {
@@ -46,9 +47,11 @@ export default function AddViewingRecordForm({
       setWatchedAt('');
       setRating('');
       setComment('');
+      showToast('視聴記録を追加しました', 'success');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'エラーが発生しました';
       setError(errorMessage);
+      showToast(errorMessage, 'error');
     }
   };
 
