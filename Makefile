@@ -1,5 +1,6 @@
 .PHONY: help help-all test test-watch dev up down logs logs-backend logs-frontend logs-db \
-         build clean rebuild ps status shell-backend shell-frontend restart validate
+         logs-backend-dev logs-frontend-dev shell-backend shell-frontend shell-backend-dev shell-frontend-dev \
+         build clean rebuild ps status restart validate
 
 # デフォルトターゲット: ヘルプを表示
 help:
@@ -16,10 +17,12 @@ help:
 	@echo "  make status        - 詳しいサービス状態を表示"
 	@echo ""
 	@echo "【ログ】"
-	@echo "  make logs          - すべてのログを表示"
-	@echo "  make logs-backend  - バックエンドのログを表示"
-	@echo "  make logs-frontend - フロントエンドのログを表示"
-	@echo "  make logs-db       - データベースのログを表示"
+	@echo "  make logs              - すべてのログを表示"
+	@echo "  make logs-backend      - バックエンド（本番）のログ"
+	@echo "  make logs-frontend     - フロントエンド（本番）のログ"
+	@echo "  make logs-backend-dev  - バックエンド（開発）のログ"
+	@echo "  make logs-frontend-dev - フロントエンド（開発）のログ"
+	@echo "  make logs-db           - データベースのログ"
 	@echo ""
 	@echo "【テスト】"
 	@echo "  make test          - 単体テストを実行"
@@ -32,8 +35,10 @@ help:
 	@echo "  make rebuild       - クリーン後に再ビルド"
 	@echo ""
 	@echo "【シェルアクセス】"
-	@echo "  make shell-backend  - バックエンドコンテナにシェルで接続"
-	@echo "  make shell-frontend - フロントエンドコンテナにシェルで接続"
+	@echo "  make shell-backend      - バックエンド（本番）にシェル接続"
+	@echo "  make shell-frontend     - フロントエンド（本番）にシェル接続"
+	@echo "  make shell-backend-dev  - バックエンド（開発）にシェル接続"
+	@echo "  make shell-frontend-dev - フロントエンド（開発）にシェル接続"
 	@echo ""
 	@echo "詳細版は: make help-all"
 
@@ -76,7 +81,7 @@ test-watch:
 # 開発サーバー起動（ホットリロード有効）
 dev:
 	@echo "開発サーバーを起動中..."
-	docker-compose up db backend-dev frontend
+	docker-compose up db backend-dev frontend-dev
 
 # 本番用コンテナ起動
 up:
@@ -134,13 +139,29 @@ status:
 	@echo "=== ディスク使用量 ==="
 	docker system df | head -5
 
-# バックエンドコンテナにシェルで接続
+# バックエンドのログを表示（開発）
+logs-backend-dev:
+	docker-compose logs -f backend-dev
+
+# フロントエンドのログを表示（開発）
+logs-frontend-dev:
+	docker-compose logs -f frontend-dev
+
+# バックエンドコンテナにシェルで接続（本番）
 shell-backend:
 	docker-compose exec backend sh
 
-# フロントエンドコンテナにシェルで接続
+# フロントエンドコンテナにシェルで接続（本番）
 shell-frontend:
 	docker-compose exec frontend sh
+
+# バックエンドコンテナにシェルで接続（開発）
+shell-backend-dev:
+	docker-compose exec backend-dev sh
+
+# フロントエンドコンテナにシェルで接続（開発）
+shell-frontend-dev:
+	docker-compose exec frontend-dev sh
 
 # サービスの再起動
 restart:
