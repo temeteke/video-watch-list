@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.videowatchlog.application.readmodel.mapper.TitleReadMapper">
+
+    <!-- Phase 7: CQRS Read Model - JOIN による単一クエリ実装 -->
+
+    <resultMap id="titleDetailReadModelMap" type="com.example.videowatchlog.application.readmodel.TitleDetailReadModel">
+        <id column="title_id" property="id"/>
+        <result column="title_name" property="name"/>
+        <result column="title_created_at" property="createdAt"/>
+        <result column="title_updated_at" property="updatedAt"/>
+        <collection property="series" ofType="com.example.videowatchlog.application.readmodel.SeriesReadModel"
+                   columnPrefix="s_">
+            <id column="id" property="id"/>
+            <result column="title_id" property="titleId"/>
+            <result column="name" property="name"/>
+            <result column="created_at" property="createdAt"/>
+            <result column="updated_at" property="updatedAt"/>
+            <collection property="episodes" ofType="com.example.videowatchlog.application.readmodel.EpisodeReadModel"
+                       columnPrefix="e_">
+                <id column="id" property="id"/>
+                <result column="series_id" property="seriesId"/>
+                <result column="episode_info" property="episodeInfo"/>
+                <result column="watch_status" property="watchStatus"/>
+                <result column="created_at" property="createdAt"/>
+                <result column="updated_at" property="updatedAt"/>
+                <collection property="watchPageUrls" ofType="String"
+                           select="selectWatchPageUrlsByEpisodeId" column="e_id"/>
+                <collection property="viewingRecords" ofType="com.example.videowatchlog.application.readmodel.ViewingRecordReadModel"
+                           select="selectViewingRecordsByEpisodeId" column="e_id"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <!-- タイトル詳細を取得: JOIN による階層構造の取得 -->
+    <select id="findTitleDetailById" resultMap="titleDetailReadModelMap" parameterType="Long">
+        SELECT
+            t.id as title_id,
+            t.name as title_name,
+            t.created_at as title_created_at,
+            t.updated_at as title_updated_at,
+            s.id as s_id,
+            s.title_id as s_title_id,
+            s.name as s_name,
+            s.created_at as s_created_at,
+            s.updated_at as s_updated_at,
+            e.id as e_id,
+            e.series_id as e_series_id,
+            e.episode_info as e_episode_info,
+            e.watch_status as e_watch_status,
+            e.created_at as e_created_at,
+            e.updated_at as e_updated_at
+        FROM titles t
+        LEFT JOIN series s ON t.id = s.title_id
+        LEFT JOIN episodes e ON s.id = e.series_id
+        WHERE t.id = #{titleId}
+        ORDER BY s.created_at ASC, e.created_at ASC
+    </select>
+
+    <!-- WatchPageUrl を別クエリで取得 -->
+    <select id="selectWatchPageUrlsByEpisodeId" resultType="String" parameterType="Long">
+        SELECT url FROM watch_page_urls WHERE episode_id = #{episodeId}
+    </select>
+
+    <!-- ViewingRecord を別クエリで取得 -->
+    <select id="selectViewingRecordsByEpisodeId"
+            resultType="com.example.videowatchlog.application.readmodel.ViewingRecordReadModel"
+            parameterType="Long">
+        SELECT
+            id,
+            episode_id as episodeId,
+            watched_at as watchedAt,
+            rating,
+            comment,
+            recorded_at as recordedAt
+        FROM viewing_records
+        WHERE episode_id = #{episodeId}
+        ORDER BY watched_at DESC
+    </select>
+
+</mapper>
