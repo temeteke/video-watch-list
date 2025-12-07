@@ -232,11 +232,84 @@ Title (1) ──────< (N) Series (1) ──────< (N) Episode (1)
 
 ## データベーススキーマ（PostgreSQL）
 
+### スキーマ設計の DDD 準拠戦略
+
+**重要な設計方針**:
+本スキーマは **DDD（ドメイン駆動設計）の原則** に準拠し、エンティティの ID は **アプリケーション層で事前生成** されてからデータベースに保存されます。したがって、エンティティテーブルの `id` カラムは `BIGINT` で定義し、`BIGSERIAL` の自動採番には **依存しません**。
+
+**背景**:
+- DDD では、エンティティの ID はエンティティの一部であり、**インスタンス化時（作成時）に既に決定** されている必要があります
+- `BIGSERIAL` 自動採番は、アプリケーション層で ID 生成をコントロールできず、DDD 原則に違反します
+- 代わりに、**IdService（ドメインサービス）** を使用して、アプリケーション層で ID を事前生成してからエンティティを作成します
+
+**実装パターン**:
+```java
+// UseCase で ID を事前生成
+@Service
+@Transactional
+public class CreateTitleUseCase {
+    private final TitleIdService titleIdService;      // ID 生成サービス
+    private final TitleRepository titleRepository;    // リポジトリ
+
+    public TitleSummaryDTO execute(CreateTitleRequestDTO request) {
+        // 1. ID をアプリケーション層で生成
+        Long id = titleIdService.generateId();
+
+        // 2. ID を含めてエンティティを作成（コンストラクタで ID が決定）
+        Title title = Title.create(id, request.getName());
+
+        // 3. ID が既に決定された状態でリポジトリに保存
+        Title savedTitle = titleRepository.save(title);
+
+        return new TitleSummaryDTO(savedTitle.getId(), savedTitle.getName());
+    }
+}
+```
+
+### シーケンス戦略
+
+ID 生成には複数の戦略が選択可能です：
+
+| 戦略 | 実装方法 | メリット | デメリット |
+|-----|--------|---------|-----------|
+| **SEQUENCE (推奨)** | PostgreSQL SEQUENCE を使用 | 予測可能、制御容易、複製環境対応 | 自動採番ではなく明示的な呼び出しが必要 |
+| **UUID** | uuid-ossp 拡張、v4 または v6 | グローバルに一意、並列化に強い | ID が長い（UUID 型または VARCHAR(36)） |
+| **マニュアル（テスト用）** | アプリケーション層で指定 | テストで任意の ID を設定可能 | 本番運用では推奨されない |
+
+**本プロジェクトの選択**: **PostgreSQL SEQUENCE** を使用
+
+### IdService の実装（インフラ層）
+
+```java
+// インフラ層での実装例
+@Service
+public class TitleIdServiceImpl implements TitleIdService {
+    private final JdbcTemplate jdbcTemplate;
+
+    public TitleIdServiceImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public Long generateId() {
+        // SEQUENCE から次の ID を取得
+        return jdbcTemplate.queryForObject(
+            "SELECT nextval('titles_id_seq')",
+            Long.class
+        );
+    }
+}
+```
+
 ### titles テーブル
 
 ```sql
+-- SEQUENCE 定義（自動採番用、アプリケーション層で呼び出し）
+CREATE SEQUENCE titles_id_seq START 1 INCREMENT 1;
+
+-- テーブル定義（id は BIGINT、BIGSERIAL ではない）
 CREATE TABLE titles (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT PRIMARY KEY,                          -- BIGINT: アプリケーション層で事前生成
     name VARCHAR(200) NOT NULL UNIQUE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -248,8 +321,10 @@ CREATE INDEX idx_titles_name ON titles(name);
 ### series テーブル
 
 ```sql
+CREATE SEQUENCE series_id_seq START 1 INCREMENT 1;
+
 CREATE TABLE series (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT PRIMARY KEY,                          -- BIGINT: アプリケーション層で事前生成
     title_id BIGINT NOT NULL,
     name VARCHAR(100) DEFAULT '',
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -263,8 +338,10 @@ CREATE INDEX idx_series_title_id ON series(title_id);
 ### episodes テーブル
 
 ```sql
+CREATE SEQUENCE episodes_id_seq START 1 INCREMENT 1;
+
 CREATE TABLE episodes (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT PRIMARY KEY,                          -- BIGINT: アプリケーション層で事前生成
     series_id BIGINT NOT NULL,
     episode_info VARCHAR(200) DEFAULT '',
     watch_status VARCHAR(20) NOT NULL DEFAULT 'UNWATCHED',
@@ -280,8 +357,10 @@ CREATE INDEX idx_episodes_watch_status ON episodes(watch_status);
 ### viewing_records テーブル
 
 ```sql
+CREATE SEQUENCE viewing_records_id_seq START 1 INCREMENT 1;
+
 CREATE TABLE viewing_records (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT PRIMARY KEY,                          -- BIGINT: アプリケーション層で事前生成
     episode_id BIGINT NOT NULL,
     watched_at TIMESTAMPTZ NOT NULL,
     rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
@@ -297,8 +376,12 @@ CREATE INDEX idx_viewing_records_watched_at ON viewing_records(watched_at DESC);
 ### title_info_urls テーブル
 
 ```sql
+-- 値オブジェクト（TitleInfoUrl）のテーブル
+-- URL の一意性は (title_id, url) の複合キーで保証（id は内部用）
+CREATE SEQUENCE title_info_urls_id_seq START 1 INCREMENT 1;
+
 CREATE TABLE title_info_urls (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT PRIMARY KEY,
     title_id BIGINT NOT NULL,
     url VARCHAR(2000) NOT NULL,
     FOREIGN KEY (title_id) REFERENCES titles(id) ON DELETE CASCADE,
@@ -311,8 +394,12 @@ CREATE INDEX idx_title_info_urls_title_id ON title_info_urls(title_id);
 ### watch_page_urls テーブル
 
 ```sql
+-- 値オブジェクト（WatchPageUrl）のテーブル
+-- URL の一意性は (episode_id, url) の複合キーで保証（id は内部用）
+CREATE SEQUENCE watch_page_urls_id_seq START 1 INCREMENT 1;
+
 CREATE TABLE watch_page_urls (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT PRIMARY KEY,
     episode_id BIGINT NOT NULL,
     url VARCHAR(2000) NOT NULL,
     FOREIGN KEY (episode_id) REFERENCES episodes(id) ON DELETE CASCADE,
@@ -589,11 +676,60 @@ Title (集約ルート)          Series (集約ルート)         Episode (集�
 
 ---
 
+---
+
+## ID 生成戦略の DDD 設計原則
+
+### なぜ BIGSERIAL ではなく SEQUENCE + IdService を使うのか？
+
+**DDD の根本原則**:
+> エンティティは、その ID を含めて完全な状態で作成されるべきである。
+
+**問題点（BIGSERIAL の場合）**:
+```java
+// ❌ 問題がある実装パターン
+Title title = new Title(name, titleInfoUrls);  // ID が決定していない
+Title saved = titleRepository.save(title);      // DB の BIGSERIAL で ID が決定
+Long titleId = saved.getId();                   // ここで初めて ID が判明
+
+// 理由：
+// - エンティティ作成時に ID が不確定である
+// - ビジネスロジック内で ID を使用できない
+// - テストで任意の ID を設定しづらい
+```
+
+**解決策（IdService の場合）**:
+```java
+// ✅ DDD に準拠した実装パターン
+Long id = titleIdService.generateId();          // ID をあらかじめ生成
+Title title = Title.create(id, name);           // ID を含めてエンティティを作成
+Title saved = titleRepository.save(title);      // DB に保存時は ID が既に確定
+Long titleId = saved.getId();                   // ID は既に判明している
+
+// メリット：
+// - エンティティ作成時に ID が既に確定している
+// - ビジネスロジック内で ID を自由に使用できる
+// - テストで任意の ID を設定可能
+```
+
+### 複製環境とエンティティ ID の一貫性
+
+IdService の SEQUENCE 戦略は、複製環境（レプリケーション）での ID の一貫性も確保します：
+
+| 戦略 | 複製環境での一貫性 | 理由 |
+|-----|------------------|------|
+| **BIGSERIAL** | ❌ 問題あり | 各レプリカが独立して ID を生成し、競合が発生 |
+| **SEQUENCE（推奨）** | ✅ 確保可能 | マスタの SEQUENCE から ID を取得し、一貫性を保証 |
+| **UUID** | ✅ 確保可能 | グローバルに一意な値を保証 |
+
+---
+
 ## まとめ
 
 このデータモデルは、以下の原則に従って設計されています：
 
 1. **DDD 準拠**:
+   - **エンティティの ID は、作成時に既に決定される**（IdService で事前生成）
    - **Phase 1**: Title を集約ルートとし、Series, Episode, ViewingRecord の整合性を保証
    - **Phase 3**（計画）: Title、Series、Episode を独立集約に昇格し、スケーラビリティ向上
 
@@ -606,3 +742,5 @@ Title (集約ルート)          Series (集約ルート)         Episode (集�
 5. **UI 最適化**: 内部構造とは独立したUI層で、条件に応じてレイヤーを動的に非表示
 
 6. **CQRS パターン準備**（Phase 3）: Read と Write を分離し、パフォーマンス最適化（N+1 クエリ削減）と保守性向上を実現
+
+7. **ID 生成戦略**: PostgreSQL SEQUENCE + IdService（ドメインサービス）で DDD 原則に準拠したエンティティ ID 管理を実現
