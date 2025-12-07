@@ -105,7 +105,7 @@ export default function TitleForm({ onSubmit, isLoading = false }: TitleFormProp
       <button
         type="submit"
         disabled={isLoading}
-        className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed w-full sm:w-auto"
+        className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed px-xl py-md"
       >
         {isLoading ? '作成中...' : '作成'}
       </button>

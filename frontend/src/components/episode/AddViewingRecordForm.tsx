@@ -110,7 +110,7 @@ export default function AddViewingRecordForm({
       <button
         type="submit"
         disabled={isLoading}
-        className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed w-full sm:w-auto"
+        className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed px-xl py-md"
       >
         記録を追加
       </button>

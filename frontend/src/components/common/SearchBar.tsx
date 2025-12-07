@@ -30,7 +30,7 @@ export default function SearchBar({ onSearch, isLoading = false }: SearchBarProp
 
   return (
     <div className="mb-xl">
-      <div className="flex flex-col sm:flex-row gap-md">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '12px', alignItems: 'center' }}>
         <input
           type="text"
           placeholder="タイトルを検索..."
@@ -38,7 +38,7 @@ export default function SearchBar({ onSearch, isLoading = false }: SearchBarProp
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={isLoading}
-          className={`flex-1 px-md py-sm border border-border-color rounded-md text-base focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-60 disabled:cursor-not-allowed`}
+          className={`px-md py-sm border border-border-color rounded-md text-base focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-60 disabled:cursor-not-allowed`}
           data-testid="search-input"
         />
 
@@ -46,7 +46,7 @@ export default function SearchBar({ onSearch, isLoading = false }: SearchBarProp
           value={watchStatus || ''}
           onChange={(e) => setWatchStatus((e.target.value as WatchStatus) || undefined)}
           disabled={isLoading}
-          className={`px-md py-sm border border-border-color rounded-md text-base min-w-fit sm:w-48 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-60 disabled:cursor-not-allowed`}
+          className={`px-md py-sm border border-border-color rounded-md text-base focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-60 disabled:cursor-not-allowed`}
           data-testid="watch-status-filter"
         >
           <option value="">すべての状態</option>

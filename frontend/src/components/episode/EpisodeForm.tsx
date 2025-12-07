@@ -61,7 +61,7 @@ export default function EpisodeForm({ onSubmit, isLoading = false }: EpisodeForm
       <button
         type="submit"
         disabled={isLoading}
-        className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed w-full sm:w-auto"
+        className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed px-xl py-md"
       >
         エピソードを追加
       </button>

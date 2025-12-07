@@ -110,7 +110,7 @@ export default function CompleteEpisodeForm({
       <button
         type="submit"
         disabled={isLoading}
-        className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed w-full sm:w-auto"
+        className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed px-xl py-md"
       >
         視聴を完了する
       </button>
