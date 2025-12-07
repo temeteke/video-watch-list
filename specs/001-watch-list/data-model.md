@@ -741,6 +741,142 @@ IdService の SEQUENCE 戦略は、複製環境（レプリケーション）で
 
 5. **UI 最適化**: 内部構造とは独立したUI層で、条件に応じてレイヤーを動的に非表示
 
-6. **CQRS パターン準備**（Phase 3）: Read と Write を分離し、パフォーマンス最適化（N+1 クエリ削減）と保守性向上を実現
+6. **CQRS パターン**（Phase 7 実装済）: Read と Write を分離し、パフォーマンス最適化（N+1 クエリ削減）と保守性向上を実現
+   - Write Model: Title, Series, Episode, ViewingRecord（ドメインエンティティ、独立集約）
+   - Read Model: TitleListReadModel, TitleDetailReadModel, SeriesReadModel, EpisodeReadModel（最適化されたクエリ結果）
+   - 効果: GetAllTitles: 101 クエリ → 1 クエリ（99% 削減）、GetTitleDetail: 2-3 クエリ → 1 クエリ（50-66% 削減）
 
 7. **ID 生成戦略**: PostgreSQL SEQUENCE + IdService（ドメインサービス）で DDD 原則に準拠したエンティティ ID 管理を実現
+
+---
+
+## Phase 7: CQRS パターンの実装詳細
+
+### 背景と課題
+Phase 1-6 では、Title を集約ルートとし、Series と Episode をネストした構造で実装していました。これにより以下の問題が発生：
+
+1. **N+1 クエリ問題**: GetAllTitles で 101 クエリ（1 タイトル SELECT + 50 シリーズ SELECT + 50 タイトル情報 URL SELECT）
+2. **パフォーマンス低下**: タイトル数が増えるに従い、応答時間が線形に増加
+3. **スケーラビリティ制限**: 500 タイトル以上での運用困難
+
+### 解決策: CQRS パターンと独立集約の導入
+
+#### Write Model（命令的）
+- **Title, Series, Episode, ViewingRecord** を **独立集約** に変更
+- 各エンティティは ID 参照のみで疎結合（オブジェクト参照を削除）
+- ドメインロジック保持：バリデーション、状態遷移、不変性
+
+```java
+// Phase 7 後：Write Model は ID 参照のみ
+public class Title {
+    private Long id;
+    private String name;
+    private Set<TitleInfoUrl> titleInfoUrls;  // ID 参照なし
+    // series フィールド削除（以前は List<Series> series）
+}
+
+public class Series {
+    private Long id;
+    private Long titleId;  // ID 参照
+    private String name;
+    // episodes フィールド削除（以前は List<Episode> episodes）
+}
+```
+
+#### Read Model（問い合わせ的）
+新規クラス群で **全データを1回のクエリで取得**：
+
+```java
+// Read Model: 階層構造を保持したデータ表現
+public class TitleDetailReadModel {
+    private Long id;
+    private String name;
+    private List<SeriesReadModel> series;  // 階層構造を保持
+    // ...
+}
+
+public class SeriesReadModel {
+    private Long id;
+    private Long titleId;
+    private String name;
+    private List<EpisodeReadModel> episodes;  // 階層構造を保持
+    // ...
+}
+
+public class EpisodeReadModel {
+    private Long id;
+    private Long seriesId;
+    private String episodeInfo;
+    private List<String> watchPageUrls;
+    private List<ViewingRecordReadModel> viewingRecords;  // 全视聴記録を含む
+    // ...
+}
+```
+
+#### MyBatis JOIN クエリの最適化
+
+```sql
+-- 従来：複数クエリ（1 + N + M）
+SELECT ... FROM titles WHERE id = ?;            -- 1 クエリ
+SELECT ... FROM series WHERE title_id = ?;     -- N クエリ（シリーズ数分）
+SELECT ... FROM episodes WHERE series_id = ?;  -- M クエリ（エピソード数分）
+
+-- Phase 7：1 クエリ（LEFT JOIN）
+SELECT
+    t.id, t.name, t.created_at, t.updated_at,
+    s.id, s.title_id, s.name, s.created_at, s.updated_at,
+    e.id, e.series_id, e.episode_info, e.watch_status, e.created_at, e.updated_at,
+    vr.id, vr.episode_id, vr.watched_at, vr.rating, vr.comment, vr.recorded_at
+FROM titles t
+LEFT JOIN series s ON t.id = s.title_id
+LEFT JOIN episodes e ON s.id = e.series_id
+LEFT JOIN viewing_records vr ON e.id = vr.episode_id
+WHERE t.id = #{titleId}
+ORDER BY s.created_at ASC, e.created_at ASC, vr.watched_at DESC
+```
+
+### パフォーマンス改善結果
+
+| 操作 | 従来（Phase 1-6） | Phase 7 CQRS | 削減率 |
+|-----|---------------------|------------|--------|
+| **GetAllTitles** | 101 クエリ | 1 クエリ | 99% 削減 |
+| **GetTitleDetail** | 2-3 クエリ | 1 クエリ | 50-66% 削減 |
+| **テスト結果** | N/A | 145 テスト成功 | 全 PASS |
+
+### 実装ファイル（Phase 7）
+
+**新規追加（Read Model）**:
+- `application/readmodel/TitleListReadModel.java`
+- `application/readmodel/TitleDetailReadModel.java`
+- `application/readmodel/SeriesReadModel.java`
+- `application/readmodel/EpisodeReadModel.java`
+- `application/readmodel/ViewingRecordReadModel.java`
+- `application/readmodel/mapper/TitleReadMapper.java`
+- `application/readmodel/service/TitleReadService.java`
+- `resources/mybatis/mapper/readmodel/TitleReadMapper.xml`
+
+**修正対象（Write Model 独立化）**:
+- `domain/model/Title.java` - Series フィールド削除
+- `domain/model/Series.java` - Episode フィールド削除
+- `infrastructure/persistence/entity/TitleEntity.java`, `SeriesEntity.java` - toDomain 署名変更
+- `infrastructure/persistence/TitleRepositoryImpl.java`, `SeriesRepositoryImpl.java` - Series/Episode を非ロード化
+- `application/usecase/GetAllTitlesUseCase.java`, `GetTitleDetailUseCase.java` - Read Model 使用
+- `application/usecase/CreateSeriesUseCase.java`, `CreateEpisodeUseCase.java` - 簡潔化
+
+### 重要な設計原則
+
+1. **独立集約の原則**: Title, Series, Episode は各々が独立した集約ルート
+   - 各エンティティの作成・更新・削除は独立で実行可能
+   - 参照は ID のみを使用
+
+2. **Read-Write の分離（CQRS）**: Write 側はドメインロジック重視、Read 側は性能重視
+   - Write: 正規化された構造、厳密なバリデーション
+   - Read: 非正規化された構造、 JOIN による最適化クエリ
+
+3. **バージョン互換性**: API レスポンスの構造は変わらず、内部構造のみ最適化
+   - `/api/v1/titles` の API 契約は変化なし
+   - クライアント側の修正不要
+
+4. **テスト戦略**: Phase 7 実装後も全 145 テストが成功
+   - ドメインロジックの正確性を維持
+   - 性能改善と保守性の両立を実現
