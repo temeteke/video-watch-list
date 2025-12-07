@@ -1,22 +1,20 @@
 package com.example.videowatchlog.domain.model;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
  * タイトル エンティティ（集約ルート）
  *
  * ドラマ・アニメ・映画作品全体を表します。
- * 内部的には必ず1件以上のシリーズを持ちます。
+ * Phase 7 アーキテクチャ改善：Title は独立した集約になり、Series への参照は ID のみです。
+ * Series の詳細データは、Read Model を通じてのみ取得します。
  */
 public class Title {
     private final Long id;
     private String name;
     private Set<TitleInfoUrl> titleInfoUrls;
-    private List<Series> series;
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -27,18 +25,16 @@ public class Title {
      * @param id Unique identifier (null for new entities)
      * @param name Title name (1-200 characters)
      * @param titleInfoUrls Set of title info URLs
-     * @param series List of series
      * @param createdAt Creation timestamp
      * @param updatedAt Last update timestamp
      * @throws IllegalArgumentException if validation fails
      */
-    public Title(Long id, String name, Set<TitleInfoUrl> titleInfoUrls, List<Series> series,
+    public Title(Long id, String name, Set<TitleInfoUrl> titleInfoUrls,
                  LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         validateName(name);
         this.name = name;
         this.titleInfoUrls = titleInfoUrls != null ? new LinkedHashSet<>(titleInfoUrls) : new LinkedHashSet<>();
-        this.series = series != null ? new ArrayList<>(series) : new ArrayList<>();
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -53,7 +49,7 @@ public class Title {
      */
     public static Title create(Long id, String name) {
         LocalDateTime now = LocalDateTime.now();
-        return new Title(id, name, new LinkedHashSet<>(), new ArrayList<>(), now, now);
+        return new Title(id, name, new LinkedHashSet<>(), now, now);
     }
 
     /**
@@ -114,10 +110,6 @@ public class Title {
 
     public Set<TitleInfoUrl> getTitleInfoUrls() {
         return titleInfoUrls;
-    }
-
-    public List<Series> getSeries() {
-        return series;
     }
 
     public LocalDateTime getCreatedAt() {

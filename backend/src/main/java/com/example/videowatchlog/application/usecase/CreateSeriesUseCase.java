@@ -32,7 +32,7 @@ public class CreateSeriesUseCase {
         Long id = seriesIdService.generateId();
         Series series = Series.create(id, titleId, request.getName());
         seriesRepository.save(series);
-        title.getSeries().add(series);
-        titleRepository.save(title);
+        // Phase 7: Title の Series フィールドがなくなったため、Series を単独で保存
+        // Title はもはや Series リストを保持しません
     }
 }

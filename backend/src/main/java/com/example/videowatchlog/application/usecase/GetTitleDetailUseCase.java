@@ -34,13 +34,10 @@ public class GetTitleDetailUseCase {
      */
     @Transactional(readOnly = true)
     public TitleDetailDTO execute(Long titleId) {
+        // Phase 7: Read Model 実装後、TitleReadService を使用するに変更予定
+        // 現在は空の Series リストを返す一時実装
         Title title = titleRepository.findById(titleId)
                 .orElseThrow(() -> new IllegalArgumentException("タイトルが見つかりません（ID: " + titleId + "）"));
-
-        // Series を変換
-        List<SeriesDetailDTO> seriesList = title.getSeries().stream()
-                .map(this::mapToSeriesDetailDTO)
-                .collect(Collectors.toList());
 
         // TitleInfoUrls を変換
         List<String> titleInfoUrls = title.getTitleInfoUrls().stream()
@@ -50,7 +47,7 @@ public class GetTitleDetailUseCase {
         return new TitleDetailDTO(
                 title.getId(),
                 title.getName(),
-                seriesList,
+                List.of(), // Phase 7: Read Model 実装後に Series データを取得
                 titleInfoUrls,
                 title.getCreatedAt(),
                 title.getUpdatedAt()
@@ -58,15 +55,12 @@ public class GetTitleDetailUseCase {
     }
 
     private SeriesDetailDTO mapToSeriesDetailDTO(Series series) {
-        List<EpisodeDetailDTO> episodeList = series.getEpisodes().stream()
-                .map(this::mapToEpisodeDetailDTO)
-                .collect(Collectors.toList());
-
+        // Phase 7: 削除予定（Read Model で置き換え）
         return new SeriesDetailDTO(
                 series.getId(),
                 series.getTitleId(),
                 series.getName(),
-                episodeList,
+                List.of(), // Phase 7: Episode データを Read Model から取得
                 series.getCreatedAt(),
                 series.getUpdatedAt()
         );

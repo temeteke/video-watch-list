@@ -1,16 +1,16 @@
 package com.example.videowatchlog.infrastructure.persistence.entity;
 
-import com.example.videowatchlog.domain.model.Episode;
 import com.example.videowatchlog.domain.model.Series;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Series entity for persistence layer (MyBatis mapping).
  * This class is responsible for database persistence only.
  * Business logic resides in domain.model.Series.
+ *
+ * Phase 7 アーキテクチャ改善：toDomain() が Episode パラメータを受け取らなくなりました。
+ * Episode は独立した集約として扱われます。
  */
 public class SeriesEntity {
     private Long id;
@@ -71,17 +71,15 @@ public class SeriesEntity {
 
     /**
      * Convert to domain model (Series).
-     * Related entities (episodes) are loaded separately by the repository.
+     * Phase 7: Episodes パラメータを削除し、Series のみを生成します。
      *
-     * @param episodes Episodes (loaded separately)
      * @return Series domain model
      */
-    public Series toDomain(List<Episode> episodes) {
+    public Series toDomain() {
         return new Series(
             this.id,
             this.titleId,
             this.name,
-            episodes != null ? episodes : new ArrayList<>(),
             this.createdAt,
             this.updatedAt
         );

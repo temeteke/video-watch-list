@@ -1,18 +1,18 @@
 package com.example.videowatchlog.infrastructure.persistence.entity;
 
-import com.example.videowatchlog.domain.model.Series;
 import com.example.videowatchlog.domain.model.Title;
 import com.example.videowatchlog.domain.model.TitleInfoUrl;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
  * Title entity for persistence layer (MyBatis mapping).
  * This entity separates persistence concerns from the domain model.
+ *
+ * Phase 7 アーキテクチャ改善：toDomain() が Series パラメータを受け取らなくなりました。
+ * Series は独立した集約として扱われます。
  */
 public class TitleEntity {
     private Long id;
@@ -28,17 +28,16 @@ public class TitleEntity {
 
     /**
      * Convert to domain model.
+     * Phase 7: Series パラメータを削除し、Title のみを生成します。
      *
      * @param titleInfoUrls Title info URLs (loaded separately)
-     * @param series Series list (loaded separately)
      * @return Title domain model
      */
-    public Title toDomain(Set<TitleInfoUrl> titleInfoUrls, List<Series> series) {
+    public Title toDomain(Set<TitleInfoUrl> titleInfoUrls) {
         return new Title(
                 this.id,
                 this.name,
                 titleInfoUrls != null ? titleInfoUrls : new LinkedHashSet<>(),
-                series != null ? series : new ArrayList<>(),
                 this.createdAt,
                 this.updatedAt
         );
