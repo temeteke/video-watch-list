@@ -8,13 +8,11 @@ import { showToast } from '@/components/common/Toast';
 interface ViewingRecordListProps {
   viewingRecords: ViewingRecordDetail[];
   onDelete: (recordId: number) => Promise<void>;
-  isLoading?: boolean;
 }
 
 export default function ViewingRecordList({
   viewingRecords,
   onDelete,
-  isLoading = false,
 }: ViewingRecordListProps) {
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; id?: number }>({
     isOpen: false,

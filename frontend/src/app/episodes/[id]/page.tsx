@@ -134,7 +134,6 @@ export default function EpisodeDetailPage() {
         <ViewingRecordList
           viewingRecords={episode.viewingRecords}
           onDelete={handleDeleteViewingRecord}
-          isLoading={isSubmitting}
         />
       </section>
 

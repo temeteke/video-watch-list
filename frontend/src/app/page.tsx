@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { titlesApi } from '@/lib/api/titles';
 import { TitleSummary } from '@/types/title';
 import { WatchStatus } from '@/types/episode';

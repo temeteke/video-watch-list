@@ -18,7 +18,6 @@ export default function TitleList({ titles, onDelete }: TitleListProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDeleteClick = (id: number) => {
-    const title = titles.find((t) => t.id === id);
     setDeleteConfirm({ isOpen: true, id });
   };
 
