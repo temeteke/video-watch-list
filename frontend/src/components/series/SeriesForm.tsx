@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { showToast } from '@/components/common/Toast';
+import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 interface SeriesFormProps {
   onSubmit: (name: string) => Promise<void>;
@@ -13,19 +15,23 @@ export default function SeriesForm({ onSubmit, isLoading = false }: SeriesFormPr
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!name.trim()) {
+      toast.error('シリーズ名を入力してください');
+      return;
+    }
     try {
       await onSubmit(name);
       setName('');
-      showToast('シリーズを追加しました', 'success');
+      toast.success('シリーズを追加しました');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'エラーが発生しました';
-      showToast(errorMessage, 'error');
+      toast.error(errorMessage);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-md">
-      <input
+    <form onSubmit={handleSubmit} className="flex gap-3">
+      <Input
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
@@ -33,13 +39,12 @@ export default function SeriesForm({ onSubmit, isLoading = false }: SeriesFormPr
         disabled={isLoading}
         className="flex-1"
       />
-      <button
+      <Button
         type="submit"
         disabled={isLoading}
-        className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap"
       >
         シリーズを追加
-      </button>
+      </Button>
     </form>
   );
 }

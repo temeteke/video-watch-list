@@ -1,6 +1,15 @@
 'use client';
 
 import React from 'react';
+import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -25,64 +34,43 @@ export default function ConfirmDialog({
   cancelButtonLabel = 'キャンセル',
   variant = 'danger',
 }: ConfirmDialogProps) {
-  if (!isOpen) return null;
-  const getConfirmButtonClass = () => {
+  const getConfirmVariant = () => {
     switch (variant) {
       case 'danger':
-        return 'btn-danger';
+        return 'destructive';
       case 'warning':
-        return 'btn-warning';
+        return 'default';
       case 'info':
-        return 'btn-info';
+        return 'default';
       default:
-        return 'btn-primary';
+        return 'default';
     }
   };
 
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      onClick={onCancel}
-      data-testid="confirm-dialog-overlay"
-    >
-      <div
-        className="bg-white rounded-lg p-2xl max-w-sm w-11/12 shadow-lg"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h2
-          className="mb-md text-lg font-bold text-text-dark"
-          data-testid="confirm-dialog-title"
-        >
-          {title}
-        </h2>
-
-        <p
-          className="mb-2xl text-sm text-text-light leading-relaxed"
-          data-testid="confirm-dialog-message"
-        >
-          {message}
-        </p>
-
-        <div className="flex gap-md justify-end">
-          <button
-            onClick={onCancel}
-            disabled={isLoading}
-            className="px-lg py-sm border border-gray-300 rounded-md bg-gray-100 text-text-dark hover:bg-gray-200 active:bg-gray-200 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-200"
-            data-testid="confirm-dialog-cancel-button"
-          >
+    <AlertDialog open={isOpen} onOpenChange={onCancel}>
+      <AlertDialogContent data-testid="confirm-dialog-overlay">
+        <AlertDialogHeader>
+          <AlertDialogTitle data-testid="confirm-dialog-title">{title}</AlertDialogTitle>
+          <AlertDialogDescription data-testid="confirm-dialog-message">
+            {message}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <div className="flex gap-3 justify-end">
+          <AlertDialogCancel data-testid="confirm-dialog-cancel-button">
             {cancelButtonLabel}
-          </button>
-
-          <button
+          </AlertDialogCancel>
+          <Button
             onClick={onConfirm}
             disabled={isLoading}
-            className={`${getConfirmButtonClass()} disabled:opacity-60 disabled:cursor-not-allowed`}
+            variant={getConfirmVariant()}
+            size="sm"
             data-testid="confirm-dialog-confirm-button"
           >
             {isLoading ? '処理中...' : confirmButtonLabel}
-          </button>
+          </Button>
         </div>
-      </div>
-    </div>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

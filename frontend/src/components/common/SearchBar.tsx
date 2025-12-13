@@ -2,6 +2,16 @@
 
 import { useState } from 'react';
 import { WatchStatus } from '@/types/episode';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Search, RotateCcw } from 'lucide-react';
 
 interface SearchBarProps {
   onSearch: (query: string | undefined, watchStatus: WatchStatus | undefined) => void;
@@ -29,48 +39,49 @@ export default function SearchBar({ onSearch, isLoading = false }: SearchBarProp
   };
 
   return (
-    <div className="mb-xl">
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_auto_auto] gap-md items-stretch">
-        <input
+    <div className="mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_150px_auto_auto] gap-3 items-end">
+        <Input
           type="text"
           placeholder="タイトルを検索..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={isLoading}
-          className="px-md py-sm border border-border-color rounded-md text-base focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-60 disabled:cursor-not-allowed min-h-touch-target"
           data-testid="search-input"
         />
 
-        <select
-          value={watchStatus || ''}
-          onChange={(e) => setWatchStatus((e.target.value as WatchStatus) || undefined)}
-          disabled={isLoading}
-          className="px-md py-sm border border-border-color rounded-md text-base focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-60 disabled:cursor-not-allowed min-h-touch-target"
-          data-testid="watch-status-filter"
-        >
-          <option value="">すべての状態</option>
-          <option value="WATCHED">視聴済み</option>
-          <option value="UNWATCHED">未視聴</option>
-        </select>
+        <Select value={watchStatus || ''} onValueChange={(value) => setWatchStatus((value as WatchStatus) || undefined)}>
+          <SelectTrigger disabled={isLoading} data-testid="watch-status-filter">
+            <SelectValue placeholder="すべての状態" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">すべての状態</SelectItem>
+            <SelectItem value="WATCHED">視聴済み</SelectItem>
+            <SelectItem value="UNWATCHED">未視聴</SelectItem>
+          </SelectContent>
+        </Select>
 
-        <button
+        <Button
           onClick={handleSearch}
           disabled={isLoading}
-          className="btn-primary px-md py-sm disabled:opacity-60 disabled:cursor-not-allowed min-h-touch-target"
+          size="sm"
           data-testid="search-button"
         >
+          <Search className="mr-2 h-4 w-4" />
           検索
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={handleClear}
           disabled={isLoading}
-          className="px-lg py-sm bg-gray-500 text-white rounded-md font-medium transition-colors duration-200 min-h-touch-target hover:bg-gray-600 active:bg-gray-600 disabled:opacity-60 disabled:cursor-not-allowed"
+          variant="outline"
+          size="sm"
           data-testid="clear-button"
         >
+          <RotateCcw className="mr-2 h-4 w-4" />
           クリア
-        </button>
+        </Button>
       </div>
     </div>
   );

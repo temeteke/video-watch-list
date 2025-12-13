@@ -15,25 +15,25 @@ interface BreadcrumbProps {
 export default function Breadcrumb({ items }: BreadcrumbProps) {
   return (
     <nav
-      className="flex items-center space-x-sm text-sm mb-lg"
+      className="flex items-center gap-2 text-sm mb-6"
       aria-label="パンくずリスト"
     >
       {items.map((item, idx) => (
         <Fragment key={idx}>
           {idx > 0 && (
-            <span className="text-text-light" aria-hidden="true">
+            <span className="text-neutral-400" aria-hidden="true">
               /
             </span>
           )}
           {item.href ? (
             <Link
               href={item.href}
-              className="text-primary hover:underline hover:text-primary-dark transition-colors duration-200"
+              className="text-primary-600 hover:underline hover:text-primary-700 transition-colors duration-200"
             >
               {item.label}
             </Link>
           ) : (
-            <span className="text-text-dark">{item.label}</span>
+            <span className="text-neutral-700">{item.label}</span>
           )}
         </Fragment>
       ))}

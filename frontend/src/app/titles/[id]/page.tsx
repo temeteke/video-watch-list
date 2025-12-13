@@ -5,8 +5,11 @@ import { useParams, useRouter } from 'next/navigation';
 import { titlesApi } from '@/lib/api/titles';
 import { seriesApi } from '@/lib/api/series';
 import { episodesApi } from '@/lib/api/episodes';
-import { showToast } from '@/components/common/Toast';
+import { toast } from 'sonner';
 import { TitleDetail } from '@/types/title';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import HierarchicalView from '@/components/common/HierarchicalView';
 import SeriesForm from '@/components/series/SeriesForm';
 import EpisodeForm from '@/components/episode/EpisodeForm';
@@ -62,7 +65,7 @@ export default function TitleDetailPage() {
     } catch (err) {
       console.error('Failed to add episode:', err);
       const errorMessage = err instanceof Error ? err.message : String(err);
-      showToast(`エピソード追加に失敗しました: ${errorMessage}`, 'error');
+      toast.error(`エピソード追加に失敗しました: ${errorMessage}`);
       throw err;
     } finally {
       setIsSubmitting(false);
@@ -70,11 +73,47 @@ export default function TitleDetailPage() {
   };
 
   if (loading) return <Spinner fullScreen />;
-  if (error) return <p style={{ color: 'red' }}>{error}</p>;
-  if (!title) return <p>タイトルが見つかりません</p>;
+  if (error) {
+    return (
+      <main className="space-y-6">
+        <Breadcrumb
+          items={[
+            { label: 'ホーム', href: '/' },
+          ]}
+        />
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+        <Button onClick={() => router.back()} variant="outline">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          戻る
+        </Button>
+      </main>
+    );
+  }
+  if (!title) {
+    return (
+      <main className="space-y-6">
+        <Breadcrumb
+          items={[
+            { label: 'ホーム', href: '/' },
+          ]}
+        />
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>タイトルが見つかりません</AlertDescription>
+        </Alert>
+        <Button onClick={() => router.back()} variant="outline">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          戻る
+        </Button>
+      </main>
+    );
+  }
 
   return (
-    <main>
+    <main className="space-y-6">
       <Breadcrumb
         items={[
           { label: 'ホーム', href: '/' },
@@ -82,7 +121,10 @@ export default function TitleDetailPage() {
         ]}
       />
 
-      <button onClick={() => router.back()}>戻る</button>
+      <Button onClick={() => router.back()} variant="outline">
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        戻る
+      </Button>
       <HierarchicalView
         title={title}
         onAddSeries={() => setShowSeriesForm(!showSeriesForm)}

@@ -7,6 +7,8 @@ import { WatchStatus } from '@/types/episode';
 import TitleList from '@/components/title/TitleList';
 import SearchBar from '@/components/common/SearchBar';
 import Spinner from '@/components/common/Spinner';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 export default function HomePage() {
   const [titles, setTitles] = useState<TitleSummary[]>([]);
@@ -52,10 +54,15 @@ export default function HomePage() {
   };
 
   return (
-    <div className="space-y-lg">
+    <div className="space-y-6">
       <SearchBar onSearch={handleSearch} isLoading={loading} />
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
       {loading ? (
         <Spinner fullScreen />
       ) : (

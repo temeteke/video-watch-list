@@ -4,7 +4,10 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { TitleSummary } from '@/types/title';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
-import { showToast } from '@/components/common/Toast';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface TitleListProps {
   titles: TitleSummary[];
@@ -28,10 +31,10 @@ export default function TitleList({ titles, onDelete }: TitleListProps) {
       setIsDeleting(true);
       await onDelete?.(deleteConfirm.id);
       setDeleteConfirm({ isOpen: false });
-      showToast('タイトルを削除しました', 'success');
+      toast.success('タイトルを削除しました');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : '削除に失敗しました';
-      showToast(errorMessage, 'error');
+      toast.error(errorMessage);
     } finally {
       setIsDeleting(false);
     }
@@ -44,34 +47,36 @@ export default function TitleList({ titles, onDelete }: TitleListProps) {
   const deletingTitle = deleteConfirm.id ? titles.find((t) => t.id === deleteConfirm.id) : null;
 
   if (titles.length === 0) {
-    return <p className="text-center text-text-light py-lg">タイトルがありません</p>;
+    return (
+      <div className="text-center py-8">
+        <p className="text-neutral-500">タイトルがありません</p>
+      </div>
+    );
   }
 
   return (
     <>
-      <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {titles.map((title) => (
-          <div
-            key={title.id}
-            className="card hover:shadow-lg transition-shadow duration-200"
-          >
-            <div className="flex items-start justify-between gap-2">
+          <Card key={title.id} className="hover:shadow-lg transition-shadow duration-200 p-4">
+            <div className="flex items-start justify-between gap-3">
               <Link
                 href={`/titles/${title.id}`}
-                className="text-primary font-medium hover:text-primary-dark text-lg block truncate flex-1"
+                className="text-primary-600 font-medium hover:text-primary-700 text-lg block truncate flex-1"
               >
                 {title.name}
               </Link>
-              <button
+              <Button
                 onClick={() => handleDeleteClick(title.id)}
-                className="text-text-light hover:text-danger transition-colors duration-200 p-1 flex-shrink-0"
+                variant="ghost"
+                size="sm"
                 aria-label="削除"
                 title="削除"
               >
-                🗑️
-              </button>
+                <Trash2 className="h-4 w-4 text-neutral-500 hover:text-danger-500" />
+              </Button>
             </div>
-          </div>
+          </Card>
         ))}
       </div>
 

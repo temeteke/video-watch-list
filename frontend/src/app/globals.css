@@ -1,60 +1,89 @@
 @import "tailwindcss";
 
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
 @theme {
-  /* Custom spacing */
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 12px;
-  --spacing-lg: 16px;
-  --spacing-xl: 20px;
-  --spacing-2xl: 24px;
-  --spacing-3xl: 32px;
+  /* Colors - OKLCH色空間を使用 */
 
-  /* Custom colors */
-  --color-primary: #007bff;
-  --color-primary-dark: #0056b3;
-  --color-primary-light: #0d6efd;
-  --color-success: #28a745;
-  --color-success-dark: #1e7e34;
-  --color-success-light: #198754;
-  --color-danger: #dc3545;
-  --color-danger-dark: #bb2d3b;
-  --color-danger-light: #f8d7da;
-  --color-warning: #ffc107;
-  --color-warning-dark: #e0a800;
-  --color-warning-light: #fff3cd;
-  --color-info: #17a2b8;
-  --color-info-dark: #117a8b;
-  --color-info-light: #d1ecf1;
-  --color-bg-light: #f5f5f5;
-  --color-text-dark: #333333;
-  --color-text-light: #666666;
-  --color-border-color: #cccccc;
+  /* Primary - Blue (アクション、リンク、CTA) */
+  --color-primary-50: oklch(0.97 0.01 250);
+  --color-primary-100: oklch(0.93 0.04 250);
+  --color-primary-200: oklch(0.86 0.08 250);
+  --color-primary-300: oklch(0.76 0.12 250);
+  --color-primary-400: oklch(0.65 0.16 250);
+  --color-primary-500: oklch(0.55 0.18 250);
+  --color-primary-600: oklch(0.48 0.18 250);
+  --color-primary-700: oklch(0.42 0.16 250);
+  --color-primary-800: oklch(0.35 0.14 250);
+  --color-primary-900: oklch(0.28 0.12 250);
+  --color-primary-950: oklch(0.18 0.08 250);
 
-  /* Custom font sizes */
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
+  /* Success - Green (視聴済み、成功メッセージ) */
+  --color-success-50: oklch(0.96 0.03 145);
+  --color-success-100: oklch(0.92 0.06 145);
+  --color-success-200: oklch(0.84 0.12 145);
+  --color-success-300: oklch(0.72 0.15 145);
+  --color-success-400: oklch(0.66 0.15 145);
+  --color-success-500: oklch(0.60 0.15 145);
+  --color-success-600: oklch(0.52 0.15 145);
+  --color-success-700: oklch(0.45 0.13 145);
+  --color-success-800: oklch(0.38 0.11 145);
+  --color-success-900: oklch(0.31 0.09 145);
+  --color-success-950: oklch(0.18 0.06 145);
 
-  /* Custom border radius */
-  --radius-xs: 2px;
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-full: 9999px;
+  /* Danger - Red (削除、エラー) */
+  --color-danger-50: oklch(0.96 0.03 25);
+  --color-danger-100: oklch(0.92 0.06 25);
+  --color-danger-200: oklch(0.84 0.12 25);
+  --color-danger-300: oklch(0.72 0.15 25);
+  --color-danger-400: oklch(0.66 0.18 25);
+  --color-danger-500: oklch(0.55 0.22 25);
+  --color-danger-600: oklch(0.48 0.22 25);
+  --color-danger-700: oklch(0.42 0.20 25);
+  --color-danger-800: oklch(0.35 0.18 25);
+  --color-danger-900: oklch(0.28 0.16 25);
+  --color-danger-950: oklch(0.16 0.10 25);
 
-  /* Custom box shadows */
-  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  /* Warning - Yellow (未視聴、警告) */
+  --color-warning-50: oklch(0.97 0.03 85);
+  --color-warning-100: oklch(0.95 0.06 85);
+  --color-warning-200: oklch(0.90 0.10 85);
+  --color-warning-300: oklch(0.82 0.14 85);
+  --color-warning-400: oklch(0.74 0.15 85);
+  --color-warning-500: oklch(0.75 0.15 85);
+  --color-warning-600: oklch(0.65 0.15 85);
+  --color-warning-700: oklch(0.55 0.14 85);
+  --color-warning-800: oklch(0.45 0.12 85);
+  --color-warning-900: oklch(0.35 0.10 85);
+  --color-warning-950: oklch(0.18 0.06 85);
 
-  /* Accessibility: minimum touch target size */
-  --min-height-touch-target: 44px;
+  /* Info - Cyan (情報、補足) */
+  --color-info-50: oklch(0.96 0.03 200);
+  --color-info-100: oklch(0.92 0.06 200);
+  --color-info-200: oklch(0.84 0.11 200);
+  --color-info-300: oklch(0.72 0.12 200);
+  --color-info-400: oklch(0.66 0.12 200);
+  --color-info-500: oklch(0.60 0.12 200);
+  --color-info-600: oklch(0.52 0.12 200);
+  --color-info-700: oklch(0.45 0.11 200);
+  --color-info-800: oklch(0.38 0.09 200);
+  --color-info-900: oklch(0.31 0.08 200);
+  --color-info-950: oklch(0.17 0.05 200);
+
+  /* Neutral - Gray (テキスト、背景、枠線) */
+  --color-neutral-50: oklch(0.98 0 0);
+  --color-neutral-100: oklch(0.96 0 0);
+  --color-neutral-200: oklch(0.92 0 0);
+  --color-neutral-300: oklch(0.86 0 0);
+  --color-neutral-400: oklch(0.72 0 0);
+  --color-neutral-500: oklch(0.55 0 0);
+  --color-neutral-600: oklch(0.45 0 0);
+  --color-neutral-700: oklch(0.38 0 0);
+  --color-neutral-800: oklch(0.28 0 0);
+  --color-neutral-900: oklch(0.25 0 0);
+  --color-neutral-950: oklch(0.15 0 0);
 }
 
 /* Base styles */
@@ -75,23 +104,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f5f5f5;
-  color: #333333;
   margin: 0;
   padding: 0;
-}
-
-/* Header styles */
-header {
-  background-color: #ffffff;
-  border-bottom: 1px solid #cccccc;
-  padding: 1rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-header h1 {
-  font-size: 1.5rem;
-  color: #333333;
 }
 
 /* Main content area */
@@ -101,101 +115,121 @@ main {
   padding: 2rem 1rem;
 }
 
-/* Component styles */
-input, textarea, select {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #cccccc;
-  border-radius: 0.375rem;
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
-input:focus, textarea:focus, select:focus {
-  outline: none;
-  ring: 2px;
-  ring-color: #007bff;
-  border-color: transparent;
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
 
-button {
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
-  min-height: 44px;
-  border: none;
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
 }
 
-/* Button variants */
-.btn-primary {
-  background-color: #007bff;
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: #0056b3;
-}
-
-.btn-secondary {
-  background-color: #e0e0e0;
-  color: #333333;
-}
-
-.btn-secondary:hover {
-  background-color: #d0d0d0;
-}
-
-.btn-danger {
-  background-color: #dc3545;
-  color: white;
-}
-
-.btn-danger:hover {
-  background-color: #bb2d3b;
-}
-
-.btn-success {
-  background-color: #28a745;
-  color: white;
-}
-
-.btn-success:hover {
-  background-color: #1e7e34;
-}
-
-.btn-warning {
-  background-color: #ffc107;
-  color: #333333;
-}
-
-.btn-warning:hover {
-  background-color: #e0a800;
-}
-
-.btn-info {
-  background-color: #17a2b8;
-  color: white;
-}
-
-.btn-info:hover {
-  background-color: #117a8b;
-}
-
-/* Form group */
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #333333;
-}
-
-/* Card styles */
-.card {
-  background-color: white;
-  border: 1px solid #cccccc;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  padding: 1rem;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }

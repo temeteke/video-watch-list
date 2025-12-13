@@ -6,6 +6,8 @@ const config: Config = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  // Tailwind CSS v4では、@themeディレクティブがglobals.cssで定義されるため、
+  // ここではthemeセクションは不要
 }
 
 export default config

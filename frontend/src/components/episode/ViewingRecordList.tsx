@@ -1,9 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { ViewingRecordDetail } from '@/types/viewing-record';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
-import { showToast } from '@/components/common/Toast';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
 
 interface ViewingRecordListProps {
   viewingRecords: ViewingRecordDetail[];
@@ -35,10 +38,10 @@ export default function ViewingRecordList({
       setIsDeleting(true);
       await onDelete(deleteConfirm.id);
       setDeleteConfirm({ isOpen: false });
-      showToast('視聴記録を削除しました', 'success');
+      toast.success('視聴記録を削除しました');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : '削除に失敗しました';
-      showToast(errorMessage, 'error');
+      toast.error(errorMessage);
     } finally {
       setIsDeleting(false);
     }
@@ -49,47 +52,49 @@ export default function ViewingRecordList({
   };
 
   if (sortedRecords.length === 0) {
-    return <div className="py-lg text-center text-text-light">視聴履歴がありません</div>;
+    return <div className="py-6 text-center text-neutral-500">視聴履歴がありません</div>;
   }
 
   return (
     <>
-      <div className="space-y-md">
+      <div className="space-y-3">
         {sortedRecords.map((record, index) => (
-          <div
+          <Card
             key={record.id}
             data-testid={`viewing-record-item-${index}`}
-            className="card flex items-start justify-between gap-lg"
+            className="p-4 flex items-start justify-between gap-4"
           >
-            <div className="flex-1 space-y-sm">
-              <div className="flex items-center gap-md">
-                <span className="text-sm font-medium text-text-light">視聴日時:</span>
-                <span className="text-sm text-text-dark">
+            <div className="flex-1 space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-neutral-600">視聴日時:</span>
+                <span className="text-sm text-neutral-900">
                   {new Date(record.watchedAt).toLocaleString('ja-JP')}
                 </span>
               </div>
-              <div className="flex items-center gap-md">
-                <span className="text-sm font-medium text-text-light">評価:</span>
-                <span className="text-sm font-bold text-primary">{record.rating}/5</span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-neutral-600">評価:</span>
+                <span className="text-sm font-bold text-primary-500">{record.rating}/5</span>
               </div>
               {record.comment && (
-                <div className="pt-md">
-                  <span className="text-sm font-medium text-text-light">感想:</span>
-                  <p className="mt-sm text-sm text-text-dark leading-relaxed">
+                <div className="pt-2">
+                  <span className="text-sm font-medium text-neutral-600">感想:</span>
+                  <p className="mt-2 text-sm text-neutral-900 leading-relaxed">
                     {record.comment}
                   </p>
                 </div>
               )}
             </div>
-            <button
+            <Button
               type="button"
+              variant="destructive"
+              size="icon"
               onClick={() => handleDeleteClick(record.id)}
               disabled={isDeleting}
-              className="btn-danger flex-shrink-0 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="flex-shrink-0"
             >
-              削除
-            </button>
-          </div>
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </Card>
         ))}
       </div>
 

@@ -1,7 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { showToast } from '@/components/common/Toast';
+import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 interface AddViewingRecordFormProps {
   onSubmit: (data: {
@@ -47,42 +52,48 @@ export default function AddViewingRecordForm({
       setWatchedAt('');
       setRating('');
       setComment('');
-      showToast('視聴記録を追加しました', 'success');
+      toast.success('視聴記録を追加しました');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'エラーが発生しました';
       setError(errorMessage);
-      showToast(errorMessage, 'error');
+      toast.error(errorMessage);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-lg">
-      <div className="form-group">
-        <label htmlFor="watched-at" className="form-label">
-          視聴日時
-        </label>
-        <input
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
+      <div>
+        <Label htmlFor="watched-at" className="mb-2 block">
+          視聴日時 <span className="text-danger-500">*</span>
+        </Label>
+        <Input
           id="watched-at"
           type="datetime-local"
           value={watchedAt}
           onChange={(e) => setWatchedAt(e.target.value)}
           disabled={isLoading}
           required
-          className="w-full"
         />
       </div>
 
-      <div className="form-group">
-        <label htmlFor="rating" className="form-label">
-          評価
-        </label>
+      <div>
+        <Label htmlFor="rating" className="mb-2 block">
+          評価 <span className="text-danger-500">*</span>
+        </Label>
         <select
           id="rating"
           value={rating}
           onChange={(e) => setRating(e.target.value)}
           disabled={isLoading}
           required
-          className="w-full"
+          className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <option value="">選択してください</option>
           <option value="1">1</option>
@@ -93,10 +104,10 @@ export default function AddViewingRecordForm({
         </select>
       </div>
 
-      <div className="form-group">
-        <label htmlFor="comment" className="form-label">
+      <div>
+        <Label htmlFor="comment" className="mb-2 block">
           感想
-        </label>
+        </Label>
         <textarea
           id="comment"
           value={comment}
@@ -104,19 +115,13 @@ export default function AddViewingRecordForm({
           placeholder="オプション: 感想を入力"
           disabled={isLoading}
           rows={4}
-          className="w-full px-md py-sm border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-60"
+          className="flex w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
         />
       </div>
 
-      {error && <div className="px-md py-md bg-danger-light text-danger rounded-md">{error}</div>}
-
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed px-xl py-md"
-      >
-        記録を追加
-      </button>
+      <Button type="submit" disabled={isLoading}>
+        {isLoading ? '追加中...' : '記録を追加'}
+      </Button>
     </form>
   );
 }

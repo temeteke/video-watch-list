@@ -5,6 +5,10 @@ import { useParams, useRouter } from 'next/navigation';
 import { episodesApi } from '@/lib/api/episodes';
 import { viewingRecordsApi } from '@/lib/api/viewing-records';
 import { EpisodeDetail } from '@/types/episode';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import CompleteEpisodeForm from '@/components/episode/CompleteEpisodeForm';
 import AddViewingRecordForm from '@/components/episode/AddViewingRecordForm';
 import ViewingRecordList from '@/components/episode/ViewingRecordList';
@@ -82,11 +86,47 @@ export default function EpisodeDetailPage() {
   };
 
   if (loading) return <Spinner fullScreen />;
-  if (error) return <p style={{ color: 'red' }}>{error}</p>;
-  if (!episode) return <p>エピソードが見つかりません</p>;
+  if (error) {
+    return (
+      <main className="space-y-6">
+        <Breadcrumb
+          items={[
+            { label: 'ホーム', href: '/' },
+          ]}
+        />
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+        <Button onClick={() => router.back()} variant="outline">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          戻る
+        </Button>
+      </main>
+    );
+  }
+  if (!episode) {
+    return (
+      <main className="space-y-6">
+        <Breadcrumb
+          items={[
+            { label: 'ホーム', href: '/' },
+          ]}
+        />
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>エピソードが見つかりません</AlertDescription>
+        </Alert>
+        <Button onClick={() => router.back()} variant="outline">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          戻る
+        </Button>
+      </main>
+    );
+  }
 
   return (
-    <main>
+    <main className="space-y-6">
       <Breadcrumb
         items={[
           { label: 'ホーム', href: '/' },
@@ -94,43 +134,53 @@ export default function EpisodeDetailPage() {
         ]}
       />
 
-      <button onClick={() => router.back()}>戻る</button>
+      <Button onClick={() => router.back()} variant="outline">
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        戻る
+      </Button>
 
-      <section>
-        <h1>{episode.episodeInfo}</h1>
+      <section className="space-y-4">
         <div>
-          <p>状態: {episode.watchStatus === 'watched' ? '視聴済み' : '未視聴'}</p>
-          {episode.watchPageUrls.length > 0 && (
-            <div>
-              <h3>視聴ページ</h3>
-              <ul>
-                {episode.watchPageUrls.map((url, index) => (
-                  <li key={index}>
-                    <a href={url} target="_blank" rel="noopener noreferrer">
-                      {url}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <h1 className="text-3xl font-bold text-neutral-900">{episode.episodeInfo}</h1>
+          <Badge variant={episode.watchStatus === 'watched' ? 'default' : 'secondary'}>
+            {episode.watchStatus === 'watched' ? '視聴済み' : '未視聴'}
+          </Badge>
         </div>
+        {episode.watchPageUrls.length > 0 && (
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold text-neutral-900">視聴ページ</h3>
+            <ul className="space-y-2">
+              {episode.watchPageUrls.map((url, index) => (
+                <li key={index}>
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary-500 hover:text-primary-600 underline text-sm break-all"
+                  >
+                    {url}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </section>
 
-      <section>
-        <h2>視聴完了</h2>
+      <section className="space-y-4">
+        <h2 className="text-2xl font-bold text-neutral-900">視聴完了</h2>
         {episode.watchStatus === 'unwatched' ? (
           <CompleteEpisodeForm
             onSubmit={handleCompleteEpisode}
             isLoading={isSubmitting}
           />
         ) : (
-          <p>このエピソードは視聴済みです。</p>
+          <p className="text-neutral-600">このエピソードは視聴済みです。</p>
         )}
       </section>
 
-      <section>
-        <h2>視聴履歴</h2>
+      <section className="space-y-4">
+        <h2 className="text-2xl font-bold text-neutral-900">視聴履歴</h2>
         <ViewingRecordList
           viewingRecords={episode.viewingRecords}
           onDelete={handleDeleteViewingRecord}
@@ -138,8 +188,8 @@ export default function EpisodeDetailPage() {
       </section>
 
       {episode.watchStatus === 'watched' && (
-        <section>
-          <h2>視聴記録を追加</h2>
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold text-neutral-900">視聴記録を追加</h2>
           <AddViewingRecordForm
             onSubmit={handleAddViewingRecord}
             isLoading={isSubmitting}

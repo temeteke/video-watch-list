@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import React from 'react';
 import './globals.css';
 import Header from '@/components/common/Header';
-import Toast from '@/components/common/Toast';
+import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
   title: '視聴予定リスト',
@@ -23,10 +23,10 @@ export default function RootLayout({
     <html lang="ja" suppressHydrationWarning>
       <body>
         <Header />
-        <main className="max-w-screen-xl mx-auto px-xl py-lg">
+        <main className="max-w-screen-xl mx-auto px-4 py-6">
           {children}
         </main>
-        <Toast />
+        <Toaster />
       </body>
     </html>
   );
