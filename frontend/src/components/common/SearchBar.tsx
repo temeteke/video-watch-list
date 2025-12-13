@@ -32,6 +32,11 @@ export default function SearchBar({ onSearch, isLoading = false }: SearchBarProp
     onSearch(undefined, undefined);
   };
 
+  const handleStatusChange = (value: string) => {
+    const status = value === 'all' ? undefined : (value as WatchStatus);
+    setWatchStatus(status);
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSearch();
@@ -51,12 +56,12 @@ export default function SearchBar({ onSearch, isLoading = false }: SearchBarProp
           data-testid="search-input"
         />
 
-        <Select value={watchStatus || ''} onValueChange={(value) => setWatchStatus((value as WatchStatus) || undefined)}>
+        <Select value={watchStatus || 'all'} onValueChange={handleStatusChange}>
           <SelectTrigger disabled={isLoading} data-testid="watch-status-filter">
             <SelectValue placeholder="すべての状態" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">すべての状態</SelectItem>
+            <SelectItem value="all">すべての状態</SelectItem>
             <SelectItem value="WATCHED">視聴済み</SelectItem>
             <SelectItem value="UNWATCHED">未視聴</SelectItem>
           </SelectContent>
