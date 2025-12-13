@@ -21,15 +21,17 @@ public class SeriesRepositoryImpl implements SeriesRepository {
 
     @Override
     public Optional<Series> findById(Long id) {
+        // Phase 7: Episode パラメータを削除
         return seriesMapper.findById(id)
-                .map(entity -> entity.toDomain(new ArrayList<>()));
+                .map(entity -> entity.toDomain());
     }
 
     @Override
     public List<Series> findByTitleId(Long titleId) {
+        // Phase 7: Episode パラメータを削除
         return seriesMapper.findByTitleId(titleId)
                 .stream()
-                .map(entity -> entity.toDomain(new ArrayList<>()))
+                .map(entity -> entity.toDomain())
                 .toList();
     }
 
@@ -49,7 +51,8 @@ public class SeriesRepositoryImpl implements SeriesRepository {
             seriesMapper.update(entity);
         }
         // Return domain model with the auto-generated or existing ID
-        return entity.toDomain(new ArrayList<>(series.getEpisodes()));
+        // Phase 7: Episode パラメータを削除
+        return entity.toDomain();
     }
 
     @Override

@@ -32,7 +32,7 @@ class SeriesTest {
             assertThat(series.getName()).isEqualTo(seriesName);
             assertThat(series.getCreatedAt()).isNotNull();
             assertThat(series.getUpdatedAt()).isNotNull();
-            assertThat(series.getEpisodes()).isEmpty();
+            // Phase 7: getEpisodes() は削除されました（Episode は独立した集約）
         }
 
         @Test
@@ -48,7 +48,7 @@ class SeriesTest {
             // Then
             assertThat(series.getTitleId()).isEqualTo(titleId);
             assertThat(series.getName()).isEmpty();
-            assertThat(series.getEpisodes()).isEmpty();
+            // Phase 7: getEpisodes() は削除されました
         }
 
         @Test
@@ -62,7 +62,8 @@ class SeriesTest {
             Series series = Series.create(id, titleId, "Season 1");
 
             // Then
-            assertThat(series.getEpisodes()).isEmpty();
+            // Phase 7: getEpisodes() は削除されました
+            assertThat(series.getId()).isEqualTo(id);
         }
     }
 
@@ -119,19 +120,15 @@ class SeriesTest {
     class EpisodeManagement {
 
         @Test
-        @DisplayName("エピソードを追加できる")
-        void shouldAddEpisode() {
+        @DisplayName("Phase 7: Episode は独立した集約に昇格")
+        void episodesAreManagedIndependently() {
             // Given
             Long seriesId = 1L;
-            Series series = new Series(seriesId, 1L, "Season 1", null, LocalDateTime.now(), LocalDateTime.now());
-            int initialSize = series.getEpisodes().size();
-
-            // When
-            Episode episode = Episode.create(2L, seriesId, "第2話");
-            series.addEpisode(episode);
+            Series series = new Series(seriesId, 1L, "Season 1", LocalDateTime.now(), LocalDateTime.now());
 
             // Then
-            assertThat(series.getEpisodes()).hasSize(initialSize + 1);
+            // Phase 7: Series は Episode リストを保持しなくなりました
+            assertThat(series.getTitleId()).isEqualTo(1L);
         }
     }
 
@@ -140,18 +137,15 @@ class SeriesTest {
     class Consistency {
 
         @Test
-        @DisplayName("シリーズにエピソードを追加できる")
-        void episodesShouldAlwaysHaveAtLeastOne() {
+        @DisplayName("Phase 7: Series は独立した集約")
+        void seriesIsNowAnIndependentAggregate() {
             // Given
             Long seriesId = 1L;
-            Series series = new Series(seriesId, 1L, "Season 1", null, LocalDateTime.now(), LocalDateTime.now());
-
-            // When
-            Episode episode = Episode.create(1L, seriesId, "第1話");
-            series.addEpisode(episode);
+            Series series = new Series(seriesId, 1L, "Season 1", LocalDateTime.now(), LocalDateTime.now());
 
             // Then
-            assertThat(series.getEpisodes()).isNotEmpty();
+            // Phase 7: Series は Episode リストを保持しなくなりました
+            assertThat(series.getId()).isEqualTo(seriesId);
         }
     }
 }

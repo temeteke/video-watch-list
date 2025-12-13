@@ -3,6 +3,7 @@
 import React from 'react';
 
 interface ConfirmDialogProps {
+  isOpen: boolean;
   title: string;
   message: string;
   onConfirm: () => void;
@@ -14,6 +15,7 @@ interface ConfirmDialogProps {
 }
 
 export default function ConfirmDialog({
+  isOpen,
   title,
   message,
   onConfirm,
@@ -23,91 +25,49 @@ export default function ConfirmDialog({
   cancelButtonLabel = 'キャンセル',
   variant = 'danger',
 }: ConfirmDialogProps) {
-  const getConfirmButtonColor = () => {
+  if (!isOpen) return null;
+  const getConfirmButtonClass = () => {
     switch (variant) {
       case 'danger':
-        return '#dc3545';
+        return 'btn-danger';
       case 'warning':
-        return '#ffc107';
+        return 'btn-warning';
       case 'info':
-        return '#17a2b8';
+        return 'btn-info';
       default:
-        return '#007bff';
+        return 'btn-primary';
     }
   };
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000,
-      }}
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       onClick={onCancel}
       data-testid="confirm-dialog-overlay"
     >
       <div
-        style={{
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          padding: '24px',
-          maxWidth: '400px',
-          width: '90%',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-        }}
+        className="bg-white rounded-lg p-2xl max-w-sm w-11/12 shadow-lg"
         onClick={(e) => e.stopPropagation()}
       >
         <h2
-          style={{
-            margin: '0 0 16px 0',
-            fontSize: '18px',
-            fontWeight: 'bold',
-            color: '#333',
-          }}
+          className="mb-md text-lg font-bold text-text-dark"
           data-testid="confirm-dialog-title"
         >
           {title}
         </h2>
 
         <p
-          style={{
-            margin: '0 0 24px 0',
-            fontSize: '14px',
-            color: '#666',
-            lineHeight: '1.5',
-          }}
+          className="mb-2xl text-sm text-text-light leading-relaxed"
           data-testid="confirm-dialog-message"
         >
           {message}
         </p>
 
-        <div
-          style={{
-            display: 'flex',
-            gap: '12px',
-            justifyContent: 'flex-end',
-          }}
-        >
+        <div className="flex gap-md justify-end">
           <button
             onClick={onCancel}
             disabled={isLoading}
-            style={{
-              padding: '8px 16px',
-              fontSize: '14px',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              backgroundColor: '#f8f9fa',
-              color: '#333',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              opacity: isLoading ? 0.6 : 1,
-            }}
+            className="px-lg py-sm border border-gray-300 rounded-md bg-gray-100 text-text-dark hover:bg-gray-200 active:bg-gray-200 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-200"
             data-testid="confirm-dialog-cancel-button"
           >
             {cancelButtonLabel}
@@ -116,16 +76,7 @@ export default function ConfirmDialog({
           <button
             onClick={onConfirm}
             disabled={isLoading}
-            style={{
-              padding: '8px 16px',
-              fontSize: '14px',
-              backgroundColor: getConfirmButtonColor(),
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              opacity: isLoading ? 0.6 : 1,
-            }}
+            className={`${getConfirmButtonClass()} disabled:opacity-60 disabled:cursor-not-allowed`}
             data-testid="confirm-dialog-confirm-button"
           >
             {isLoading ? '処理中...' : confirmButtonLabel}

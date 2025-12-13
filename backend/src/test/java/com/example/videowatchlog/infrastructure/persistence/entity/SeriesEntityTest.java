@@ -32,19 +32,16 @@ class SeriesEntityTest {
         entity.setCreatedAt(createdAt);
         entity.setUpdatedAt(updatedAt);
 
-        List<Episode> episodes = List.of(
-            Episode.create(1L, 1L, "Episode 1")
-        );
-
         // When
-        Series domain = entity.toDomain(episodes);
+        // Phase 7: toDomain() のみ使用
+        Series domain = entity.toDomain();
 
         // Then
         assertThat(domain).isNotNull();
         assertThat(domain.getId()).isEqualTo(1L);
         assertThat(domain.getTitleId()).isEqualTo(100L);
         assertThat(domain.getName()).isEqualTo("Season 1");
-        assertThat(domain.getEpisodes()).hasSize(1);
+        // Phase 7: Episode は独立した集約
         assertThat(domain.getCreatedAt()).isEqualTo(createdAt);
         assertThat(domain.getUpdatedAt()).isEqualTo(updatedAt);
     }
@@ -54,11 +51,11 @@ class SeriesEntityTest {
     void fromDomain_shouldConvertCorrectly() {
         // Given
         LocalDateTime now = LocalDateTime.now();
+        // Phase 7: Series コンストラクタから Episode パラメータを削除
         Series domain = new Series(
             1L,
             100L,
             "Season 1",
-            new ArrayList<>(),
             now,
             now
         );
@@ -80,18 +77,19 @@ class SeriesEntityTest {
     void fromDomain_toDomain_roundTrip() {
         // Given
         LocalDateTime now = LocalDateTime.now();
+        // Phase 7: Series コンストラクタから Episode パラメータを削除
         Series original = new Series(
             2L,
             100L,
             "Season 2",
-            new ArrayList<>(),
             now,
             now
         );
 
         // When: Convert domain -> entity -> domain
         SeriesEntity entity = SeriesEntity.fromDomain(original);
-        Series converted = entity.toDomain(new ArrayList<>());
+        // Phase 7: toDomain() シグネチャが変更
+        Series converted = entity.toDomain();
 
         // Then: All properties should be preserved
         assertThat(converted.getId()).isEqualTo(original.getId());
@@ -113,7 +111,8 @@ class SeriesEntityTest {
         entity.setUpdatedAt(LocalDateTime.now());
 
         // When
-        Series domain = entity.toDomain(new ArrayList<>());
+        // Phase 7: toDomain() シグネチャが変更
+        Series domain = entity.toDomain();
 
         // Then
         assertThat(domain.getName()).isEmpty();
@@ -131,10 +130,12 @@ class SeriesEntityTest {
         entity.setUpdatedAt(LocalDateTime.now());
 
         // When
-        Series domain = entity.toDomain(new ArrayList<>());
+        // Phase 7: toDomain() シグネチャが変更
+        Series domain = entity.toDomain();
 
         // Then
-        assertThat(domain.getEpisodes()).isEmpty();
+        // Phase 7: getEpisodes() は削除されました
+        assertThat(domain.getId()).isEqualTo(1L);
     }
 
     @Test

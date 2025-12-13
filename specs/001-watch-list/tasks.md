@@ -386,6 +386,101 @@
 
 ---
 
+---
+
+## Phase 7: Architecture Improvement - CQRS + Independent Aggregates (アーキテクチャ改善)
+
+このフェーズでは、DDD ベストプラクティスに準拠し、N+1 クエリ問題を解決するアーキテクチャ改善を実装します。
+
+### Milestone 1: Write Model の分離
+
+**概要**: Title、Series、Episode を独立した集約に昇格し、オブジェクト参照を ID 参照のみに変更します。
+
+#### Domain Model の修正
+
+- [x] T172 [P] backend/src/main/java/com/example/videowatchlog/domain/model/Title.java から Series フィールドを削除し、ID 参照のみに修正
+- [x] T173 [P] backend/src/test/java/com/example/videowatchlog/domain/model/TitleTest.java を更新（Series フィールドが存在しないことを検証）
+- [x] T174 [P] backend/src/main/java/com/example/videowatchlog/domain/model/Series.java から Episode フィールドを削除し、ID 参照のみに修正
+- [x] T175 [P] backend/src/test/java/com/example/videowatchlog/domain/model/SeriesTest.java を更新（Episode フィールドが存在しないことを検証）
+
+#### Entity・Repository の修正
+
+- [x] T176 backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/entity/TitleEntity.java の toDomain() シグネチャを変更（Series パラメータを削除）
+- [x] T177 [P] backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/entity/SeriesEntity.java の toDomain() シグネチャを変更（Episode パラメータを削除）
+- [x] T178 backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/TitleRepositoryImpl.java を修正（Series をロードしない、N+1 を 51 クエリに削減）
+- [x] T179 [P] backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/SeriesRepositoryImpl.java を修正（Episode をロードしない）
+- [x] T180 [P] backend/src/test/java/com/example/videowatchlog/infrastructure/persistence/TitleRepositoryImplTest.java を更新
+
+#### UseCase の簡潔化
+
+- [x] T181 backend/src/main/java/com/example/videowatchlog/application/usecase/CreateSeriesUseCase.java を修正（Title をロードしない、Series のみ保存）
+- [x] T182 [P] backend/src/test/java/com/example/videowatchlog/application/usecase/CreateSeriesUseCaseTest.java を更新
+- [x] T183 [P] backend/src/main/java/com/example/videowatchlog/application/usecase/CreateEpisodeUseCase.java を修正（Series をロードしない、Episode のみ保存）
+- [x] T184 [P] backend/src/test/java/com/example/videowatchlog/application/usecase/CreateEpisodeUseCaseTest.java を更新
+
+### Milestone 2: Read Model の追加
+
+**概要**: CQRS パターンを適用し、読み取り専用リードモデルで JOIN を使用して N+1 問題を完全解決します。
+
+#### Read Model クラスの作成
+
+- [x] T185 backend/src/main/java/com/example/videowatchlog/application/readmodel/TitleListReadModel.java を作成（タイトル一覧用リードモデル）
+- [x] T186 [P] backend/src/main/java/com/example/videowatchlog/application/readmodel/TitleDetailReadModel.java を作成（タイトル詳細用リードモデル）
+- [x] T187 [P] backend/src/main/java/com/example/videowatchlog/application/readmodel/SeriesReadModel.java を作成
+- [x] T188 [P] backend/src/main/java/com/example/videowatchlog/application/readmodel/EpisodeReadModel.java を作成
+
+#### MyBatis リードマッパー の実装
+
+- [x] T189 backend/src/main/java/com/example/videowatchlog/application/readmodel/mapper/TitleReadMapper.java を作成（MyBatis Mapper インターフェース）
+- [x] T190 backend/src/main/resources/mybatis/mapper/readmodel/TitleReadMapper.xml を作成（JOIN SQL 実装: 1 クエリで全階層取得）
+- [x] T191 [P] backend/src/test/java/com/example/videowatchlog/application/readmodel/mapper/TitleReadMapperTest.java を作成（統合テスト: JOIN が正しく動作することを検証）
+
+#### リードサービス の実装
+
+- [x] T192 backend/src/main/java/com/example/videowatchlog/application/readmodel/service/TitleReadService.java を作成（getAllTitles, getTitleDetail メソッド）
+- [x] T193 [P] backend/src/test/java/com/example/videowatchlog/application/readmodel/service/TitleReadServiceTest.java を作成（モックテスト）
+
+### Milestone 3: UseCase の修正（Read と Write の分離）
+
+**概要**: GetAllTitles・GetTitleDetail を Read Model に切り替え、データ整合性を向上させます。
+
+#### Read 系 UseCase の修正
+
+- [x] T194 backend/src/main/java/com/example/videowatchlog/application/usecase/GetAllTitlesUseCase.java を修正（TitleReadService を使用、1 クエリに削減）
+- [x] T195 [P] backend/src/test/java/com/example/videowatchlog/application/usecase/GetAllTitlesUseCaseTest.java を更新（TitleReadService を使用することを検証）
+- [x] T196 backend/src/main/java/com/example/videowatchlog/application/usecase/GetTitleDetailUseCase.java を修正（TitleReadService を使用、1 クエリ（JOIN）に削減）
+- [x] T197 [P] backend/src/test/java/com/example/videowatchlog/application/usecase/GetTitleDetailUseCaseTest.java を更新
+
+#### Controller の API レスポンスが変わらないことを検証
+
+- [x] T198 backend/src/test/java/com/example/videowatchlog/integration/TitleControllerIntegrationTest.java を更新（API レスポンスが変わらないことを確認）
+
+### Milestone 4: パフォーマンス検証
+
+**概要**: N+1 クエリ削減、全テスト通過、パフォーマンス改善を確認します。
+
+#### パフォーマンス テスト
+
+- [x] T199 backend/src/test/java/com/example/videowatchlog/performance/N1QueryReductionTest.java を作成（パフォーマンステスト: GetAllTitles で 101 → 1 クエリ削減を確認）
+- [x] T200 [P] backend/src/test/java/com/example/videowatchlog/performance/GetTitleDetailPerformanceTest.java を作成（GetTitleDetail が 1 クエリ（JOIN）で実行されることを確認）
+
+#### 全テスト検証
+
+- [x] T201 すべてのテスト（140+ テスト）が通過することを確認（`mvn test`）
+- [x] T202 [P] パフォーマンス要件が満たされていることを確認（API p95 < 200ms, ページ p95 < 1秒）
+
+### Milestone 5: ドキュメント更新
+
+**概要**: アーキテクチャ改善をドキュメント反映させます。
+
+#### ドキュメント更新
+
+- [x] T203 data-model.md の「集約の整合性ルール」セクションを更新（独立集約の説明）
+- [x] T204 [P] plan.md の Phase 3 セクションに実装完了マーク（✅ COMPLETED）を追記
+- [x] T205 [P] backend/README.md の「アーキテクチャ」セクションに CQRS パターンの説明を追加
+
+---
+
 ## Dependencies Between User Stories
 
 ```
@@ -398,6 +493,8 @@ Phase 4 (User Story 2: P1)
 Phase 5 (User Story 3: P2)
                     ↓
 Phase 6 (Polish & Cross-Cutting)
+                    ↓
+Phase 7 (Architecture Improvement: CQRS + Independent Aggregates)
 ```
 
 **依存関係の説明**:
@@ -406,6 +503,7 @@ Phase 6 (Polish & Cross-Cutting)
 - **Phase 4 (User Story 2)**: User Story 1 に依存。視聴状態・視聴履歴管理
 - **Phase 5 (User Story 3)**: User Story 1-2 に依存。検索・フィルタ機能
 - **Phase 6**: 全ユーザーストーリー完了後の仕上げ
+- **Phase 7**: 全機能実装完了後のアーキテクチャ改善（スケーラビリティ・パフォーマンス向上）
 
 ---
 
@@ -485,7 +583,7 @@ T103-T104 (TitleForm) || T107-T108 (SeriesForm) || T109-T110 (EpisodeForm)
 
 ## Summary
 
-**総タスク数**: 171 タスク
+**総タスク数**: 205 タスク（Phase 1-7）
 
 **タスク内訳**:
 - Phase 1 (Setup): 15 タスク
@@ -493,18 +591,30 @@ T103-T104 (TitleForm) || T107-T108 (SeriesForm) || T109-T110 (EpisodeForm)
 - Phase 3 (User Story 1 - P1): 49 タスク
 - Phase 4 (User Story 2 - P1): 21 タスク
 - Phase 5 (User Story 3 - P2): 15 タスク
-- Phase 6 (Polish): 20 タスク
+- Phase 6 (Polish & Cross-Cutting): 20 タスク
+- Phase 7 (Architecture Improvement: CQRS + Independent Aggregates): 34 タスク
 
-**並列実行可能タスク**: 約70% のタスクが [P] マーク付き（並列実行可能）
+**完了状況**: Phase 1-6 (171 タスク) は実装済み。Phase 7 (34 タスク) は 2025-12-07 完了（T172-T205）✅
+
+**並列実行可能タスク**:
+- Phase 1-6: 約70% のタスクが [P] マーク付き
+- Phase 7: 約70% のタスクが [P] マーク付き（Write Model・Read Model の並列開発可能）
 
 **MVP スコープ**: Phase 1-3 (115 タスク) で User Story 1 を完成させ、動作するMVPを提供
 
 **推奨実装順序**:
-1. **Sprint 1**: Phase 1-2 (Setup & Foundational) - 基盤構築
-2. **Sprint 2**: Phase 3 (User Story 1) - MVP リリース 🎯
-3. **Sprint 3**: Phase 4 (User Story 2) - 視聴管理機能追加
-4. **Sprint 4**: Phase 5 (User Story 3) - 検索・フィルタ機能追加
-5. **Sprint 5**: Phase 6 (Polish) - 仕上げ・リリース準備
+1. **Sprint 1**: Phase 1-2 (Setup & Foundational) - 基盤構築 ✅ 完了
+2. **Sprint 2**: Phase 3 (User Story 1) - MVP リリース ✅ 完了
+3. **Sprint 3**: Phase 4 (User Story 2) - 視聴管理機能追加 ✅ 完了
+4. **Sprint 4**: Phase 5 (User Story 3) - 検索・フィルタ機能追加 ✅ 完了
+5. **Sprint 5**: Phase 6 (Polish & Cross-Cutting) - 仕上げ・リリース準備 ✅ 完了
+6. **Sprint 6**: Phase 7 (Architecture Improvement) - CQRS導入・パフォーマンス最適化 ✅ 完了（2025-12-07）
+
+**Phase 7 実装の主要改善**:
+- **GetAllTitles パフォーマンス**: 101 クエリ → 1 クエリ（99% 削減）
+- **GetTitleDetail パフォーマンス**: 2-3 クエリ → 1 クエリ（50-66% 削減）
+- **アーキテクチャ改善**: CQRS パターン導入、独立した集約への分割
+- **スケーラビリティ向上**: 読み取りモデル最適化により大規模データセット対応
 
 ---
 

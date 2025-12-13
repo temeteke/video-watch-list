@@ -20,11 +20,14 @@ spring:
     baseline-on-migrate: true
 
 mybatis:
-  mapper-locations: classpath:mybatis/mapper/*.xml
+  mapper-locations: classpath:mybatis/mapper/**/*.xml
   configuration:
     map-underscore-to-camel-case: true
     default-enum-type-handler: org.apache.ibatis.type.EnumTypeHandler
     log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
 
 server:
   port: 8080

@@ -1,11 +1,17 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import React from 'react';
 import './globals.css';
+import Header from '@/components/common/Header';
+import Toast from '@/components/common/Toast';
 
 export const metadata: Metadata = {
   title: '視聴予定リスト',
   description: 'ドラマ・アニメ・映画の視聴予定と履歴を管理するアプリケーション',
-  viewport: 'width=device-width, initial-scale=1',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -14,14 +20,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ja">
+    <html lang="ja" suppressHydrationWarning>
       <body>
-        <header>
-          <h1>視聴予定リスト</h1>
-        </header>
-        <main>
+        <Header />
+        <main className="max-w-screen-xl mx-auto px-xl py-lg">
           {children}
         </main>
+        <Toast />
       </body>
     </html>
   );

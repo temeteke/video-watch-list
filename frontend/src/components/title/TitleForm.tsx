@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { showToast } from '@/components/common/Toast';
 import { CreateTitleRequest } from '@/types/title';
 
 interface TitleFormProps {
@@ -42,15 +43,20 @@ export default function TitleForm({ onSubmit, isLoading = false }: TitleFormProp
         name: name.trim(),
         titleInfoUrls: filledUrls.length > 0 ? filledUrls : undefined,
       });
+      showToast('タイトルを作成しました', 'success');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'エラーが発生しました');
+      const errorMessage = err instanceof Error ? err.message : 'エラーが発生しました';
+      setError(errorMessage);
+      showToast(errorMessage, 'error');
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="name">タイトル名 *</label>
+    <form onSubmit={handleSubmit} className="space-y-lg">
+      <div className="form-group">
+        <label htmlFor="name" className="form-label">
+          タイトル名 *
+        </label>
         <input
           id="name"
           type="text"
@@ -58,39 +64,53 @@ export default function TitleForm({ onSubmit, isLoading = false }: TitleFormProp
           onChange={(e) => setName(e.target.value)}
           placeholder="例: 進撃の巨人"
           disabled={isLoading}
+          className="w-full"
         />
       </div>
 
-      <div>
-        <label>タイトル情報URL</label>
-        {urls.map((url, index) => (
-          <div key={index}>
-            <input
-              type="url"
-              value={url}
-              onChange={(e) => handleUrlChange(index, e.target.value)}
-              placeholder="https://..."
-              disabled={isLoading}
-            />
-            {urls.length > 1 && (
-              <button
-                type="button"
-                onClick={() => removeUrlField(index)}
+      <div className="form-group">
+        <label className="form-label">タイトル情報URL</label>
+        <div className="space-y-md">
+          {urls.map((url, index) => (
+            <div key={index} className="flex gap-md items-center">
+              <input
+                type="url"
+                value={url}
+                onChange={(e) => handleUrlChange(index, e.target.value)}
+                placeholder="https://..."
                 disabled={isLoading}
-              >
-                削除
-              </button>
-            )}
-          </div>
-        ))}
-        <button type="button" onClick={addUrlField} disabled={isLoading}>
+                className="flex-1"
+              />
+              {urls.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeUrlField(index)}
+                  disabled={isLoading}
+                  className="px-lg py-sm bg-danger text-white rounded-md font-medium transition-colors duration-200 min-h-touch-target hover:bg-danger-dark active:bg-danger-dark disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap"
+                >
+                  削除
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={addUrlField}
+          disabled={isLoading}
+          className="mt-md px-lg py-sm bg-info text-white rounded-md font-medium transition-colors duration-200 min-h-touch-target hover:bg-info-dark active:bg-info-dark disabled:opacity-60 disabled:cursor-not-allowed"
+        >
           URL を追加
         </button>
       </div>
 
-      {error && <div style={{ color: 'red' }}>{error}</div>}
+      {error && <div className="px-md py-md bg-danger-light text-danger rounded-md">{error}</div>}
 
-      <button type="submit" disabled={isLoading}>
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed px-xl py-md"
+      >
         {isLoading ? '作成中...' : '作成'}
       </button>
     </form>

@@ -40,7 +40,7 @@ public class CreateEpisodeUseCase {
         }
 
         episodeRepository.save(episode);
-        series.getEpisodes().add(episode);
-        seriesRepository.save(series);
+        // Phase 7: Series の Episode フィールドがなくなったため、Episode を単独で保存
+        // Series はもはや Episode リストを保持しません
     }
 }

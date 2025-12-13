@@ -1,25 +1,24 @@
 package com.example.videowatchlog.domain.model;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**
  * Series entity.
  * Represents a season within a Title (e.g., Season 1, Season 2).
  *
+ * Phase 7 アーキテクチャ改善：Series は独立した集約になり、Episode への参照は ID のみです。
+ * Episode の詳細データは、Read Model を通じてのみ取得します。
+ *
  * Key business rules:
  * - Series name can be empty (for default series)
  * - Series name must not exceed 100 characters
- * - Series must have at least one Episode internally (enforced at use case layer)
  * - Deleting a series cascades to all Episodes and ViewingRecords
  */
 public class Series {
     private final Long id;
     private final Long titleId;
     private String name;
-    private final List<Episode> episodes;
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -29,18 +28,16 @@ public class Series {
      * @param id Unique identifier (null for new entities)
      * @param titleId Parent title ID (required)
      * @param name Series name (can be empty, max 100 characters)
-     * @param episodes List of episodes (internally must have at least 1)
      * @param createdAt Creation timestamp
      * @param updatedAt Last update timestamp
      * @throws IllegalArgumentException if validation fails
      */
-    public Series(Long id, Long titleId, String name, List<Episode> episodes,
+    public Series(Long id, Long titleId, String name,
                   LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.titleId = Objects.requireNonNull(titleId, "titleId must not be null");
         validateName(name);
         this.name = name != null ? name : "";
-        this.episodes = episodes != null ? new ArrayList<>(episodes) : new ArrayList<>();
         this.createdAt = Objects.requireNonNull(createdAt, "createdAt must not be null");
         this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt must not be null");
     }
@@ -48,16 +45,15 @@ public class Series {
 
     /**
      * Factory method to create a new Series.
-     * Note: Episodes should be added separately after Series is persisted.
      *
      * @param id Series ID (EntityIdentityServiceで生成)
      * @param titleId Parent title ID
      * @param name Series name
-     * @return New Series without episodes
+     * @return New Series
      */
     public static Series create(Long id, Long titleId, String name) {
         LocalDateTime now = LocalDateTime.now();
-        return new Series(id, titleId, name, null, now, now);
+        return new Series(id, titleId, name, now, now);
     }
 
     /**
@@ -81,27 +77,6 @@ public class Series {
         if (name != null && name.length() > 100) {
             throw new IllegalArgumentException("Series name must not exceed 100 characters");
         }
-    }
-
-    /**
-     * Adds an episode to this series.
-     *
-     * @param episode Episode to add
-     */
-    public void addEpisode(Episode episode) {
-        Objects.requireNonNull(episode, "Episode must not be null");
-        if (!this.episodes.contains(episode)) {
-            this.episodes.add(episode);
-        }
-    }
-
-    /**
-     * Removes an episode from this series.
-     *
-     * @param episode Episode to remove
-     */
-    public void removeEpisode(Episode episode) {
-        this.episodes.remove(episode);
     }
 
     /**
@@ -135,10 +110,6 @@ public class Series {
         return name;
     }
 
-    public List<Episode> getEpisodes() {
-        return new ArrayList<>(episodes);
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -166,7 +137,6 @@ public class Series {
                 "id=" + id +
                 ", titleId=" + titleId +
                 ", name='" + name + '\'' +
-                ", episodes=" + episodes.size() +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

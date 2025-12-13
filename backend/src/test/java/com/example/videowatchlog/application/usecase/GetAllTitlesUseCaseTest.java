@@ -1,8 +1,8 @@
 package com.example.videowatchlog.application.usecase;
 
 import com.example.videowatchlog.application.dto.TitleSummaryDTO;
-import com.example.videowatchlog.domain.model.Title;
-import com.example.videowatchlog.domain.repository.TitleRepository;
+import com.example.videowatchlog.application.readmodel.TitleListReadModel;
+import com.example.videowatchlog.application.readmodel.service.TitleReadService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,12 +19,14 @@ import static org.mockito.Mockito.when;
 
 /**
  * GetAllTitlesUseCaseTest - すべてのタイトルを取得する UseCase のテスト
+ *
+ * Phase 7: TitleReadService を使用した Read Model テスト
  */
 @DisplayName("GetAllTitlesUseCase のテスト")
 class GetAllTitlesUseCaseTest {
 
     @Mock
-    private TitleRepository titleRepository;
+    private TitleReadService titleReadService;
 
     @InjectMocks
     private GetAllTitlesUseCase getAllTitlesUseCase;
@@ -39,13 +41,11 @@ class GetAllTitlesUseCaseTest {
     void shouldGetAllTitles() {
         // Given
         LocalDateTime now = LocalDateTime.now();
-        Title title1 = new Title(1L, "Title 1", new java.util.LinkedHashSet<>(),
-                                new java.util.ArrayList<>(), now, now);
-        Title title2 = new Title(2L, "Title 2", new java.util.LinkedHashSet<>(),
-                                new java.util.ArrayList<>(), now, now);
+        TitleListReadModel title1 = new TitleListReadModel(1L, "Title 1", now, now);
+        TitleListReadModel title2 = new TitleListReadModel(2L, "Title 2", now, now);
 
-        List<Title> titles = Arrays.asList(title1, title2);
-        when(titleRepository.findAll()).thenReturn(titles);
+        List<TitleListReadModel> titles = Arrays.asList(title1, title2);
+        when(titleReadService.getAllTitles()).thenReturn(titles);
 
         // When
         List<TitleSummaryDTO> result = getAllTitlesUseCase.execute();
@@ -62,7 +62,7 @@ class GetAllTitlesUseCaseTest {
     @DisplayName("タイトルが存在しない場合は空のリストを返す")
     void shouldReturnEmptyListWhenNoTitles() {
         // Given
-        when(titleRepository.findAll()).thenReturn(List.of());
+        when(titleReadService.getAllTitles()).thenReturn(List.of());
 
         // When
         List<TitleSummaryDTO> result = getAllTitlesUseCase.execute();

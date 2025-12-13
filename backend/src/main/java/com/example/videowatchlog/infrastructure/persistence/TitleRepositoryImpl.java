@@ -38,13 +38,8 @@ public class TitleRepositoryImpl implements TitleRepository {
         List<com.example.videowatchlog.domain.model.TitleInfoUrl> titleInfoUrlsList = titleMapper.selectTitleInfoUrlsByTitleId(id);
         java.util.Set<com.example.videowatchlog.domain.model.TitleInfoUrl> titleInfoUrls = new java.util.LinkedHashSet<>(titleInfoUrlsList);
 
-        // Load Series (convert SeriesEntity -> Series)
-        List<com.example.videowatchlog.infrastructure.persistence.entity.SeriesEntity> seriesEntities = seriesMapper.findByTitleId(id);
-        List<Series> series = seriesEntities.stream()
-                .map(se -> se.toDomain(new java.util.ArrayList<>()))
-                .toList();
-
-        return Optional.of(entityOpt.get().toDomain(titleInfoUrls, series));
+        // Phase 7: Series は独立した集約になったため、ここでは読み込みません
+        return Optional.of(entityOpt.get().toDomain(titleInfoUrls));
     }
 
     @Override
@@ -56,13 +51,8 @@ public class TitleRepositoryImpl implements TitleRepository {
                     List<com.example.videowatchlog.domain.model.TitleInfoUrl> titleInfoUrlsList = titleMapper.selectTitleInfoUrlsByTitleId(entity.getId());
                     java.util.Set<com.example.videowatchlog.domain.model.TitleInfoUrl> titleInfoUrls = new java.util.LinkedHashSet<>(titleInfoUrlsList);
 
-                    // Load Series (convert SeriesEntity -> Series)
-                    List<com.example.videowatchlog.infrastructure.persistence.entity.SeriesEntity> seriesEntities = seriesMapper.findByTitleId(entity.getId());
-                    List<Series> series = seriesEntities.stream()
-                            .map(se -> se.toDomain(new java.util.ArrayList<>()))
-                            .toList();
-
-                    return entity.toDomain(titleInfoUrls, series);
+                    // Phase 7: Series は独立した集約になったため、ここでは読み込みません
+                    return entity.toDomain(titleInfoUrls);
                 })
                 .toList();
     }
@@ -80,11 +70,11 @@ public class TitleRepositoryImpl implements TitleRepository {
             titleMapper.insert(entity);
 
             // 2. IDが設定された新しいTitleインスタンスを返す（不変なため新規作成）
+            // Phase 7: Series フィールドを削除
             return new Title(
                     entity.getId(),
                     title.getName(),
                     title.getTitleInfoUrls(),
-                    title.getSeries(),
                     title.getCreatedAt(),
                     title.getUpdatedAt()
             );
@@ -116,13 +106,8 @@ public class TitleRepositoryImpl implements TitleRepository {
                     List<com.example.videowatchlog.domain.model.TitleInfoUrl> titleInfoUrlsList = titleMapper.selectTitleInfoUrlsByTitleId(entity.getId());
                     java.util.Set<com.example.videowatchlog.domain.model.TitleInfoUrl> titleInfoUrls = new java.util.LinkedHashSet<>(titleInfoUrlsList);
 
-                    // Load Series (convert SeriesEntity -> Series)
-                    List<com.example.videowatchlog.infrastructure.persistence.entity.SeriesEntity> seriesEntities = seriesMapper.findByTitleId(entity.getId());
-                    List<Series> series = seriesEntities.stream()
-                            .map(se -> se.toDomain(new java.util.ArrayList<>()))
-                            .toList();
-
-                    return entity.toDomain(titleInfoUrls, series);
+                    // Phase 7: Series は独立した集約になったため、ここでは読み込みません
+                    return entity.toDomain(titleInfoUrls);
                 })
                 .toList();
     }

@@ -4,10 +4,11 @@ import com.example.videowatchlog.application.dto.TitleDetailDTO;
 import com.example.videowatchlog.application.dto.TitleDetailDTO.SeriesDetailDTO;
 import com.example.videowatchlog.application.dto.TitleDetailDTO.EpisodeDetailDTO;
 import com.example.videowatchlog.application.dto.TitleDetailDTO.ViewingRecordDTO;
-import com.example.videowatchlog.domain.model.Title;
-import com.example.videowatchlog.domain.model.Series;
-import com.example.videowatchlog.domain.model.Episode;
-import com.example.videowatchlog.domain.repository.TitleRepository;
+import com.example.videowatchlog.application.readmodel.TitleDetailReadModel;
+import com.example.videowatchlog.application.readmodel.SeriesReadModel;
+import com.example.videowatchlog.application.readmodel.EpisodeReadModel;
+import com.example.videowatchlog.application.readmodel.ViewingRecordReadModel;
+import com.example.videowatchlog.application.readmodel.service.TitleReadService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,14 +20,16 @@ import java.util.stream.Collectors;
  */
 @Service
 public class GetTitleDetailUseCase {
-    private final TitleRepository titleRepository;
+    private final TitleReadService titleReadService;
 
-    public GetTitleDetailUseCase(TitleRepository titleRepository) {
-        this.titleRepository = titleRepository;
+    public GetTitleDetailUseCase(TitleReadService titleReadService) {
+        this.titleReadService = titleReadService;
     }
 
     /**
      * タイトル詳細を取得します
+     * Phase 7: TitleReadService を使用して 1 JOIN クエリで全データ取得
+     * 元は 2-3 クエリ → 1 クエリに削減
      *
      * @param titleId タイトルID
      * @return タイトル詳細
@@ -34,31 +37,28 @@ public class GetTitleDetailUseCase {
      */
     @Transactional(readOnly = true)
     public TitleDetailDTO execute(Long titleId) {
-        Title title = titleRepository.findById(titleId)
+        // Phase 7: TitleReadService から Read Model を取得（1 JOIN クエリで全データ）
+        TitleDetailReadModel titleDetail = titleReadService.getTitleDetail(titleId)
                 .orElseThrow(() -> new IllegalArgumentException("タイトルが見つかりません（ID: " + titleId + "）"));
 
-        // Series を変換
-        List<SeriesDetailDTO> seriesList = title.getSeries().stream()
+        // Series データを変換
+        List<SeriesDetailDTO> seriesDetailList = titleDetail.getSeries().stream()
                 .map(this::mapToSeriesDetailDTO)
                 .collect(Collectors.toList());
 
-        // TitleInfoUrls を変換
-        List<String> titleInfoUrls = title.getTitleInfoUrls().stream()
-                .map(url -> url.getUrl())
-                .collect(Collectors.toList());
-
         return new TitleDetailDTO(
-                title.getId(),
-                title.getName(),
-                seriesList,
-                titleInfoUrls,
-                title.getCreatedAt(),
-                title.getUpdatedAt()
+                titleDetail.getId(),
+                titleDetail.getName(),
+                seriesDetailList,
+                List.of(), // TitleInfoUrls は Write Model から取得が必要な場合のみ
+                titleDetail.getCreatedAt(),
+                titleDetail.getUpdatedAt()
         );
     }
 
-    private SeriesDetailDTO mapToSeriesDetailDTO(Series series) {
-        List<EpisodeDetailDTO> episodeList = series.getEpisodes().stream()
+    private SeriesDetailDTO mapToSeriesDetailDTO(SeriesReadModel series) {
+        // Phase 7: Episode データを Read Model から取得
+        List<EpisodeDetailDTO> episodeDetailList = series.getEpisodes().stream()
                 .map(this::mapToEpisodeDetailDTO)
                 .collect(Collectors.toList());
 
@@ -66,17 +66,17 @@ public class GetTitleDetailUseCase {
                 series.getId(),
                 series.getTitleId(),
                 series.getName(),
-                episodeList,
+                episodeDetailList,
                 series.getCreatedAt(),
                 series.getUpdatedAt()
         );
     }
 
-    private EpisodeDetailDTO mapToEpisodeDetailDTO(Episode episode) {
-        List<String> watchPageUrls = episode.getWatchPageUrls().stream()
-                .map(url -> url.getUrl())
-                .collect(Collectors.toList());
+    private EpisodeDetailDTO mapToEpisodeDetailDTO(EpisodeReadModel episode) {
+        // WatchPageUrls を Read Model から取得
+        List<String> watchPageUrls = episode.getWatchPageUrls();
 
+        // ViewingRecords を Read Model から取得
         List<ViewingRecordDTO> viewingRecords = episode.getViewingRecords().stream()
                 .map(record -> new ViewingRecordDTO(
                         record.getId(),

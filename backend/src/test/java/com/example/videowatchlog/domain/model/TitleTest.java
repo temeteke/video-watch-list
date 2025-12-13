@@ -33,7 +33,7 @@ class TitleTest {
             assertThat(title.getCreatedAt()).isNotNull();
             assertThat(title.getUpdatedAt()).isNotNull();
             assertThat(title.getTitleInfoUrls()).isEmpty();
-            assertThat(title.getSeries()).isEmpty(); // デフォルトシリーズはRepositoryで作成される
+            // Phase 7: getSeries() は削除されました（Series は独立した集約）
         }
 
         @Test
@@ -46,8 +46,8 @@ class TitleTest {
             Title title = Title.create(TEST_ID, titleName);
 
             // Then
-            // デフォルトシリーズはRepository層で保存時に作成される
-            assertThat(title.getSeries()).isEmpty();
+            // Phase 7: Series は独立した集約として管理されます
+            assertThat(title.getId()).isEqualTo(TEST_ID);
         }
     }
 
@@ -168,9 +168,9 @@ class TitleTest {
             Title title = Title.create(TEST_ID, "進撃の巨人");
 
             // Then
-            // ドメインモデル作成時は空
-            assertThat(title.getSeries()).isEmpty();
-            // 注: デフォルトシリーズはTitleRepository.save()で作成される
+            // Phase 7: Series は独立した集約として管理されます
+            assertThat(title.getId()).isEqualTo(TEST_ID);
+            // 注: Series はTitleRepository.save()後に別途作成されます
         }
     }
 }

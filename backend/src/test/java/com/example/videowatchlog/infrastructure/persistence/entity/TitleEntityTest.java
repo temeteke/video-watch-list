@@ -37,19 +37,16 @@ class TitleEntityTest {
         Set<TitleInfoUrl> titleInfoUrls = new LinkedHashSet<>();
         titleInfoUrls.add(new TitleInfoUrl("https://example.com/title/1"));
 
-        List<Series> series = List.of(
-            Series.create(1L, 1L, "Season 1")
-        );
-
         // When
-        Title domain = entity.toDomain(titleInfoUrls, series);
+        // Phase 7: toDomain(titleInfoUrls) のみ使用
+        Title domain = entity.toDomain(titleInfoUrls);
 
         // Then
         assertThat(domain).isNotNull();
         assertThat(domain.getId()).isEqualTo(1L);
         assertThat(domain.getName()).isEqualTo("進撃の巨人");
         assertThat(domain.getTitleInfoUrls()).hasSize(1);
-        assertThat(domain.getSeries()).hasSize(1);
+        // Phase 7: Series は独立した集約
         assertThat(domain.getCreatedAt()).isEqualTo(createdAt);
         assertThat(domain.getUpdatedAt()).isEqualTo(updatedAt);
     }
@@ -60,7 +57,7 @@ class TitleEntityTest {
         // Given
         LocalDateTime now = LocalDateTime.now();
         Title domain = new Title(2L, "鬼滅の刃", new LinkedHashSet<>(),
-                                new ArrayList<>(), now, now);
+                                now, now);
 
         // When
         TitleEntity entity = TitleEntity.fromDomain(domain);
@@ -77,11 +74,12 @@ class TitleEntityTest {
         // Given
         LocalDateTime now = LocalDateTime.now();
         Title original = new Title(3L, "呪術廻戦", new LinkedHashSet<>(),
-                                  new ArrayList<>(), now, now);
+                                  now, now);
 
         // When: Convert domain -> entity -> domain
         TitleEntity entity = TitleEntity.fromDomain(original);
-        Title converted = entity.toDomain(new LinkedHashSet<>(), new ArrayList<>());
+        // Phase 7: toDomain シグネチャが変更されました
+        Title converted = entity.toDomain(new LinkedHashSet<>());
 
         // Then: All properties should be preserved
         assertThat(converted.getId()).isEqualTo(original.getId());
@@ -99,11 +97,12 @@ class TitleEntityTest {
         entity.setUpdatedAt(LocalDateTime.now());
 
         // When
-        Title domain = entity.toDomain(new LinkedHashSet<>(), new ArrayList<>());
+        // Phase 7: toDomain シグネチャが変更
+        Title domain = entity.toDomain(new LinkedHashSet<>());
 
         // Then
         assertThat(domain.getTitleInfoUrls()).isEmpty();
-        assertThat(domain.getSeries()).isEmpty();
+        // Phase 7: Series は独立した集約
     }
 
     @Test

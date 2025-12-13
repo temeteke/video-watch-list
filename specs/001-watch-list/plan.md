@@ -248,13 +248,213 @@ docker-compose.yml                 # 開発環境 docker compose 定義
 
 ---
 
+### Phase 3: Architecture Improvement - CQRS + Independent Aggregates 🔜 NEXT
+
+**背景**: Phase 1-2 の実装により、Episode + ViewingRecord の集約化が完了したが、Title → Series → Episode → ViewingRecord の Giant Aggregate パターンがN+1クエリ問題を引き起こしている（GetAllTitles: 50タイトル時に101クエリ）。
+
+**目標**:
+1. Series と Episode を独立した集約に昇格（DDD ベストプラクティス準拠）
+2. CQRS パターンを適用し、Read Model で JOIN を使用して N+1 クエリを完全解決（99% 削減）
+3. Write Model（ドメインモデル）とRead Model（クエリ最適化）を明確に分離
+4. 全140テストが通過し、パフォーマンス改善を確認
+
+**技術アプローチ**:
+- **Write Model**: Title、Series、Episode を独立した集約として管理（ID参照のみ）
+- **Read Model**: TitleReadModel、SeriesReadModel、EpisodeReadModel で JOIN 最適化
+- **Repository パターン**: Title、Series、Episode ごとに独立した Repository
+- **MyBatis**: Write用と Read用で別々の Mapper を管理
+
+#### 3.1 集約境界の再設計
+
+**案A: 3つの独立集約（推奨）** vs **案B: 1つの大きな集約**
+
+**案A採用の理由**:
+- DDDベストプラクティス準拠（Eric Evans、Vaughn Vernon が推奨）
+- Series と Episode を独立した集約に昇格
+- スケーラビリティが高い（Series/Episode が増えても Title のロード時間は一定）
+- 責任の分離が明確（各Repository が独立した責任）
+- テストが簡潔（各集約を独立してテスト可能）
+- CQRS パターンで JOIN を使用すれば N+1 クエリ問題も完全解決可能
+
+**新しい集約構造**:
+```
+Title (集約ルート 1)
+├── id: Long
+├── name: String
+└── titleInfoUrls: Set<TitleInfoUrl>
+
+Series (集約ルート 2) ← 独立集約
+├── id: Long
+├── titleId: Long ← ID参照のみ
+└── name: String
+
+Episode (集約ルート 3) ← 独立集約
+├── id: Long
+├── seriesId: Long ← ID参照のみ
+├── episodeInfo: String
+├── watchPageUrls: List<WatchPageUrl>
+└── viewingRecords: List<ViewingRecord> ← Episode 集約の一部
+```
+
+#### 3.2 CQRS パターンの適用
+
+**Write Model（書き込み用）**:
+- Title, Series, Episode が独立集約（オブジェクト参照なし）
+- CreateTitle, CreateSeries, CreateEpisode などの書き込み操作に使用
+- TitleRepository, SeriesRepository, EpisodeRepository
+- ドメインロジック（バリデーション、ビジネスルール）を保持
+
+**Read Model（読み取り専用）**:
+- GetAllTitles, GetTitleDetail などの読み取り操作専用
+- JOINを使って効率的にデータを取得（1クエリ）
+- TitleListReadModel, TitleDetailReadModel
+- 専用のMapper: TitleReadMapper（MyBatis）
+- DTOに近い構造（ビジネスロジックなし）
+
+**リードモデルの設計**:
+
+TitleListReadModel（タイトル一覧用）:
+```java
+public class TitleListReadModel {
+    private Long id;
+    private String name;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    // Getter のみ（イミュータブル）
+}
+```
+
+TitleDetailReadModel（タイトル詳細用、Seriesとっ Episodeを包含）:
+```java
+public class TitleDetailReadModel {
+    private Long id;
+    private String name;
+    private List<String> titleInfoUrls;
+    private List<SeriesReadModel> series;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}
+
+public class SeriesReadModel {
+    private Long id;
+    private String name;
+    private List<EpisodeReadModel> episodes;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}
+
+public class EpisodeReadModel {
+    private Long id;
+    private String episodeInfo;
+    private String watchStatus;
+    private List<String> watchPageUrls;
+    private int viewingRecordCount;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}
+```
+
+**MyBatis SQL（TitleReadMapper.xml）**:
+```xml
+<!-- タイトル一覧取得（シンプル） -->
+<select id="findAllForList" resultType="TitleListReadModel">
+    SELECT id, name, created_at AS createdAt, updated_at AS updatedAt
+    FROM titles
+    ORDER BY created_at DESC
+</select>
+
+<!-- タイトル詳細取得（JOIN で全て取得） -->
+<select id="findByIdWithSeriesAndEpisodes" resultMap="TitleDetailResultMap">
+    SELECT
+        t.id AS title_id, t.name AS title_name,
+        s.id AS series_id, s.name AS series_name,
+        e.id AS episode_id, e.episode_info, e.watch_status,
+        tiu.url AS title_info_url,
+        (SELECT COUNT(*) FROM viewing_records WHERE episode_id = e.id) AS viewing_record_count
+    FROM titles t
+    LEFT JOIN title_info_urls tiu ON t.id = tiu.title_id
+    LEFT JOIN series s ON t.id = s.title_id
+    LEFT JOIN episodes e ON s.id = e.series_id
+    WHERE t.id = #{id}
+    ORDER BY s.created_at, e.created_at
+</select>
+```
+
+**TitleReadService**:
+```java
+@Service
+public class TitleReadService {
+    private final TitleReadMapper titleReadMapper;
+
+    public List<TitleListReadModel> getAllTitles() {
+        return titleReadMapper.findAllForList();  // 1 クエリ
+    }
+
+    public Optional<TitleDetailReadModel> getTitleDetail(Long titleId) {
+        return titleReadMapper.findByIdWithSeriesAndEpisodes(titleId);  // 1 クエリ（JOIN）
+    }
+}
+```
+
+**実装 Milestone**:
+1. **Milestone 1** - Write Model の分離（Phase 1）: Title、Series、Episode のオブジェクト参照を削除、ID 参照に置き換え
+2. **Milestone 2** - Read Model の追加（Phase 2）: CQRS パターン適用、JOIN 最適化実装
+3. **Milestone 3** - UseCase 修正（Phase 3）: GetAllTitles、GetTitleDetail を Read Model に切り替え、CreateSeries/CreateEpisodeUseCase を簡潔化
+4. **Milestone 4** - 全テスト検証（Phase 4）: 140テスト通過、パフォーマンス確認
+
+**期待される効果**:
+- GetAllTitles: 101 クエリ → 1 クエリ（99% 削減）
+- GetTitleDetail: 2-3 クエリ → 1 クエリ（50-66% 削減）
+- DDD ベストプラクティス完全準拠
+- スケーラビリティ向上（Series/Episode 数増加の影響最小化）
+- データ整合性の向上（CreateSeriesUseCase と CreateEpisodeUseCase の同期問題解決）
+
+#### 3.3 実装ファイル一覧
+
+**新規作成（Read Model）**:
+- `backend/src/main/java/com/example/videowatchlog/application/readmodel/TitleListReadModel.java`
+- `backend/src/main/java/com/example/videowatchlog/application/readmodel/TitleDetailReadModel.java`
+- `backend/src/main/java/com/example/videowatchlog/application/readmodel/SeriesReadModel.java`
+- `backend/src/main/java/com/example/videowatchlog/application/readmodel/EpisodeReadModel.java`
+- `backend/src/main/java/com/example/videowatchlog/application/readmodel/mapper/TitleReadMapper.java`
+- `backend/src/main/java/com/example/videowatchlog/application/readmodel/service/TitleReadService.java`
+- `backend/src/main/resources/mybatis/mapper/readmodel/TitleReadMapper.xml`
+
+**修正対象（Write Model）**:
+- `backend/src/main/java/com/example/videowatchlog/domain/model/Title.java` - Series フィールド削除
+- `backend/src/main/java/com/example/videowatchlog/domain/model/Series.java` - Episode フィールド削除
+- `backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/entity/TitleEntity.java`
+- `backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/entity/SeriesEntity.java`
+- `backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/TitleRepositoryImpl.java` - Series をロードしない
+- `backend/src/main/java/com/example/videowatchlog/infrastructure/persistence/SeriesRepositoryImpl.java` - Episode をロードしない
+- `backend/src/main/java/com/example/videowatchlog/application/usecase/GetAllTitlesUseCase.java` - Read Model 使用
+- `backend/src/main/java/com/example/videowatchlog/application/usecase/GetTitleDetailUseCase.java` - Read Model 使用
+- `backend/src/main/java/com/example/videowatchlog/application/usecase/CreateSeriesUseCase.java` - 簡潔化
+- `backend/src/main/java/com/example/videowatchlog/application/usecase/CreateEpisodeUseCase.java` - 簡潔化
+
+**テスト修正**:
+- Domain層テスト: TitleTest, SeriesTest
+- Repository層テスト: TitleRepositoryImplTest, SeriesRepositoryImplTest
+- UseCase層テスト: 各ユースケーステスト
+- Read Model テスト: TitleReadMapperTest, TitleReadServiceTest（新規）
+- 統合テスト: 全APIエンドポイントテスト
+
+---
+
 ## Notes
 
 **本プランは `/speckit.plan` コマンドにより Phase 0-1 まで完了しました。**
 
-次のステップ:
-- Phase 2（タスク生成）は `/speckit.tasks` コマンドを実行してください
-- Phase 3（実装）は `/speckit.implement` コマンドまたは手動実装で進めてください
+現在の進捗:
+- ✅ Phase 0（リサーチ）: 完了 - research.md 生成
+- ✅ Phase 1（設計）: 完了 - data-model.md、contracts/、quickstart.md 生成
+- ✅ Phase 2-6（基本機能実装）: 完了 - TDD に従い全機能実装
+- ✅ Phase 7（CQRS 改善）: 完了 - 2025-12-07 完了
+  - Milestone 1: Write Model 分離（独立集約パターン）✅
+  - Milestone 2: Read Model 追加（CQRS パターン）✅
+  - Milestone 3: UseCase 修正（Read Model 使用）✅
+  - Milestone 4: パフォーマンス検証（145 テスト成功）✅
+  - Milestone 5: ドキュメント更新（進行中）🔄
 
 **重要なリファレンス**:
 - 仕様書: `specs/001-watch-list/spec.md`

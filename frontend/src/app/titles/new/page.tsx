@@ -23,9 +23,9 @@ export default function CreateTitlePage() {
   };
 
   return (
-    <main>
-      <h1>タイトルを作成</h1>
+    <div className="max-w-md">
+      <h1 className="text-2xl font-bold mb-lg">タイトルを作成</h1>
       <TitleForm onSubmit={handleSubmit} isLoading={loading} />
-    </main>
+    </div>
   );
 }
