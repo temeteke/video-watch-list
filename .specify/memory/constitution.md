@@ -118,6 +118,31 @@ MyBatis は以下の理由により、本プロジェクトの DDD 実装に適�
 - **ドメイン層の独立性**: SQL マッピングをインフラ層に完全に分離でき、ドメイン層の純粋性を保ちやすい
 - **リポジトリ実装の柔軟性**: 複雑なドメインモデルをシンプルに永続化できる（例：値オブジェクトの JSON マッピング）
 
+### CQRS パターン適用
+
+本プロジェクトは CQRS パターンを採用し、Read Model（Query Model）と Write Model（Command Model）を分離します：
+
+**Write Model (Command Side)**:
+- 配置: `domain/model/` (例: Title, Series, Episode, ViewingRecord)
+- 責務: ビジネスルールの実装、状態変更、ドメインロジック
+- 特性: 振る舞いを持つ (updateName, validate 等)
+- 永続化: Repository Interface 経由（依存性逆転）
+- Mapper: `infrastructure/persistence/` に配置（Write 側 SQL）
+
+**Read Model (Query Side)**:
+- 配置: `application/readmodel/` (例: TitleDetailReadModel, TitleListReadModel)
+- 責務: ビュー最適化、JOIN クエリ、N+1 問題解決
+- 特性: 振る舞いなし (getter のみ)、完全不変
+- 永続化: MyBatis Mapper 経由（JOIN 最適化）
+- Mapper: `infrastructure/persistence/readmodel/` に配置（Read 側 SQL）
+
+**配置理由**:
+- Read Model はアプリケーション層の関心事（技術的最適化）
+- Domain 層はビジネスルールに集中（DDD 原則）
+- Onion Architecture 準拠（Application → Domain 依存は許可）
+- Mapper は技術的実装詳細であり、Infrastructure 層に配置
+- Write/Read Mapper の一貫性（両方とも `infrastructure/persistence` 配下）
+
 ## 技術スタック
 
 ### バックエンド

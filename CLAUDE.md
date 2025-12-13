@@ -182,6 +182,34 @@ Presentation (REST controllers, @RestController)
 - **Domain Layer Independence**: SQL mapping is completely separated in infrastructure layer, preserving domain purity
 - **Flexible Persistence**: Simplifies complex domain model persistence (e.g., value objects mapped to JSONB)
 
+### CQRS Read Model Placement
+
+**Read Model配置原則**:
+- Read Model (Query Model) は `application.readmodel` パッケージに配置
+- Domain Model とは明確に分離 (CQRS 原則)
+
+**配置理由**:
+1. Read Model は「ビュー最適化」というアプリケーション層の関心事
+2. Domain 層は「ビジネスルール」に集中（純粋性の維持）
+3. Onion Architecture の依存方向を遵守 (Application → Domain)
+4. Microsoft eShopOnContainers 等の業界標準パターンと一致
+
+**Mapper配置**: MyBatis Mapper は `infrastructure.persistence.readmodel` に配置
+- Read Model（DTO）: Application 層（ビュー最適化の関心事）
+- Mapper（技術実装）: Infrastructure 層（永続化技術の詳細）
+- 一貫性: Write 側 Mapper（`infrastructure.persistence`）と同じ層に配置
+
+**Read Model vs Domain Model**:
+| 観点 | Read Model (application.readmodel) | Domain Model (domain.model) |
+|------|-----------------------------------|---------------------------|
+| 目的 | ビュー最適化 (JOIN、denormalize) | ビジネスルール表現 |
+| 振る舞い | なし (getter のみ) | あり (update, validate 等) |
+| 不変性 | 完全不変 (final fields) | 部分的可変 (業務ロジック次第) |
+| 永続化 | MyBatis JOIN Query | Repository 経由 |
+| CQRS 役割 | Query Model (Read-side) | Command Model (Write-side) |
+
+参考: [Microsoft CQRS Pattern](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/eshoponcontainers-cqrs-ddd-microservice)
+
 ### Frontend: Next.js App Router + Server Components
 
 **Component Hierarchy**:

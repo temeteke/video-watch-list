@@ -4,12 +4,30 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * TitleDetailReadModel - タイトル詳細表示用の読み取りモデル
+ * TitleDetailReadModel - CQRS Query Model (Application Layer)
  *
- * Phase 7 CQRS パターン: Read Model
+ * Architecture Decision:
+ * This is a Read Model (Query Model) in CQRS pattern, NOT a Domain Model.
+ * - Placed in application.readmodel (NOT domain.model)
+ * - No business logic (getters only)
+ * - Optimized for read operations (denormalized, JOIN-friendly)
+ * - Immutable DTO for presentation layer
  * - Title + Series + Episode の完全な階層構造を保持
- * - JOIN クエリで単一の SELECT で取得
- * - 詳細ビュー用の最適化モデル
+ *
+ * CQRS Separation:
+ * - Write operations: Use domain.model.Title (Command Model with business logic)
+ * - Read operations: Use application.readmodel.TitleDetailReadModel (Query Model)
+ *
+ * Why Application Layer?
+ * - Read Model is an application concern (view optimization)
+ * - Domain layer focuses on business rules and behavior
+ * - Follows Onion Architecture (Application → Domain dependency is allowed)
+ * - Aligns with Microsoft eShopOnContainers CQRS pattern
+ *
+ * Related:
+ * - Write Model: domain.model.Title (Aggregate Root)
+ * - Query Service: application.readmodel.service.TitleReadService
+ * - Persistence: infrastructure.persistence.readmodel.TitleReadMapper (MyBatis)
  */
 public class TitleDetailReadModel {
     private final Long id;

@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.videowatchlog.application.readmodel.mapper.TitleReadMapper">
+<mapper namespace="com.example.videowatchlog.infrastructure.persistence.readmodel.TitleReadMapper">
 
     <!-- Phase 7: CQRS Read Model - JOIN による単一クエリ実装 -->
     <!-- 注: MyBatis の制限により、immutable オブジェクトの複雑なネストは手動マッピングで対応 -->

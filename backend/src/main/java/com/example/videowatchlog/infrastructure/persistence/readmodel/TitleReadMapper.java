@@ -1,4 +1,4 @@
-package com.example.videowatchlog.application.readmodel.mapper;
+package com.example.videowatchlog.infrastructure.persistence.readmodel;
 
 import com.example.videowatchlog.application.readmodel.TitleDetailReadModel;
 import com.example.videowatchlog.application.readmodel.TitleListReadModel;

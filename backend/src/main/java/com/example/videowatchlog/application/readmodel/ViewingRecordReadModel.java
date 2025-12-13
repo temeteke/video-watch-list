@@ -3,9 +3,29 @@ package com.example.videowatchlog.application.readmodel;
 import java.time.LocalDateTime;
 
 /**
- * ViewingRecordReadModel - 視聴記録用の読み取りモデル
+ * ViewingRecordReadModel - CQRS Query Model (Application Layer)
  *
- * Phase 7 CQRS パターン: Read Model
+ * Architecture Decision:
+ * This is a Read Model (Query Model) in CQRS pattern, NOT a Domain Model.
+ * - Placed in application.readmodel (NOT domain.model)
+ * - No business logic (getters only)
+ * - Optimized for read operations (denormalized, lightweight)
+ * - Immutable DTO for presentation layer
+ *
+ * CQRS Separation:
+ * - Write operations: Use domain.model.ViewingRecord (Command Model with business logic)
+ * - Read operations: Use application.readmodel.ViewingRecordReadModel (Query Model)
+ *
+ * Why Application Layer?
+ * - Read Model is an application concern (view optimization)
+ * - Domain layer focuses on business rules and behavior
+ * - Follows Onion Architecture (Application → Domain dependency is allowed)
+ * - Aligns with Microsoft eShopOnContainers CQRS pattern
+ *
+ * Related:
+ * - Write Model: domain.model.ViewingRecord (Entity)
+ * - Query Service: application.readmodel.service.TitleReadService
+ * - Persistence: infrastructure.persistence.readmodel.TitleReadMapper (MyBatis)
  */
 public class ViewingRecordReadModel {
     private final Long id;

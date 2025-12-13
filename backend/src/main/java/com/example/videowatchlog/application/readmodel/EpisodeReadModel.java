@@ -5,11 +5,32 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * EpisodeReadModel - エピソード用の読み取りモデル
+ * EpisodeReadModel - CQRS Query Model (Application Layer)
  *
- * Phase 7 CQRS パターン: Read Model
+ * Architecture Decision:
+ * This is a Read Model (Query Model) in CQRS pattern, NOT a Domain Model.
+ * - Placed in application.readmodel (NOT domain.model)
+ * - No business logic (getters only)
+ * - Optimized for read operations (denormalized, nested structure)
+ * - Immutable DTO for presentation layer
  * - Episode + ViewingRecord の情報を保持
  * - SeriesReadModel に含まれる
+ *
+ * CQRS Separation:
+ * - Write operations: Use domain.model.Episode (Command Model with business logic)
+ * - Read operations: Use application.readmodel.EpisodeReadModel (Query Model)
+ *
+ * Why Application Layer?
+ * - Read Model is an application concern (view optimization)
+ * - Domain layer focuses on business rules and behavior
+ * - Follows Onion Architecture (Application → Domain dependency is allowed)
+ * - Aligns with Microsoft eShopOnContainers CQRS pattern
+ *
+ * Related:
+ * - Write Model: domain.model.Episode (Entity)
+ * - Query Service: application.readmodel.service.TitleReadService
+ * - Persistence: infrastructure.persistence.readmodel.TitleReadMapper (MyBatis)
+ * - Domain Value Object: domain.model.WatchStatus (referenced for view data)
  */
 public class EpisodeReadModel {
     private final Long id;

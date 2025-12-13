@@ -5,7 +5,7 @@ import com.example.videowatchlog.application.readmodel.SeriesReadModel;
 import com.example.videowatchlog.application.readmodel.TitleDetailReadModel;
 import com.example.videowatchlog.application.readmodel.TitleListReadModel;
 import com.example.videowatchlog.application.readmodel.ViewingRecordReadModel;
-import com.example.videowatchlog.application.readmodel.mapper.TitleReadMapper;
+import com.example.videowatchlog.infrastructure.persistence.readmodel.TitleReadMapper;
 import com.example.videowatchlog.domain.model.WatchStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,15 +18,32 @@ import java.util.Optional;
 import java.util.LinkedHashMap;
 
 /**
- * TitleReadService - CQRS Read Model サービス
+ * TitleReadService - CQRS Query Service (Application Layer)
  *
- * Phase 7 アーキテクチャ改善:
- * - 読み取り専用操作を専用サービスに集約
- * - JOIN を使用した効率的なデータ取得
- * - N+1 クエリ問題を完全解決
+ * Architecture Decision:
+ * This is a Query Service that handles all read-only operations using CQRS Read Models.
+ * - Uses infrastructure.persistence.readmodel.TitleReadMapper (MyBatis) for data access
+ * - Transforms raw database results into immutable ReadModels (DTOs)
+ * - Separates read-side queries from domain write operations (Command/Query separation)
  *
- * GetAllTitles: 101 クエリ → 1 クエリ (99% 削減)
- * GetTitleDetail: 2-3 クエリ → 1 クエリ (50-66% 削減)
+ * Performance Optimization:
+ * - Phase 7 Architecture: Single JOIN query replaces N+1 queries
+ * - GetAllTitles: 101 queries → 1 query (99% reduction)
+ * - GetTitleDetail: 2-3 queries → 1 query (50-66% reduction)
+ *
+ * CQRS Separation:
+ * - Write operations: Use domain repositories (domain.model entities, domain.repository interfaces)
+ * - Read operations: Use this TitleReadService with TitleReadMapper (infrastructure.persistence.readmodel)
+ *
+ * Why Application Layer?
+ * - Query Service orchestrates application-level concerns (data transformation, use case logic)
+ * - Domain layer focuses on business rules (entities, domain services)
+ * - Read-side implementation details (MyBatis Mapper) are in infrastructure layer
+ *
+ * Related:
+ * - Query Models: application.readmodel.TitleListReadModel, TitleDetailReadModel, etc.
+ * - Data Mapper: infrastructure.persistence.readmodel.TitleReadMapper (MyBatis)
+ * - Command Side: domain repositories and services for write operations
  */
 @Service
 public class TitleReadService {
