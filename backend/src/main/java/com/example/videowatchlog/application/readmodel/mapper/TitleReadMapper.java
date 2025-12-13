@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -27,11 +28,12 @@ public interface TitleReadMapper {
     List<TitleListReadModel> findAllTitles();
 
     /**
-     * タイトル詳細を取得（Series/Episode/ViewingRecord を含む）
-     * 単一の JOIN クエリで全データを取得
+     * タイトル詳細の生データを取得（Series/Episode/ViewingRecord を含む）
+     * 単一の JOIN クエリで全データを取得（返却はマップのリスト）
+     * TitleReadService でこれを TitleDetailReadModel に変換する
      *
      * @param titleId タイトルID
-     * @return タイトル詳細
+     * @return タイトル詳細の生データ
      */
-    Optional<TitleDetailReadModel> findTitleDetailById(Long titleId);
+    List<Map<String, Object>> findTitleDetailByIdRaw(Long titleId);
 }

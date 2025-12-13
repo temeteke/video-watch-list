@@ -6,37 +6,10 @@
 <mapper namespace="com.example.videowatchlog.application.readmodel.mapper.TitleReadMapper">
 
     <!-- Phase 7: CQRS Read Model - JOIN による単一クエリ実装 -->
-
-    <resultMap id="titleDetailReadModelMap" type="com.example.videowatchlog.application.readmodel.TitleDetailReadModel">
-        <id column="title_id" property="id"/>
-        <result column="title_name" property="name"/>
-        <result column="title_created_at" property="createdAt"/>
-        <result column="title_updated_at" property="updatedAt"/>
-        <collection property="series" ofType="com.example.videowatchlog.application.readmodel.SeriesReadModel"
-                   columnPrefix="s_">
-            <id column="id" property="id"/>
-            <result column="title_id" property="titleId"/>
-            <result column="name" property="name"/>
-            <result column="created_at" property="createdAt"/>
-            <result column="updated_at" property="updatedAt"/>
-            <collection property="episodes" ofType="com.example.videowatchlog.application.readmodel.EpisodeReadModel"
-                       columnPrefix="e_">
-                <id column="id" property="id"/>
-                <result column="series_id" property="seriesId"/>
-                <result column="episode_info" property="episodeInfo"/>
-                <result column="watch_status" property="watchStatus"/>
-                <result column="created_at" property="createdAt"/>
-                <result column="updated_at" property="updatedAt"/>
-                <collection property="watchPageUrls" ofType="String"
-                           select="selectWatchPageUrlsByEpisodeId" column="e_id"/>
-                <collection property="viewingRecords" ofType="com.example.videowatchlog.application.readmodel.ViewingRecordReadModel"
-                           select="selectViewingRecordsByEpisodeId" column="e_id"/>
-            </collection>
-        </collection>
-    </resultMap>
+    <!-- 注: MyBatis の制限により、immutable オブジェクトの複雑なネストは手動マッピングで対応 -->
 
     <!-- タイトル詳細を取得: JOIN による階層構造の取得 -->
-    <select id="findTitleDetailById" resultMap="titleDetailReadModelMap" parameterType="Long">
+    <select id="findTitleDetailByIdRaw" resultType="map" parameterType="Long">
         SELECT
             t.id as title_id,
             t.name as title_name,
