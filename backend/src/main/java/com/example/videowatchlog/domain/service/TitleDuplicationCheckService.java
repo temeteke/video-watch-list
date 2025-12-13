@@ -1,15 +1,16 @@
 package com.example.videowatchlog.domain.service;
 
 import com.example.videowatchlog.domain.repository.TitleRepository;
-import org.springframework.stereotype.Service;
 
 /**
  * TitleDuplicationCheckService ドメインサービス
  *
  * タイトル名の重複をチェックします
  * （大文字小文字区別なし、完全一致チェック）
+ *
+ * Note: This is a pure domain service with no Spring dependencies.
+ * Bean registration is handled in DomainServiceConfig.
  */
-@Service
 public class TitleDuplicationCheckService {
     private final TitleRepository titleRepository;
 
