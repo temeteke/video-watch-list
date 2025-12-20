@@ -20,9 +20,9 @@ export default function HierarchicalView({
   const hasMultipleSeries = title.series.length > 1;
   const totalEpisodes = title.series.reduce((sum, s) => sum + s.episodes.length, 0);
 
-  const episodeRow = (episode: TitleDetail['series'][0]['episodes'][0]) => (
+  const episodeRow = (episode: TitleDetail['series'][0]['episodes'][0], seriesId: number) => (
     <Link
-      href={`/episodes/${episode.id}`}
+      href={`/series/${seriesId}/episodes/${episode.id}`}
       className="flex items-center justify-between p-3 bg-neutral-50 rounded-md border border-neutral-200 hover:bg-neutral-100 transition-colors duration-200"
     >
       <span className="text-sm text-neutral-700">
@@ -49,7 +49,7 @@ export default function HierarchicalView({
                 <div className="space-y-2 mb-6">
                   {series.episodes.map((episode) => (
                     <div key={episode.id}>
-                      {episodeRow(episode)}
+                      {episodeRow(episode, series.id)}
                     </div>
                   ))}
                 </div>
@@ -74,7 +74,7 @@ export default function HierarchicalView({
           <div className="space-y-2">
             {title.series[0]?.episodes.map((episode) => (
               <div key={episode.id}>
-                {episodeRow(episode)}
+                {episodeRow(episode, title.series[0].id)}
               </div>
             ))}
           </div>

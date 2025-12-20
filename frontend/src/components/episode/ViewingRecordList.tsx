@@ -91,6 +91,7 @@ export default function ViewingRecordList({
               onClick={() => handleDeleteClick(record.id)}
               disabled={isDeleting}
               className="flex-shrink-0"
+              aria-label="削除"
             >
               <Trash2 className="h-4 w-4" />
             </Button>

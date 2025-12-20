@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.videowatchlog.infrastructure.persistence.readmodel.EpisodeReadMapper">
+
+    <!--
+    エピソード詳細と関連データを取得（watch_page_urls と ViewingRecord を含む）
+
+    Multiple LEFT JOIN query:
+    - Episode
+    - Episode.watchPageUrls (LEFT JOIN watch_page_urls)
+    - Episode.viewingRecords (LEFT JOIN viewing_records)
+
+    Result: Multiple rows (one per combination of ViewingRecord and watch_page_url)
+    Need to aggregate in Java code
+    -->
+    <select id="findEpisodeDetailByIdAndSeriesIdRaw"
+            resultType="map"
+            parameterType="map">
+        SELECT
+            e.id as e_id,
+            e.series_id as e_series_id,
+            e.episode_info as e_episode_info,
+            e.watch_status as e_watch_status,
+            e.created_at as e_created_at,
+            e.updated_at as e_updated_at,
+            wpu.url as wpu_url,
+            vr.id as vr_id,
+            vr.episode_id as vr_episode_id,
+            vr.watched_at as vr_watched_at,
+            vr.rating as vr_rating,
+            vr.comment as vr_comment,
+            vr.recorded_at as vr_recorded_at
+        FROM episodes e
+        LEFT JOIN watch_page_urls wpu ON e.id = wpu.episode_id
+        LEFT JOIN viewing_records vr ON e.id = vr.episode_id
+        WHERE e.series_id = #{seriesId} AND e.id = #{episodeId}
+        ORDER BY vr.recorded_at DESC, wpu.id ASC
+    </select>
+
+</mapper>

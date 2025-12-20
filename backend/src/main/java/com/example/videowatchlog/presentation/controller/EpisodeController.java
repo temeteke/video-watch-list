@@ -1,6 +1,8 @@
 package com.example.videowatchlog.presentation.controller;
 
 import com.example.videowatchlog.application.dto.CreateEpisodeRequestDTO;
+import com.example.videowatchlog.application.readmodel.EpisodeReadModel;
+import com.example.videowatchlog.application.readmodel.service.EpisodeReadService;
 import com.example.videowatchlog.application.usecase.CreateEpisodeUseCase;
 import com.example.videowatchlog.application.usecase.DeleteEpisodeUseCase;
 import com.example.videowatchlog.application.usecase.UpdateEpisodeUseCase;
@@ -16,17 +18,29 @@ import java.util.List;
 @RestController
 @RequestMapping("/series/{seriesId}/episodes")
 public class EpisodeController {
+    private final EpisodeReadService episodeReadService;
     private final CreateEpisodeUseCase createEpisodeUseCase;
     private final UpdateEpisodeUseCase updateEpisodeUseCase;
     private final DeleteEpisodeUseCase deleteEpisodeUseCase;
 
     public EpisodeController(
+            EpisodeReadService episodeReadService,
             CreateEpisodeUseCase createEpisodeUseCase,
             UpdateEpisodeUseCase updateEpisodeUseCase,
             DeleteEpisodeUseCase deleteEpisodeUseCase) {
+        this.episodeReadService = episodeReadService;
         this.createEpisodeUseCase = createEpisodeUseCase;
         this.updateEpisodeUseCase = updateEpisodeUseCase;
         this.deleteEpisodeUseCase = deleteEpisodeUseCase;
+    }
+
+    @GetMapping("/{episodeId}")
+    public ResponseEntity<EpisodeReadModel> getEpisodeDetail(
+            @PathVariable Long seriesId,
+            @PathVariable Long episodeId) {
+        return episodeReadService.getEpisodeDetail(seriesId, episodeId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping

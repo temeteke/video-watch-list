@@ -18,7 +18,8 @@ import Breadcrumb from '@/components/common/Breadcrumb';
 export default function EpisodeDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const episodeId = Number(params.id);
+  const episodeId = Number(params.episodeId);
+  const seriesId = Number(params.seriesId);
 
   const [episode, setEpisode] = useState<EpisodeDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -27,12 +28,12 @@ export default function EpisodeDetailPage() {
 
   useEffect(() => {
     loadEpisode();
-  }, [episodeId]);
+  }, [episodeId, seriesId]);
 
   const loadEpisode = async () => {
     try {
       setLoading(true);
-      const data = await episodesApi.getEpisodeDetail(episodeId);
+      const data = await episodesApi.getEpisodeDetail(seriesId, episodeId);
       setEpisode(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'エラーが発生しました');
