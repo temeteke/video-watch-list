@@ -7,8 +7,8 @@ import java.util.Objects;
  * Series entity.
  * Represents a season within a Title (e.g., Season 1, Season 2).
  *
- * Phase 7 アーキテクチャ改善：Series は独立した集約になり、Episode への参照は ID のみです。
- * Episode の詳細データは、Read Model を通じてのみ取得します。
+ * Series is an independent aggregate root. Episode references are by ID only.
+ * Episode detail data is retrieved through Read Model.
  *
  * Key business rules:
  * - Series name can be empty (for default series)

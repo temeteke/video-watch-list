@@ -8,7 +8,7 @@ import java.util.Set;
  * タイトル エンティティ（集約ルート）
  *
  * ドラマ・アニメ・映画作品全体を表します。
- * Phase 7 アーキテクチャ改善：Title は独立した集約になり、Series への参照は ID のみです。
+ * Title は独立した集約ルートとして機能し、Series への参照は ID のみです。
  * Series の詳細データは、Read Model を通じてのみ取得します。
  */
 public class Title {

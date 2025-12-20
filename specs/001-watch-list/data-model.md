@@ -24,7 +24,7 @@
 
 ### 1. Title（タイトル）
 
-**集約ルート**: Title は集約ルートとして機能し、Series, Episode, ViewingRecord の整合性を保証します。
+**集約境界**: Title は独立した集約ルートとして機能します。Series, Episode, ViewingRecord は Title 配下ではなく、各々独立した集約として管理されます。Title は自身の整合性のみを保証し、Series, Episode, ViewingRecord との関連は ID 参照で疎結合に保たれます。
 
 #### 属性
 
@@ -33,9 +33,10 @@
 | id | ID | Long | ✅ | タイトルの一意識別子（自動生成） |
 | name | 作品名 | String | ✅ | ドラマ・アニメ・映画の名前 |
 | titleInfoUrls | タイトル情報URL | List\<TitleInfoUrl\> | ❌ | 0件以上の情報ページリンク |
-| series | シリーズ | List\<Series\> | ✅ | **内部的に必ず1件以上**のシリーズ（UI上では0件以上として表示可能） |
 | createdAt | 作成日時 | ZonedDateTime | ✅ | タイトルを登録した日時（UTC） |
 | updatedAt | 更新日時 | ZonedDateTime | ✅ | 最後に更新した日時（UTC） |
+
+**注**: Title はオブジェクト参照としての`series`フィールドを持ちません。Series との関連はデータベースレベル（Series テーブルの`title_id`外部キー）でのみ存在し、読み取り用の Read Model を通じて取得します。
 
 #### バリデーションルール
 
@@ -64,9 +65,10 @@
 | id | ID | Long | ✅ | シリーズの一意識別子（自動生成） |
 | titleId | タイトルID | Long | ✅ | 親タイトルの ID（外部キー） |
 | name | シーズン名 | String | ❌ | 「Season 1」「Season 2」等（空文字列の場合はデフォルトシリーズ） |
-| episodes | エピソード | List\<Episode\> | ✅ | **内部的に必ず1件以上**のエピソード（UI上では0件以上として表示可能） |
 | createdAt | 作成日時 | ZonedDateTime | ✅ | シリーズを追加した日時（UTC） |
 | updatedAt | 更新日時 | ZonedDateTime | ✅ | 最後に更新した日時（UTC） |
+
+**注**: Series はオブジェクト参照としての`episodes`フィールドを持ちません。Episode との関連はデータベースレベル（Episode テーブルの`series_id`外部キー）でのみ存在し、読み取り用の Read Model を通じて取得します。
 
 #### バリデーションルール
 
@@ -426,29 +428,44 @@ CREATE INDEX idx_watch_page_urls_episode_id ON watch_page_urls(episode_id);
 
 ---
 
-## 集約の整合性ルール
+## 集約の整合性ルール（独立集約パターン）
 
-### Title 集約
+Title、Series、Episode は各々独立した集約ルートとして管理されます。各集約は自身の整合性を保証し、集約間の参照は ID によって疎結合に保たれます。
 
-**集約ルート**: Title
-
-**整合性保証**:
-1. **シリーズの最小件数**: Title は必ず最低1件の Series を持つ。Title 作成時に、デフォルトシリーズを自動生成
-2. **タイトル名の一意性**: 同一タイトル名の重複登録は拒否
-3. **カスケード削除**: Title 削除時に、配下のすべての Series, Episode, ViewingRecord, TitleInfoUrl を削除
-
-### Series 集約（Title 配下）
+### Title 集約（独立）
 
 **整合性保証**:
-1. **エピソードの最小件数**: Series は必ず最低1件の Episode を持つ。Series 作成時に、デフォルトエピソードを自動生成
-2. **カスケード削除**: Series 削除時に、配下のすべての Episode, ViewingRecord, WatchPageUrl を削除
+1. **タイトル名の一意性**: 同一タイトル名の重複登録は拒否
+2. **TitleInfoUrl の管理**: Title 内で TitleInfoUrl の整合性を保証（重複排除、フォーマット検証）
+3. **カスケード削除**: Title 削除時に、関連するすべての Series, Episode, ViewingRecord, TitleInfoUrl を削除（データベースレベルの外部キー制約で実現）
 
-### Episode 集約（Series 配下）
+**注**: 「内部的に最低 1 件のシリーズを持つ」という仕様は、データベースアプリケーションレベルで担保されます（ドメインモデルレベルではなく）。
+
+### Series 集約（独立）
+
+**整合性保証**:
+1. **シリーズ名のバリデーション**: 0 文字以上、100 文字以下
+2. **Title との関連**: titleId が有効な Title を参照していることを確認（外部キー制約）
+3. **カスケード削除**: Series 削除時に、関連するすべての Episode, ViewingRecord, WatchPageUrl を削除（データベースレベルの外部キー制約で実現）
+
+**注**: 「内部的に最低 1 件のエピソードを持つ」という仕様は、データベース・アプリケーションレベルで担保されます（ドメインモデルレベルではなく）。
+
+### Episode 集約（独立）
+
+**集約の構成要素**: Episode、ViewingRecord、WatchPageUrl
 
 **整合性保証**:
 1. **視聴状態の不変性**: 一度 WATCHED に変更されたら、状態変更は不可（すべての ViewingRecord 削除時を除く）
 2. **視聴履歴の整合性**: すべての ViewingRecord が削除された場合、Episode の状態を UNWATCHED に戻す
-3. **カスケード削除**: Episode 削除時に、配下のすべての ViewingRecord, WatchPageUrl を削除
+3. **Series との関連**: seriesId が有効な Series を参照していることを確認（外部キー制約）
+4. **WatchPageUrl の管理**: Episode 内で WatchPageUrl の整合性を保証（重複排除、フォーマット検証）
+5. **カスケード削除**: Episode 削除時に、配下のすべての ViewingRecord、WatchPageUrl を削除
+
+### ViewingRecord（Episode 集約に従属）
+
+**整合性保証**:
+1. **不変性**: ViewingRecord は作成後、変更・削除は不可（ただし Episode 削除時にカスケード削除される）
+2. **視聴日時の妥当性**: 視聴日時が未来日時でないことを確認
 
 ---
 

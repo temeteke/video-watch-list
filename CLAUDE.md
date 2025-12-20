@@ -161,11 +161,11 @@ Infrastructure (MyBatis, Spring)
 Presentation (REST controllers, @RestController)
 ```
 
-**Core DDD Entities**:
-- **Title**: Aggregate root, contains multiple Series
-- **Series**: Belongs to Title, contains multiple Episodes
-- **Episode**: Belongs to Series, has watch status and ViewingRecords
-- **ViewingRecord**: Immutable record of a single viewing
+**Core DDD Entities** (Independent Aggregates):
+- **Title**: Independent aggregate root (references Series by ID only, no object reference)
+- **Series**: Independent aggregate root (references Title by titleId, Episode by ID only, no object references)
+- **Episode**: Independent aggregate root (references Series by seriesId, contains ViewingRecords)
+- **ViewingRecord**: Part of Episode aggregate, immutable record of a single viewing
 
 **Key Pattern: Factory Methods**
 - Entities use private constructors + static factory methods (e.g., `Title.create()`)
