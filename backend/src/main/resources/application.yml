@@ -34,6 +34,19 @@ server:
   servlet:
     context-path: /api/v1
 
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    operationsSorter: alpha
+    tagsSorter: alpha
+    disable-swagger-default-url: true
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json
+
 logging:
   level:
     root: INFO

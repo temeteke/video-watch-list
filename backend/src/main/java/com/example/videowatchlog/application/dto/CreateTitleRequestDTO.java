@@ -1,5 +1,6 @@
 package com.example.videowatchlog.application.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.List;
@@ -7,11 +8,14 @@ import java.util.List;
 /**
  * CreateTitleRequestDTO - タイトル作成リクエスト
  */
+@Schema(description = "タイトル作成リクエスト")
 public class CreateTitleRequestDTO {
+    @Schema(description = "タイトル名", example = "進撃の巨人", requiredMode = Schema.RequiredMode.REQUIRED, maxLength = 200)
     @NotBlank(message = "タイトル名は必須です")
     @Size(min = 1, max = 200, message = "タイトル名は1～200文字である必要があります")
     private String name;
 
+    @Schema(description = "作品情報URL一覧", example = "[\"https://example.com\"]")
     private List<String> titleInfoUrls;
 
     public CreateTitleRequestDTO() {}
