@@ -1,5 +1,6 @@
 package com.example.videowatchlog.application.usecase;
 
+import com.example.videowatchlog.application.dto.ViewingRecordDetailDTO;
 import com.example.videowatchlog.domain.model.Episode;
 import com.example.videowatchlog.domain.model.ViewingRecord;
 import com.example.videowatchlog.domain.model.WatchStatus;
@@ -36,10 +37,11 @@ public class CompleteEpisodeUseCase {
      * @param watchedAt Date and time when the episode was watched (must not be in future)
      * @param rating User rating (1-5)
      * @param comment User comment (optional, max 2000 characters)
+     * @return ViewingRecordDetailDTO of the created record
      * @throws IllegalArgumentException if episode not found or validation fails
      * @throws IllegalStateException if episode is already watched
      */
-    public void execute(Long episodeId, LocalDateTime watchedAt, Integer rating, String comment) {
+    public ViewingRecordDetailDTO execute(Long episodeId, LocalDateTime watchedAt, Integer rating, String comment) {
         // Validate input
         Objects.requireNonNull(episodeId, "episodeId must not be null");
         Objects.requireNonNull(watchedAt, "watchedAt must not be null");
@@ -64,5 +66,15 @@ public class CompleteEpisodeUseCase {
 
         // Persist changes
         episodeRepository.save(episode);
+
+        // Return created viewing record as DTO
+        return new ViewingRecordDetailDTO(
+                viewingRecord.getId(),
+                viewingRecord.getEpisodeId(),
+                viewingRecord.getWatchedAt(),
+                viewingRecord.getRating(),
+                viewingRecord.getComment(),
+                viewingRecord.getRecordedAt()
+        );
     }
 }

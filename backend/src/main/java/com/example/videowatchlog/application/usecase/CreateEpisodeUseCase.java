@@ -26,7 +26,7 @@ public class CreateEpisodeUseCase {
     }
 
     @Transactional
-    public void execute(Long seriesId, CreateEpisodeRequestDTO request) {
+    public Long execute(Long seriesId, CreateEpisodeRequestDTO request) {
         Series series = seriesRepository.findById(seriesId)
                 .orElseThrow(() -> new IllegalArgumentException("シリーズが見つかりません"));
 
@@ -42,5 +42,6 @@ public class CreateEpisodeUseCase {
         episodeRepository.save(episode);
         // Phase 7: Series の Episode フィールドがなくなったため、Episode を単独で保存
         // Series はもはや Episode リストを保持しません
+        return id;
     }
 }

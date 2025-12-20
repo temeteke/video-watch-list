@@ -83,8 +83,8 @@ public class TitleController {
 
     @GetMapping
     @Operation(
-        summary = "全タイトル一覧を取得",
-        description = "登録されているすべてのタイトルを一覧で取得します。"
+        summary = "タイトル一覧を取得",
+        description = "登録されているタイトルを一覧で取得します。queryまたはwatchStatusパラメータでフィルタ可能です。"
     )
     @ApiResponses(value = {
         @ApiResponse(
@@ -93,24 +93,18 @@ public class TitleController {
             content = @Content(schema = @Schema(implementation = TitleSummaryDTO.class))
         )
     })
-    public ResponseEntity<List<TitleSummaryDTO>> getAllTitles() {
-        List<TitleSummaryDTO> result = getAllTitlesUseCase.execute();
-        return ResponseEntity.ok(result);
-    }
-
-    @GetMapping("/search")
-    @Operation(
-        summary = "タイトルを検索",
-        description = "タイトル名または視聴ステータスで検索します。"
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "検索成功")
-    })
-    public ResponseEntity<List<TitleSummaryDTO>> searchTitles(
+    public ResponseEntity<List<TitleSummaryDTO>> getTitles(
             @Parameter(description = "検索キーワード（タイトル名の部分一致）", example = "進撃")
             @RequestParam(required = false) String query,
             @Parameter(description = "視聴ステータスフィルタ", schema = @Schema(allowableValues = {"UNWATCHED", "WATCHED"}))
             @RequestParam(required = false) WatchStatus watchStatus) {
+        // 両方のパラメータが null の場合: 全件取得
+        if (query == null && watchStatus == null) {
+            List<TitleSummaryDTO> result = getAllTitlesUseCase.execute();
+            return ResponseEntity.ok(result);
+        }
+
+        // いずれかのパラメータがある場合: 検索実行
         List<TitleSummaryDTO> result = searchTitlesUseCase.execute(query, watchStatus);
         return ResponseEntity.ok(result);
     }
@@ -137,16 +131,18 @@ public class TitleController {
         description = "既存のタイトル情報を更新します。"
     )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "更新成功"),
+        @ApiResponse(responseCode = "200", description = "更新成功",
+            content = @Content(schema = @Schema(implementation = TitleDetailDTO.class))),
         @ApiResponse(responseCode = "404", description = "タイトルが見つかりません"),
         @ApiResponse(responseCode = "409", description = "タイトル名が既に存在(重複)")
     })
-    public ResponseEntity<Void> updateTitle(
+    public ResponseEntity<TitleDetailDTO> updateTitle(
             @Parameter(description = "タイトルID", required = true, example = "1")
             @PathVariable Long id,
             @Valid @RequestBody UpdateTitleRequestDTO request) {
         updateTitleUseCase.execute(id, request);
-        return ResponseEntity.noContent().build();
+        TitleDetailDTO updated = getTitleDetailUseCase.execute(id);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")

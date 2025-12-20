@@ -25,7 +25,7 @@ public class CreateSeriesUseCase {
     }
 
     @Transactional
-    public void execute(Long titleId, CreateSeriesRequestDTO request) {
+    public Long execute(Long titleId, CreateSeriesRequestDTO request) {
         Title title = titleRepository.findById(titleId)
                 .orElseThrow(() -> new IllegalArgumentException("タイトルが見つかりません"));
 
@@ -34,5 +34,6 @@ public class CreateSeriesUseCase {
         seriesRepository.save(series);
         // Phase 7: Title の Series フィールドがなくなったため、Series を単独で保存
         // Title はもはや Series リストを保持しません
+        return id;
     }
 }
