@@ -93,6 +93,36 @@ class SeriesTest {
             Series series = Series.create(1L, 1L, null);
             assertThat(series.getName()).isEmpty();
         }
+
+        @Test
+        @DisplayName("titleIdがnullでは作成できない")
+        void shouldNotCreateWithNullTitleId() {
+            assertThatThrownBy(() -> new Series(
+                    1L, null, "Season 1",
+                    LocalDateTime.now(), LocalDateTime.now()
+            )).isInstanceOf(NullPointerException.class)
+              .hasMessageContaining("titleId must not be null");
+        }
+
+        @Test
+        @DisplayName("createdAtがnullでは作成できない")
+        void shouldNotCreateWithNullCreatedAt() {
+            assertThatThrownBy(() -> new Series(
+                    1L, 1L, "Season 1",
+                    null, LocalDateTime.now()
+            )).isInstanceOf(NullPointerException.class)
+              .hasMessageContaining("createdAt must not be null");
+        }
+
+        @Test
+        @DisplayName("updatedAtがnullでは作成できない")
+        void shouldNotCreateWithNullUpdatedAt() {
+            assertThatThrownBy(() -> new Series(
+                    1L, 1L, "Season 1",
+                    LocalDateTime.now(), null
+            )).isInstanceOf(NullPointerException.class)
+              .hasMessageContaining("updatedAt must not be null");
+        }
     }
 
     @Nested
@@ -111,6 +141,20 @@ class SeriesTest {
 
             // Then
             assertThat(series.getName()).isEqualTo("Season 1 (Complete)");
+            assertThat(series.getUpdatedAt()).isAfterOrEqualTo(originalUpdatedAt);
+        }
+
+        @Test
+        @DisplayName("touch()でupdatedAtが更新される")
+        void shouldUpdateUpdatedAtWhenTouched() {
+            // Given
+            Series series = Series.create(1L, 1L, "Season 1");
+            LocalDateTime originalUpdatedAt = series.getUpdatedAt();
+
+            // When
+            series.touch();
+
+            // Then
             assertThat(series.getUpdatedAt()).isAfterOrEqualTo(originalUpdatedAt);
         }
     }

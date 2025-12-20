@@ -80,6 +80,46 @@ class EpisodeTest {
             Episode episode = Episode.create(1L, 1L, info);
             assertThat(episode.getEpisodeInfo()).isEqualTo(info);
         }
+
+        @Test
+        @DisplayName("seriesIdがnullでは作成できない")
+        void shouldNotCreateWithNullSeriesId() {
+            assertThatThrownBy(() -> new Episode(
+                    1L, null, "第1話", null, WatchStatus.UNWATCHED, null,
+                    LocalDateTime.now(), LocalDateTime.now()
+            )).isInstanceOf(NullPointerException.class)
+              .hasMessageContaining("seriesId must not be null");
+        }
+
+        @Test
+        @DisplayName("watchStatusがnullでは作成できない")
+        void shouldNotCreateWithNullWatchStatus() {
+            assertThatThrownBy(() -> new Episode(
+                    1L, 1L, "第1話", null, null, null,
+                    LocalDateTime.now(), LocalDateTime.now()
+            )).isInstanceOf(NullPointerException.class)
+              .hasMessageContaining("watchStatus must not be null");
+        }
+
+        @Test
+        @DisplayName("createdAtがnullでは作成できない")
+        void shouldNotCreateWithNullCreatedAt() {
+            assertThatThrownBy(() -> new Episode(
+                    1L, 1L, "第1話", null, WatchStatus.UNWATCHED, null,
+                    null, LocalDateTime.now()
+            )).isInstanceOf(NullPointerException.class)
+              .hasMessageContaining("createdAt must not be null");
+        }
+
+        @Test
+        @DisplayName("updatedAtがnullでは作成できない")
+        void shouldNotCreateWithNullUpdatedAt() {
+            assertThatThrownBy(() -> new Episode(
+                    1L, 1L, "第1話", null, WatchStatus.UNWATCHED, null,
+                    LocalDateTime.now(), null
+            )).isInstanceOf(NullPointerException.class)
+              .hasMessageContaining("updatedAt must not be null");
+        }
     }
 
     @Nested
@@ -270,6 +310,21 @@ class EpisodeTest {
             assertThat(episode.getViewingRecords()).isEmpty();
             assertThat(episode.getWatchStatus()).isEqualTo(WatchStatus.UNWATCHED);
         }
+
+        @Test
+        @DisplayName("同じViewingRecordを複数回追加しても重複しない")
+        void shouldNotAddDuplicateViewingRecord() {
+            // Given
+            Episode episode = Episode.create(1L, 1L, "第1話");
+            ViewingRecord record = ViewingRecord.create(100L, 1L, LocalDateTime.now(), 5, "Great!");
+
+            // When
+            episode.addViewingRecord(record);
+            episode.addViewingRecord(record); // 重複追加
+
+            // Then
+            assertThat(episode.getViewingRecords()).hasSize(1);
+        }
     }
 
     @Nested
@@ -349,6 +404,20 @@ class EpisodeTest {
 
             // Then
             assertThat(episode.getEpisodeInfo()).isEqualTo("第1話「巨人襲来」");
+            assertThat(episode.getUpdatedAt()).isAfterOrEqualTo(originalUpdatedAt);
+        }
+
+        @Test
+        @DisplayName("touch()でupdatedAtが更新される")
+        void shouldUpdateUpdatedAtWhenTouched() {
+            // Given
+            Episode episode = Episode.create(1L, 1L, "第1話");
+            LocalDateTime originalUpdatedAt = episode.getUpdatedAt();
+
+            // When
+            episode.touch();
+
+            // Then
             assertThat(episode.getUpdatedAt()).isAfterOrEqualTo(originalUpdatedAt);
         }
     }

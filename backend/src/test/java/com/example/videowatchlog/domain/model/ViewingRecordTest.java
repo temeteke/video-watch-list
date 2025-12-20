@@ -148,6 +148,36 @@ class ViewingRecordTest {
             )).isInstanceOf(IllegalArgumentException.class)
               .hasMessageContaining("Rating must not be null");
         }
+
+        @Test
+        @DisplayName("episodeIdがnullでは作成できない")
+        void shouldNotCreateWithNullEpisodeId() {
+            assertThatThrownBy(() -> new ViewingRecord(
+                    1L, null, LocalDateTime.now(), 5, "Test",
+                    LocalDateTime.now()
+            )).isInstanceOf(NullPointerException.class)
+              .hasMessageContaining("episodeId must not be null");
+        }
+
+        @Test
+        @DisplayName("watchedAtがnullでは作成できない")
+        void shouldNotCreateWithNullWatchedAt() {
+            assertThatThrownBy(() -> new ViewingRecord(
+                    1L, 1L, null, 5, "Test",
+                    LocalDateTime.now()
+            )).isInstanceOf(NullPointerException.class)
+              .hasMessageContaining("watchedAt must not be null");
+        }
+
+        @Test
+        @DisplayName("recordedAtがnullでは作成できない")
+        void shouldNotCreateWithNullRecordedAt() {
+            assertThatThrownBy(() -> new ViewingRecord(
+                    1L, 1L, LocalDateTime.now(), 5, "Test",
+                    null
+            )).isInstanceOf(NullPointerException.class)
+              .hasMessageContaining("recordedAt must not be null");
+        }
     }
 
     @Nested
