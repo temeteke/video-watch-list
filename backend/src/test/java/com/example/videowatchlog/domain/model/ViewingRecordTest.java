@@ -135,6 +135,19 @@ class ViewingRecordTest {
                     "Future"
             )).isInstanceOf(IllegalArgumentException.class);
         }
+
+        @Test
+        @DisplayName("評価がnullでは作成できない")
+        void shouldNotCreateWithNullRating() {
+            assertThatThrownBy(() -> ViewingRecord.create(
+                    1L,
+                    1L,
+                    LocalDateTime.now(),
+                    null, // null評価
+                    "Test"
+            )).isInstanceOf(IllegalArgumentException.class)
+              .hasMessageContaining("Rating must not be null");
+        }
     }
 
     @Nested

@@ -193,6 +193,32 @@ class EpisodeTest {
             // Then
             assertThat(episode.getWatchPageUrls()).hasSize(1);
         }
+
+        @Test
+        @DisplayName("視聴ページURLを削除できる")
+        void shouldRemoveWatchPageUrl() {
+            // Given
+            Episode episode = Episode.create(1L, 1L, "第1話");
+            WatchPageUrl url = new WatchPageUrl("https://www.netflix.com/watch/12345", "Netflix");
+            episode.addWatchPageUrl(url);
+
+            // When
+            episode.removeWatchPageUrl(url);
+
+            // Then
+            assertThat(episode.getWatchPageUrls()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("存在しない視聴ページURLを削除しても例外が発生しない")
+        void shouldNotThrowWhenRemovingNonExistentWatchPageUrl() {
+            // Given
+            Episode episode = Episode.create(1L, 1L, "第1話");
+            WatchPageUrl url = new WatchPageUrl("https://www.netflix.com/watch/12345", "Netflix");
+
+            // When & Then
+            assertThatCode(() -> episode.removeWatchPageUrl(url)).doesNotThrowAnyException();
+        }
     }
 
     @Nested

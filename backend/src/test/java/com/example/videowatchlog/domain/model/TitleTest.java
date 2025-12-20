@@ -135,6 +135,32 @@ class TitleTest {
             // Then
             assertThat(title.getTitleInfoUrls()).hasSize(2);
         }
+
+        @Test
+        @DisplayName("タイトル情報URLを削除できる")
+        void shouldRemoveTitleInfoUrl() {
+            // Given
+            Title title = Title.create(TEST_ID, "進撃の巨人");
+            TitleInfoUrl url = new TitleInfoUrl("https://www.wikipedia.org/進撃の巨人");
+            title.addTitleInfoUrl(url);
+
+            // When
+            title.removeTitleInfoUrl(url);
+
+            // Then
+            assertThat(title.getTitleInfoUrls()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("存在しないタイトル情報URLを削除しても例外が発生しない")
+        void shouldNotThrowWhenRemovingNonExistentTitleInfoUrl() {
+            // Given
+            Title title = Title.create(TEST_ID, "進撃の巨人");
+            TitleInfoUrl url = new TitleInfoUrl("https://www.wikipedia.org/進撃の巨人");
+
+            // When & Then
+            assertThatCode(() -> title.removeTitleInfoUrl(url)).doesNotThrowAnyException();
+        }
     }
 
     @Nested
